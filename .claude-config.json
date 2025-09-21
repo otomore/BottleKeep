@@ -1,0 +1,7 @@
+{
+  "language": "ja",
+  "locale": "ja_JP",
+  "systemPrompt": "常に日本語で応答してください。すべての説明、コメント、エラーメッセージを日本語で提供してください。コードのコメントも日本語で記述してください。",
+  "responseLanguage": "japanese",
+  "preferredLanguage": "ja"
+}
