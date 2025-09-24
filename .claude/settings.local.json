@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(claude config list)",
-      "Bash(claude config set --help)"
+      "Bash(claude config set --help)",
+      "Bash(grep:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

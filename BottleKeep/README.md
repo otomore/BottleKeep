@@ -9,8 +9,8 @@ BottleKeepは、ウイスキーコレクションを効率的に管理するた�
 - ✅ 検索・フィルタ機能
 - ✅ Core Data + CloudKit統合
 - ✅ テイスティングノート・評価機能
-- 🔄 統計情報表示（実装予定）
-- 🔄 ウィッシュリスト機能（実装予定）
+- ✅ 統計情報表示（チャート・グラフ機能含む）
+- ✅ ウィッシュリスト機能（優先度管理機能含む）
 
 ## 技術スタック
 - **言語**: Swift 5.9+
@@ -87,14 +87,14 @@ BottleKeep/
 
 ## 開発状況
 - ✅ プロジェクト構造設計完了
-- ✅ Core Data モデル実装完了
-- ✅ Repository層実装完了
-- ✅ ViewModel層実装完了
-- ✅ 基本UI実装完了
+- ✅ Core Data モデル実装完了（Bottle, BottlePhoto, WishlistItem）
+- ✅ Repository層実装完了（BottleRepository, WishlistRepository）
+- ✅ ViewModel層実装完了（全ViewModels）
+- ✅ 基本UI実装完了（SwiftUI Views）
 - ✅ 基本的なCRUD操作実装完了
-- 🔄 テスト実装中
-- ⏳ 統計機能実装予定
-- ⏳ ウィッシュリスト機能実装予定
+- ✅ 統計機能実装完了（Charts Framework使用）
+- ✅ ウィッシュリスト機能実装完了
+- ✅ テスト実装完了（ユニット・UI・統合テスト）
 
 ## テスト実行
 ```bash

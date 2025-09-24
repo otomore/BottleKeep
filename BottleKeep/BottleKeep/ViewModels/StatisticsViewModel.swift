@@ -11,6 +11,8 @@ class StatisticsViewModel: ObservableObject {
     @Published var totalValue: Decimal = 0
     @Published var averageRating: Double = 0
     @Published var regionDistribution: [String: Int] = [:]
+    @Published var typeDistribution: [String: Int] = [:]
+    @Published var vintageDistribution: [Int: Int] = [:]
     @Published var openedCount: Int = 0
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -38,18 +40,24 @@ class StatisticsViewModel: ObservableObject {
             async let totalValueTask = repository.getTotalValue()
             async let averageRatingTask = repository.getAverageRating()
             async let regionDistributionTask = repository.getBottlesByRegion()
+            async let typeDistributionTask = repository.getBottlesByType()
+            async let vintageDistributionTask = repository.getVintageDistribution()
 
-            let (count, value, rating, regions) = await (
+            let (count, value, rating, regions, types, vintages) = await (
                 try totalCountTask,
                 try totalValueTask,
                 try averageRatingTask,
-                try regionDistributionTask
+                try regionDistributionTask,
+                try typeDistributionTask,
+                try vintageDistributionTask
             )
 
             totalCount = count
             totalValue = value
             averageRating = rating
             regionDistribution = regions
+            typeDistribution = types
+            vintageDistribution = vintages
 
             // 開栓数を計算
             let openedBottles = try await repository.fetchOpenedBottles()
@@ -107,6 +115,36 @@ extension StatisticsViewModel {
     /// 地域分布のソート済み配列
     var sortedRegions: [(String, Int)] {
         return regionDistribution.sorted { $0.value > $1.value }
+    }
+
+    /// タイプ分布のソート済み配列
+    var sortedTypes: [(String, Int)] {
+        return typeDistribution.sorted { $0.value > $1.value }
+    }
+
+    /// ヴィンテージ分布のソート済み配列
+    var sortedVintages: [(Int, Int)] {
+        return vintageDistribution.sorted { $0.key > $1.key }
+    }
+
+    /// 最も多い地域
+    var mostCommonRegion: String? {
+        return sortedRegions.first?.0
+    }
+
+    /// 最も多いタイプ
+    var mostCommonType: String? {
+        return sortedTypes.first?.0
+    }
+
+    /// 最古のヴィンテージ
+    var oldestVintage: Int? {
+        return vintageDistribution.keys.min()
+    }
+
+    /// 最新のヴィンテージ
+    var newestVintage: Int? {
+        return vintageDistribution.keys.max()
     }
 
     /// 統計サマリー

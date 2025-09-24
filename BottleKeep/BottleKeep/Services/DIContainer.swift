@@ -11,6 +11,7 @@ class DIContainer: ObservableObject {
 
     // MARK: - Repositories
     private let bottleRepository: BottleRepositoryProtocol
+    private let wishlistRepository: WishlistRepositoryProtocol
 
     // MARK: - Initialization
 
@@ -21,6 +22,7 @@ class DIContainer: ObservableObject {
 
         // Repositories
         self.bottleRepository = BottleRepository(coreDataManager: coreDataManager)
+        self.wishlistRepository = WishlistRepository(coreDataManager: coreDataManager)
     }
 
     // MARK: - ViewModels Factory
@@ -49,6 +51,10 @@ class DIContainer: ObservableObject {
         return StatisticsViewModel(repository: bottleRepository)
     }
 
+    func makeWishlistViewModel() -> WishlistViewModel {
+        return WishlistViewModel(repository: wishlistRepository)
+    }
+
     // MARK: - Services Access
 
     func getCoreDataManager() -> CoreDataManager {
@@ -61,5 +67,9 @@ class DIContainer: ObservableObject {
 
     func getBottleRepository() -> BottleRepositoryProtocol {
         return bottleRepository
+    }
+
+    func getWishlistRepository() -> WishlistRepositoryProtocol {
+        return wishlistRepository
     }
 }

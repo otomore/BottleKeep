@@ -22,6 +22,9 @@ protocol BottleRepositoryProtocol {
     func getTotalValue() async throws -> Decimal
     func getAverageRating() async throws -> Double
     func getBottlesByRegion() async throws -> [String: Int]
+    func fetchOpenedBottles() async throws -> [Bottle]
+    func getBottlesByType() async throws -> [String: Int]
+    func getVintageDistribution() async throws -> [Int: Int]
 }
 
 /// Repository層のエラー定義

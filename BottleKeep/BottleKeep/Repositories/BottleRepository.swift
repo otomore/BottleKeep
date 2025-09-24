@@ -192,6 +192,43 @@ class BottleRepository: BottleRepositoryProtocol {
             return regionCounts
         }
     }
+
+    func getBottlesByType() async throws -> [String: Int] {
+        return try await coreDataManager.performBackgroundTask { context in
+            let request: NSFetchRequest<Bottle> = Bottle.fetchRequest()
+            request.predicate = NSPredicate(format: "type != nil AND type != ''")
+
+            let bottles = try context.fetch(request)
+            var typeCounts: [String: Int] = [:]
+
+            for bottle in bottles {
+                if let type = bottle.type {
+                    typeCounts[type, default: 0] += 1
+                }
+            }
+
+            return typeCounts
+        }
+    }
+
+    func getVintageDistribution() async throws -> [Int: Int] {
+        return try await coreDataManager.performBackgroundTask { context in
+            let request: NSFetchRequest<Bottle> = Bottle.fetchRequest()
+            request.predicate = NSPredicate(format: "vintage > 0")
+
+            let bottles = try context.fetch(request)
+            var vintageCounts: [Int: Int] = [:]
+
+            for bottle in bottles {
+                let vintage = Int(bottle.vintage)
+                if vintage > 0 {
+                    vintageCounts[vintage, default: 0] += 1
+                }
+            }
+
+            return vintageCounts
+        }
+    }
 }
 
 // MARK: - Convenience Extensions
