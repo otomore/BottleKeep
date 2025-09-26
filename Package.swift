@@ -20,6 +20,9 @@ let package = Package(
             name: "BottleKeep",
             dependencies: [],
             path: "BottleKeep",
+            exclude: [
+                "Resources/Info.plist"
+            ],
             resources: [
                 .process("Resources")
             ]
