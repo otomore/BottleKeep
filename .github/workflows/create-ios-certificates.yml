@@ -85,7 +85,7 @@ jobs:
           EOF
 
       - name: CSRと秘密鍵をアップロード
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: certificate-signing-request
           path: |
@@ -103,7 +103,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 前回のCSRファイルをダウンロード
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: certificate-signing-request
         continue-on-error: true
@@ -202,7 +202,7 @@ jobs:
           fi
 
       - name: P12ファイルをアップロード（作成された場合）
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ios-distribution-certificate
           path: |
