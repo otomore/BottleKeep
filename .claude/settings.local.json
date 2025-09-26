@@ -19,7 +19,8 @@
       "Bash(gh workflow run:*)",
       "Bash(gh run download:*)",
       "Bash(gh secret set:*)",
-      "Bash(gh secret:*)"
+      "Bash(gh secret:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

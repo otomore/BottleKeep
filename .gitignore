@@ -131,4 +131,5 @@ config.json
 .claude-config.json
 CLAUDE.md
 claude-ja.bat
-claude-ja.sh
+claude-ja.shcert_encoded.txt
+encoded.txt

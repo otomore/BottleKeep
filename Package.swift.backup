@@ -7,7 +7,7 @@ let package = Package(
         .iOS(.v16)
     ],
     products: [
-        .executable(
+        .library(
             name: "BottleKeep",
             targets: ["BottleKeep"]
         )
@@ -16,7 +16,7 @@ let package = Package(
         // 外部依存関係はここに追加
     ],
     targets: [
-        .executableTarget(
+        .target(
             name: "BottleKeep",
             dependencies: [],
             path: "BottleKeep",
