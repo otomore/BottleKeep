@@ -7,19 +7,22 @@ let package = Package(
         .iOS(.v16)
     ],
     products: [
-        .executable(
+        .library(
             name: "BottleKeep",
             targets: ["BottleKeep"]
         )
     ],
     dependencies: [
-        // 必要な依存関係をここに追加
+        // Core Data用の依存関係
     ],
     targets: [
-        .executableTarget(
+        .target(
             name: "BottleKeep",
             dependencies: [],
-            path: "BottleKeep"
+            path: "BottleKeep",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .testTarget(
             name: "BottleKeepTests",
