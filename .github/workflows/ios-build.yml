@@ -29,20 +29,22 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
           xcodebuild -version
 
-      - name: Xcodeプロジェクト情報を確認
+      - name: Swift Package情報を確認
         run: |
-          echo "=== Xcodeプロジェクト情報を確認 ==="
-          ls -la *.xcodeproj
+          echo "=== Swift Package情報を確認 ==="
+          cat Package.swift
 
-          echo "=== 利用可能なスキームを確認 ==="
-          xcodebuild -project ${{ env.PROJECT_PATH }} -list
+          echo "=== パッケージ解決 ==="
+          swift package resolve
 
-      - name: Xcodeプロジェクトビルドテスト
+          echo "=== 利用可能なターゲット確認 ==="
+          swift package describe --type json | jq '.targets[] | .name' || echo "jq not available"
+
+      - name: Swift Packageビルドテスト
         run: |
-          echo "=== Xcodeプロジェクトビルドテスト ==="
+          echo "=== Swift Packageビルドテスト ==="
           xcodebuild build \
-            -project ${{ env.PROJECT_PATH }} \
-            -scheme ${{ env.SCHEME }} \
+            -scheme BottleKeep \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
             -configuration Debug \
             || echo "ビルドテストに失敗"
@@ -50,13 +52,7 @@ jobs:
       - name: ユニットテストを実行
         run: |
           echo "=== ユニットテストを実行 ==="
-          xcodebuild test \
-            -project ${{ env.PROJECT_PATH }} \
-            -scheme ${{ env.SCHEME }} \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
-            -resultBundlePath TestResults \
-            -enableCodeCoverage YES \
-            || echo "テスト実行をスキップしました（テストターゲットが見つからない可能性があります）"
+          swift test || echo "テスト実行をスキップしました（テストターゲットが見つからない可能性があります）"
 
       - name: テスト結果をアップロード
         if: always()
@@ -121,8 +117,8 @@ jobs:
           echo "=== プロジェクト構造確認 ==="
           ls -la BottleKeep/
 
-          echo "=== 利用可能なスキーム確認 ==="
-          xcodebuild -project ${{ env.PROJECT_PATH }} -list
+          echo "=== Swift Package確認 ==="
+          swift package describe --type json || echo "パッケージ情報取得失敗"
 
           echo "=== Info.plist確認 ==="
           ls -la BottleKeep/Info.plist
