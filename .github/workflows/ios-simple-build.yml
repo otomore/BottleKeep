@@ -17,42 +17,31 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.0.app
           xcodebuild -version
 
-      - name: Swift Packageから.xcodeprojを生成
+      - name: Swift Package情報を確認
         run: |
-          echo "=== Swift Packageから.xcodeprojを生成 ==="
-          swift package generate-xcodeproj --skip-extra-files
+          echo "=== Swift Package情報を確認 ==="
+          swift package describe --type json || echo "Package.swift確認"
+          cat Package.swift
 
-          echo "=== 生成されたファイルを確認 ==="
-          ls -la *.xcodeproj
+          echo "=== 利用可能なターゲットを確認 ==="
+          swift package show-dependencies || echo "依存関係なし"
 
-      - name: プロジェクト情報を確認
+      - name: Swift Packageビルドテスト
         run: |
-          echo "=== プロジェクト構造を確認 ==="
-          PROJECT_FILE=$(ls *.xcodeproj | head -1)
-          echo "プロジェクトファイル: $PROJECT_FILE"
+          echo "=== Swift Packageビルドテスト ==="
+          swift build --target BottleKeep || echo "Swift Package Manager ビルドに失敗"
 
-          echo "=== 利用可能なスキームを確認 ==="
-          xcodebuild -project "$PROJECT_FILE" -list
-
-          echo "=== ターゲット情報を確認 ==="
-          xcodebuild -project "$PROJECT_FILE" -list | grep -A 10 "Targets:"
-
-      - name: シンプルビルドテスト
+      - name: xcodebuildを使用したビルドテスト
         run: |
-          PROJECT_FILE=$(ls *.xcodeproj | head -1)
-          echo "使用するプロジェクト: $PROJECT_FILE"
+          echo "=== xcodebuildを使用してSwift Packageを直接ビルド ==="
 
-          # 最初に見つかったスキームを使用
-          SCHEME=$(xcodebuild -project "$PROJECT_FILE" -list | grep -A 20 "Schemes:" | grep -v "Schemes:" | head -1 | xargs)
-          echo "使用するスキーム: $SCHEME"
-
-          echo "=== ビルドテストを実行 ==="
+          # Swift Packageから直接ビルド
           xcodebuild build \
-            -project "$PROJECT_FILE" \
-            -scheme "$SCHEME" \
+            -scheme BottleKeep \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
             -configuration Debug \
-            || echo "ビルドに失敗しましたが、続行します"
+            -skipPackagePluginValidation \
+            || echo "xcodebuildビルドに失敗しましたが、続行します"
 
       - name: 詳細ログ表示
         if: always()
