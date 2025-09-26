@@ -12,7 +12,7 @@ env:
   XCODE_VERSION: '15.0' # 使用するXcodeのバージョン
   SCHEME: 'BottleKeep'
   PROJECT_PATH: 'BottleKeep.xcodeproj' # プロジェクトファイルのパス
-  BUNDLE_ID: 'com.bottlekeep.app'
+  BUNDLE_ID: 'com.bottlekeep.whiskey'
 
 jobs:
   # テスト実行ジョブ

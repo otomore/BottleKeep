@@ -12,12 +12,12 @@
 
     <!-- チームIDの設定 -->
     <key>teamID</key>
-    <string>YOUR_TEAM_ID</string>
+    <string>B3QHWZX47Z</string>
 
     <!-- バンドルIDとプロビジョニングプロファイルのマッピング -->
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.bottlekeep.app</key>
+        <key>com.bottlekeep.whiskey</key>
         <string>BottleKeep Distribution</string>
     </dict>
 
