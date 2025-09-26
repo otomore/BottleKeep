@@ -131,16 +131,16 @@ jobs:
         run: |
           echo "=== アーカイブビルドを開始 ==="
 
-          # 標準的なXcodeプロジェクトからiOSアプリをビルド
+          # Swift Package ManagerからiOSアプリをビルド
           xcodebuild archive \
-            -project ${{ env.PROJECT_PATH }} \
-            -scheme ${{ env.SCHEME }} \
+            -scheme BottleKeep \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }} \
-            PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_ID }}
+            PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_ID }} \
+            OTHER_SWIFT_FLAGS="-Xfrontend -enable-experimental-concurrency"
 
       - name: IPAをエクスポート
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
