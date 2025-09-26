@@ -29,24 +29,34 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
           xcodebuild -version
 
-      - name: Swift Package情報を確認
+      - name: Xcodeプロジェクト情報を確認
         run: |
-          echo "=== Swift Package情報を確認 ==="
-          swift package describe --type json || echo "Package.swift確認"
-          cat Package.swift
+          echo "=== Xcodeプロジェクト情報を確認 ==="
+          ls -la *.xcodeproj
 
-          echo "=== 利用可能なターゲットを確認 ==="
-          swift package show-dependencies || echo "依存関係なし"
+          echo "=== 利用可能なスキームを確認 ==="
+          xcodebuild -project ${{ env.PROJECT_PATH }} -list
 
-      - name: Swift Packageビルドテスト
+      - name: Xcodeプロジェクトビルドテスト
         run: |
-          echo "=== Swift Packageビルドテスト ==="
-          swift build --target BottleKeep || echo "Swift Package Manager ビルドに失敗"
+          echo "=== Xcodeプロジェクトビルドテスト ==="
+          xcodebuild build \
+            -project ${{ env.PROJECT_PATH }} \
+            -scheme ${{ env.SCHEME }} \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+            -configuration Debug \
+            || echo "ビルドテストに失敗"
 
       - name: ユニットテストを実行
         run: |
           echo "=== ユニットテストを実行 ==="
-          swift test || echo "テスト実行をスキップしました（テストターゲットが見つからない可能性があります）"
+          xcodebuild test \
+            -project ${{ env.PROJECT_PATH }} \
+            -scheme ${{ env.SCHEME }} \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+            -resultBundlePath TestResults \
+            -enableCodeCoverage YES \
+            || echo "テスト実行をスキップしました（テストターゲットが見つからない可能性があります）"
 
       - name: テスト結果をアップロード
         if: always()
@@ -108,27 +118,29 @@ jobs:
 
       - name: プロジェクト構造とスキームを確認
         run: |
-          echo "=== Swift Packageターゲット確認 ==="
-          swift package describe --type json | grep -o '"name":"[^"]*"' || echo "ターゲット確認失敗"
+          echo "=== プロジェクト構造確認 ==="
+          ls -la BottleKeep/
 
-          echo "=== 現在のディレクトリ構造 ==="
-          find . -name "*.swift" -type f | head -10
+          echo "=== 利用可能なスキーム確認 ==="
+          xcodebuild -project ${{ env.PROJECT_PATH }} -list
+
+          echo "=== Info.plist確認 ==="
+          ls -la BottleKeep/Info.plist
 
       - name: アーカイブをビルド
         run: |
           echo "=== アーカイブビルドを開始 ==="
 
-          # Swift PackageからiOSアプリとしてビルド
+          # 標準的なXcodeプロジェクトからiOSアプリをビルド
           xcodebuild archive \
-            -scheme BottleKeep \
+            -project ${{ env.PROJECT_PATH }} \
+            -scheme ${{ env.SCHEME }} \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
             -allowProvisioningUpdates \
-            -skipPackagePluginValidation \
             DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }} \
-            PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_ID }} \
-            || echo "アーカイブビルドに失敗しましたが、続行します"
+            PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_ID }}
 
       - name: IPAをエクスポート
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

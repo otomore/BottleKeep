@@ -4,10 +4,15 @@ TestFlightへの自動配信に必要なApp Store Connect APIキーの設定手�
 
 ## 1. App Store Connect APIキーの作成
 
-### 1.1 Apple Developer Portalにアクセス
+### 1.1 App Store Connectにアクセス
 1. [App Store Connect](https://appstoreconnect.apple.com/) にログイン
 2. 上部メニューから「ユーザーとアクセス」をクリック
-3. サイドバーから「キー」タブを選択
+3. 左側のサイドバーで「統合」セクションを探し、「App Store Connect API」または「キー」を選択
+
+**注意**: UIが更新されている場合は以下も確認してください：
+- 「設定」→「API」→「キー」
+- 「アカウント」→「API」
+- ページ上部の検索で「API」を検索
 
 ### 1.2 新しいAPIキーを作成
 1. 「+」ボタンをクリック
