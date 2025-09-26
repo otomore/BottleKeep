@@ -112,3 +112,23 @@ iOSInjectionProject/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Security and sensitive files
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+.env
+.env.*
+*.env
+secrets.json
+config.json
+
+# Claude Code settings
+.claude/
+.claude-config.json
+CLAUDE.md
+claude-ja.bat
+claude-ja.sh

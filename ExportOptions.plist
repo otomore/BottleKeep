@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 配信方法の設定 -->
+    <!-- app-store: App Store配信用 -->
+    <!-- ad-hoc: テスター配信用 -->
+    <!-- enterprise: エンタープライズ配信用 -->
+    <!-- development: 開発用 -->
+    <key>method</key>
+    <string>app-store</string>
+
+    <!-- チームIDの設定 -->
+    <key>teamID</key>
+    <string>YOUR_TEAM_ID</string>
+
+    <!-- バンドルIDとプロビジョニングプロファイルのマッピング -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.yourcompany.BottleKeep</key>
+        <string>BottleKeep Distribution</string>
+    </dict>
+
+    <!-- ビットコードの設定 -->
+    <key>uploadBitcode</key>
+    <true/>
+
+    <!-- シンボルのアップロード設定 -->
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- アプリシニング設定 -->
+    <key>compileBitcode</key>
+    <true/>
+
+    <!-- アプリストリップ設定 -->
+    <key>stripSwiftSymbols</key>
+    <true/>
+
+    <!-- 署名スタイル -->
+    <key>signingStyle</key>
+    <string>manual</string>
+
+    <!-- 署名証明書 -->
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+
+    <!-- アプリのターゲットデバイス -->
+    <key>destination</key>
+    <string>export</string>
+
+    <!-- 薄型化の設定 -->
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+</dict>
+</plist>

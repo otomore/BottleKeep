@@ -1,0 +1,297 @@
+name: iOS証明書作成アシスタント
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: '実行するステップ'
+        required: true
+        default: 'create-csr'
+        type: choice
+        options:
+          - create-csr
+          - create-p12
+          - full-setup
+
+env:
+  CERTIFICATE_NAME: "BottleKeep Distribution"
+  ORGANIZATION: "BottleKeep"
+  COUNTRY: "JP"
+  STATE: "Tokyo"
+  CITY: "Tokyo"
+
+jobs:
+  create-certificate-signing-request:
+    name: 証明書署名要求（CSR）の作成
+    runs-on: macos-latest
+    if: github.event.inputs.step == 'create-csr' || github.event.inputs.step == 'full-setup'
+
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+
+      - name: 証明書署名要求（CSR）を作成
+        run: |
+          echo "=== iOS Distribution証明書の証明書署名要求（CSR）を作成します ==="
+
+          # 秘密鍵を生成
+          openssl genrsa -out BottleKeep_Distribution.key 2048
+
+          # CSR（証明書署名要求）を生成
+          openssl req -new \
+            -key BottleKeep_Distribution.key \
+            -out BottleKeep_Distribution.csr \
+            -subj "/C=${{ env.COUNTRY }}/ST=${{ env.STATE }}/L=${{ env.CITY }}/O=${{ env.ORGANIZATION }}/CN=${{ env.CERTIFICATE_NAME }}"
+
+          echo "CSRファイルが作成されました！"
+          echo ""
+          echo "作成されたファイル:"
+          ls -la BottleKeep_Distribution.*
+
+          echo ""
+          echo "CSR内容:"
+          openssl req -in BottleKeep_Distribution.csr -text -noout | head -20
+
+      - name: CSRファイルの内容を表示
+        run: |
+          echo "=== 作成されたCSRファイルの内容 ==="
+          echo "以下の内容をApple Developer Portalでアップロードしてください："
+          echo ""
+          cat BottleKeep_Distribution.csr
+
+      - name: Apple Developer Portal手順ガイド
+        run: |
+          cat << 'EOF'
+
+          ==========================================
+          Apple Developer Portal での証明書作成手順
+          ==========================================
+
+          1. https://developer.apple.com にアクセス
+          2. Apple IDでサインイン
+          3. Account > Certificates, IDs & Profiles をクリック
+          4. Certificates セクションで + ボタンをクリック
+          5. "Apple Distribution" を選択してContinue
+          6. 下記のCSRファイルをアップロード
+          7. 作成された証明書(.cer)をダウンロード
+
+          ==========================================
+          次のステップ
+          ==========================================
+
+          証明書(.cer)をダウンロードしたら、このワークフローを
+          step: create-p12 で再実行してください。
+
+          EOF
+
+      - name: CSRと秘密鍵をアップロード
+        uses: actions/upload-artifact@v3
+        with:
+          name: certificate-signing-request
+          path: |
+            BottleKeep_Distribution.csr
+            BottleKeep_Distribution.key
+          retention-days: 7
+
+  create-p12-certificate:
+    name: P12証明書の作成
+    runs-on: macos-latest
+    if: github.event.inputs.step == 'create-p12' || github.event.inputs.step == 'full-setup'
+
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+
+      - name: 前回のCSRファイルをダウンロード
+        uses: actions/download-artifact@v3
+        with:
+          name: certificate-signing-request
+        continue-on-error: true
+
+      - name: P12証明書作成の準備
+        run: |
+          echo "=== P12証明書作成の準備 ==="
+          echo ""
+          echo "このステップでは、Apple Developer Portalから"
+          echo "ダウンロードした証明書(.cer)を使用してP12ファイルを作成します。"
+          echo ""
+          echo "必要なファイル:"
+          echo "1. BottleKeep_Distribution.cer (Apple Developer Portalからダウンロード)"
+          echo "2. BottleKeep_Distribution.key (前のステップで作成)"
+          echo ""
+
+          # 秘密鍵が存在するかチェック
+          if [ -f "BottleKeep_Distribution.key" ]; then
+            echo "✓ 秘密鍵ファイルが見つかりました"
+          else
+            echo "❌ 秘密鍵ファイルが見つかりません"
+            echo "先にステップ 'create-csr' を実行してください"
+            exit 1
+          fi
+
+      - name: 証明書ファイルの手動アップロード手順
+        run: |
+          cat << 'EOF'
+
+          ==========================================
+          証明書ファイルのアップロード手順
+          ==========================================
+
+          Apple Developer Portalから証明書(.cer)をダウンロードしたら、
+          以下の手順でP12ファイルを作成できます：
+
+          手動での変換手順（macOS環境）:
+
+          1. ダウンロードした BottleKeep_Distribution.cer をダブルクリック
+          2. キーチェーンアクセスで証明書を確認
+          3. 証明書を右クリック > "書き出し"
+          4. ファイル形式で "個人情報交換 (.p12)" を選択
+          5. 強いパスワードを設定（GitHub Secretsに使用）
+          6. BottleKeep_Distribution.p12 として保存
+
+          ==========================================
+          Base64エンコード手順
+          ==========================================
+
+          P12ファイルが作成できたら、以下のコマンドでBase64エンコード:
+
+          macOS/Linux:
+          base64 -i BottleKeep_Distribution.p12 | pbcopy
+
+          Windows (PowerShell):
+          [Convert]::ToBase64String([IO.File]::ReadAllBytes("BottleKeep_Distribution.p12")) | Set-Clipboard
+
+          この結果をGitHub SecretsのBUILD_CERTIFICATE_BASE64に設定してください。
+
+          EOF
+
+      - name: 自動P12作成スクリプト（証明書ファイルが利用可能な場合）
+        run: |
+          # 実際の証明書作成（証明書ファイルが存在する場合のみ）
+          if [ -f "BottleKeep_Distribution.cer" ]; then
+            echo "証明書ファイルが見つかりました。P12ファイルを作成します..."
+
+            # 証明書をPEM形式に変換
+            openssl x509 -inform DER -in BottleKeep_Distribution.cer -out BottleKeep_Distribution.pem
+
+            # 秘密鍵と証明書を結合してP12ファイルを作成
+            # パスワードとしてサンプル値を使用（実際の使用時は強いパスワードに変更）
+            openssl pkcs12 -export \
+              -out BottleKeep_Distribution.p12 \
+              -inkey BottleKeep_Distribution.key \
+              -in BottleKeep_Distribution.pem \
+              -password pass:ChangeThisPassword123!
+
+            echo "P12ファイルが作成されました！"
+
+            # Base64エンコードして表示
+            echo ""
+            echo "=== GitHub Secrets用のBase64エンコード値 ==="
+            echo "BUILD_CERTIFICATE_BASE64:"
+            base64 -i BottleKeep_Distribution.p12
+
+            echo ""
+            echo "P12_PASSWORD: ChangeThisPassword123!"
+            echo ""
+            echo "重要: パスワードは本番環境では強いものに変更してください"
+
+          else
+            echo "証明書ファイル（.cer）が見つかりません。"
+            echo "Apple Developer Portalから証明書をダウンロードして、"
+            echo "リポジトリのルートディレクトリに配置してから再実行してください。"
+          fi
+
+      - name: P12ファイルをアップロード（作成された場合）
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-distribution-certificate
+          path: |
+            BottleKeep_Distribution.p12
+            BottleKeep_Distribution.pem
+        continue-on-error: true
+
+  setup-provisioning-profile:
+    name: プロビジョニングプロファイル設定ガイド
+    runs-on: macos-latest
+    if: github.event.inputs.step == 'full-setup'
+
+    steps:
+      - name: プロビジョニングプロファイル作成ガイド
+        run: |
+          cat << 'EOF'
+
+          ==========================================
+          プロビジョニングプロファイルの作成手順
+          ==========================================
+
+          1. Apple Developer Portal > Certificates, IDs & Profiles
+          2. Profiles セクションで + ボタンをクリック
+          3. "App Store" を選択（配布用）
+          4. App ID を選択または新規作成:
+             - Bundle ID: com.yourcompany.bottlekeep
+             - App Name: BottleKeep
+          5. 先ほど作成した Distribution証明書を選択
+          6. プロファイル名を入力: "BottleKeep Distribution"
+          7. プロファイルをダウンロード（.mobileprovision）
+
+          ==========================================
+          プロビジョニングプロファイルのBase64エンコード
+          ==========================================
+
+          macOS/Linux:
+          base64 -i BottleKeep_Distribution.mobileprovision | pbcopy
+
+          Windows (PowerShell):
+          [Convert]::ToBase64String([IO.File]::ReadAllBytes("BottleKeep_Distribution.mobileprovision")) | Set-Clipboard
+
+          この結果をGitHub SecretsのBUILD_PROVISION_PROFILE_BASE64に設定してください。
+
+          ==========================================
+          GitHub Secrets設定まとめ
+          ==========================================
+
+          以下のシークレットをGitHub リポジトリに設定してください：
+
+          1. BUILD_CERTIFICATE_BASE64: P12証明書のBase64エンコード値
+          2. P12_PASSWORD: P12証明書のパスワード
+          3. BUILD_PROVISION_PROFILE_BASE64: プロビジョニングプロファイルのBase64エンコード値
+          4. KEYCHAIN_PASSWORD: 任意の強いパスワード（GitHub Actions用）
+          5. TEAM_ID: Apple Developer Team ID
+
+          App Store Connect APIキー（TestFlight配信用）:
+          6. APP_STORE_CONNECT_API_KEY_ID: APIキーID
+          7. APP_STORE_CONNECT_ISSUER_ID: Issuer ID
+          8. APP_STORE_CONNECT_API_KEY: APIキーファイル（.p8）の内容
+
+          EOF
+
+  cleanup:
+    name: クリーンアップとセキュリティ注意事項
+    runs-on: macos-latest
+    if: always()
+
+    steps:
+      - name: セキュリティ注意事項
+        run: |
+          cat << 'EOF'
+
+          ==========================================
+          セキュリティ注意事項
+          ==========================================
+
+          ⚠️  重要なセキュリティ注意事項:
+
+          1. 作成された秘密鍵(.key)とP12ファイルは機密情報です
+          2. これらのファイルは絶対にパブリックリポジトリにコミットしないでください
+          3. GitHub Secretsにのみ保存してください
+          4. 不要になったアーティファクトは削除してください
+          5. 強いパスワードを使用してください
+
+          ✅ 完了後の確認事項:
+
+          - [ ] GitHub Secretsに必要な値を設定済み
+          - [ ] ExportOptions.plistのTeam IDとBundle IDを更新済み
+          - [ ] ワークフローファイルのプロジェクトパスを確認済み
+          - [ ] テストブランチでワークフローを実行済み
+
+          EOF
