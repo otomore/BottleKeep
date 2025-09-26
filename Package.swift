@@ -8,7 +8,7 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "BottleKeep",
+            name: "BottleKeepLib",
             targets: ["BottleKeep"]
         )
     ],
