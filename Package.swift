@@ -7,7 +7,7 @@ let package = Package(
         .iOS(.v16)
     ],
     products: [
-        .library(
+        .executable(
             name: "BottleKeep",
             targets: ["BottleKeep"]
         )
@@ -16,15 +16,13 @@ let package = Package(
         // Core Data用の依存関係
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "BottleKeep",
             dependencies: [],
             path: "BottleKeep",
-            resources: [
-                .process("Resources/BottleKeep.xcdatamodeld")
-            ],
             exclude: [
-                "Resources/Info.plist"
+                "Resources/Info.plist",
+                "Resources/BottleKeep.xcdatamodeld"
             ]
         ),
         .testTarget(
