@@ -106,7 +106,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: certificate-signing-request
-        continue-on-error: true
+        continue-on-error: false
 
       - name: P12証明書作成の準備
         run: |

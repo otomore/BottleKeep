@@ -17,7 +17,7 @@
     <!-- バンドルIDとプロビジョニングプロファイルのマッピング -->
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.yourcompany.BottleKeep</key>
+        <key>com.bottlekeep.app</key>
         <string>BottleKeep Distribution</string>
     </dict>
 
