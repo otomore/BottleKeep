@@ -3,7 +3,7 @@
 ウイスキーコレクション管理iOS/iPadアプリ
 
 [![iOS Build](https://github.com/otomore/BottleKeep/actions/workflows/ios-build.yml/badge.svg)](https://github.com/otomore/BottleKeep/actions/workflows/ios-build.yml)
-[![TestFlight](https://img.shields.io/badge/TestFlight-Available-blue)](https://testflight.apple.com/)
+[![TestFlight](https://img.shields.io/badge/TestFlight-Auto_Deploy-success)](https://testflight.apple.com/)
 
 ## 🎯 概要
 
