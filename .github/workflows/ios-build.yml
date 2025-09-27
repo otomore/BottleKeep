@@ -122,16 +122,15 @@ jobs:
         run: |
           echo "=== アーカイブビルドを開始 ==="
 
-          # ターゲット指定でのアーカイブビルド
+          # スキーム指定でのアーカイブビルド
           xcodebuild clean archive \
             -project ${{ env.PROJECT_PATH }} \
-            -target BottleKeep \
+            -scheme ${{ env.SCHEME }} \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
             -configuration Release \
             DEVELOPMENT_TEAM=KRVLW3Y2SL \
-            CODE_SIGN_STYLE=Automatic \
-            || echo "アーカイブビルドに失敗しましたが継続します"
+            CODE_SIGN_STYLE=Automatic
 
           echo "✅ アーカイブビルド完了"
 
@@ -140,21 +139,30 @@ jobs:
         run: |
           echo "=== IPAエクスポート開始 ==="
 
-          # ExportOptions.plistが存在するか確認
+          # ExportOptions.plistの存在確認
           if [ -f "ExportOptions.plist" ]; then
-            echo "ExportOptions.plistを使用してIPAエクスポート"
-            xcodebuild -exportArchive \
-              -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
-              -exportPath $RUNNER_TEMP/ipa \
-              -exportOptionsPlist ExportOptions.plist \
-              || echo "IPAエクスポートに失敗しました"
-          else
-            echo "ExportOptions.plistが見つからないため、IPAエクスポートをスキップ"
-            mkdir -p $RUNNER_TEMP/ipa
-            echo "アーカイブビルドは成功しています" > $RUNNER_TEMP/ipa/build_success.txt
-          fi
+            echo "✅ ExportOptions.plistが見つかりました"
 
-          echo "✅ IPAエクスポート完了"
+            # アーカイブの存在確認
+            if [ -d "$RUNNER_TEMP/BottleKeep.xcarchive" ]; then
+              echo "✅ アーカイブファイルが見つかりました"
+
+              # IPAエクスポート実行
+              xcodebuild -exportArchive \
+                -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
+                -exportPath $RUNNER_TEMP/ipa \
+                -exportOptionsPlist ExportOptions.plist
+
+              echo "✅ IPAエクスポート完了"
+              ls -la $RUNNER_TEMP/ipa/
+            else
+              echo "❌ アーカイブファイルが見つかりません"
+              exit 1
+            fi
+          else
+            echo "❌ ExportOptions.plistが見つかりません"
+            exit 1
+          fi
 
       - name: ビルド成果物をアップロード
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -188,24 +196,55 @@ jobs:
           name: BottleKeep-IPA
           path: ./ipa
 
-      - name: App Store Connectへアップロード（シミュレート）
+      - name: App Store Connect APIキーを設定
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         run: |
-          echo "=== App Store Connect アップロードをシミュレート ==="
+          echo "=== App Store Connect API設定 ==="
 
-          # GitHub Secretsの設定確認
+          # API Key ファイルを作成
+          mkdir -p ~/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY" > ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
+
+          # API設定の確認
           echo "✅ APP_STORE_CONNECT_API_KEY_ID: ${APP_STORE_CONNECT_API_KEY_ID:0:4}****"
           echo "✅ APP_STORE_CONNECT_ISSUER_ID: ${APP_STORE_CONNECT_ISSUER_ID:0:8}****"
-          echo "✅ APP_STORE_CONNECT_API_KEY: 設定済み (${#APP_STORE_CONNECT_API_KEY}文字)"
+          echo "✅ APIキーファイル作成完了"
 
-          # IPAファイル確認
-          ls -la ./ipa/
+      - name: TestFlightへアップロード
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          echo "=== TestFlightアップロード開始 ==="
 
-          echo "🎉 TestFlightへの自動配信パイプラインが完全に準備完了！"
-          echo "🔧 実際のiOSアプリビルドは次回の最適化で実装予定"
+          # IPAファイルを確認
+          IPA_FILE=$(find ./ipa -name "*.ipa" | head -1)
+
+          if [ -f "$IPA_FILE" ]; then
+            echo "✅ IPAファイルが見つかりました: $IPA_FILE"
+
+            # xcrunを使用してTestFlightにアップロード
+            xcrun altool --upload-app \
+              --type ios \
+              --file "$IPA_FILE" \
+              --apiKey $APP_STORE_CONNECT_API_KEY_ID \
+              --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
+              --verbose
+
+            if [ $? -eq 0 ]; then
+              echo "🎉 TestFlightアップロード成功！"
+            else
+              echo "❌ TestFlightアップロードに失敗しました"
+              exit 1
+            fi
+          else
+            echo "❌ IPAファイルが見つかりません"
+            ls -la ./ipa/
+            exit 1
+          fi
 
       - name: Slackへ通知（オプション）
         if: success() && env.SLACK_WEBHOOK_URL != ''
