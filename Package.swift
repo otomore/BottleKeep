@@ -21,11 +21,12 @@ let package = Package(
             dependencies: [],
             path: "BottleKeep",
             exclude: [
-                "Resources/Info.plist",
-                "Resources/BottleKeep.xcdatamodeld"
+                "Info.plist",
+                "BottleKeep.xcdatamodeld",
+                "Preview Content"
             ],
             resources: [
-                .process("Resources")
+                .process("Assets.xcassets")
             ]
         )
     ]

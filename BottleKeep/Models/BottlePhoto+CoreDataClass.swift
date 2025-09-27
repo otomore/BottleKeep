@@ -1,17 +1,22 @@
 import Foundation
 import CoreData
+
+#if canImport(UIKit)
 import UIKit
+#endif
 
 @objc(BottlePhoto)
 public class BottlePhoto: NSManagedObject {
 
     // MARK: - Computed Properties
 
+    #if canImport(UIKit)
     /// ファイル名からUIImageを取得
     var image: UIImage? {
         guard !fileName.isEmpty else { return nil }
         return PhotoManager.shared.loadPhoto(fileName: fileName)
     }
+    #endif
 
     /// メイン写真かどうかの判定
     var isMainPhoto: Bool {

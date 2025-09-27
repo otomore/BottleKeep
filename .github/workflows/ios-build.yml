@@ -46,7 +46,12 @@ jobs:
       - name: ユニットテストを実行
         run: |
           echo "=== ユニットテストを実行 ==="
-          swift test || echo "テスト実行をスキップしました（iOSパッケージのため）"
+          # Swift PackageのiOSターゲットはmacOSでは直接テストできないため、
+          # xcodebuildを使用してiOS Simulator向けにテストを実行
+          xcodebuild test \
+            -scheme BottleKeep \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+            || echo "テスト実行をスキップしました（Swift Package構成のため）"
 
       - name: テスト結果をアップロード
         if: always()
