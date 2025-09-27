@@ -19,12 +19,12 @@ BottleKeepは、ウイスキー愛好家のためのコレクション管理ア�
 
 ## 🛠 技術スタック
 
-- **開発言語**: Swift 5.9+
+- **開発言語**: Swift 5.0+
 - **UI Framework**: SwiftUI
 - **データ管理**: Core Data
 - **対応OS**: iOS 15.0+, iPadOS 15.0+
 - **開発環境**: Xcode 15+
-- **パッケージ管理**: Swift Package Manager
+- **プロジェクト形式**: Xcodeプロジェクト (.xcodeproj)
 
 ## 🚀 CI/CD & 配信
 
@@ -50,39 +50,39 @@ git clone https://github.com/otomore/BottleKeep.git
 cd BottleKeep
 ```
 
-2. Swift Package Managerで依存関係を解決
+2. Xcodeでプロジェクトを開く
 ```bash
-swift package resolve
+# Xcodeプロジェクトファイルを開く
+open BottleKeep.xcodeproj
 ```
 
-3. Xcodeでプロジェクトを開く
-```bash
-# Package.swiftから直接開く
-xed .
-```
+または、Xcode GUIから `BottleKeep.xcodeproj` を開いてください。
 
 ### ビルド & テスト
 ```bash
 # ビルド実行
-swift build
+xcodebuild build -project BottleKeep.xcodeproj -scheme BottleKeep -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
 # テスト実行
-swift test
+xcodebuild test -project BottleKeep.xcodeproj -scheme BottleKeep -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
-# iOS Simulatorでビルド
-xcodebuild build -scheme BottleKeep -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
+# アーカイブビルド（リリース用）
+xcodebuild archive -project BottleKeep.xcodeproj -scheme BottleKeep -destination 'generic/platform=iOS' -archivePath ./BottleKeep.xcarchive
 ```
 
 ## 🔧 CI/CD セットアップガイド
 
-### 1. 証明書とプロビジョニングプロファイル
-詳細な手順は [`PROVISIONING_PROFILE_GUIDE.md`](PROVISIONING_PROFILE_GUIDE.md) を参照
+このプロジェクトでは、GitHub ActionsとGitHub Secretsを使用した完全自動化CI/CDパイプラインを構築済みです。
 
-### 2. App Store Connect API設定
-TestFlight自動配信のセットアップは [`APP_STORE_CONNECT_SETUP.md`](APP_STORE_CONNECT_SETUP.md) を参照
-
-### 3. TestFlight配信テスト
-配信テストの手順は [`TESTFLIGHT_GUIDE.md`](TESTFLIGHT_GUIDE.md) を参照
+### 必要なGitHub Secrets
+以下のSecretsが設定済みです：
+- `BUILD_CERTIFICATE_BASE64`: iOS配信用証明書
+- `P12_PASSWORD`: 証明書のパスワード
+- `BUILD_PROVISION_PROFILE_BASE64`: プロビジョニングプロファイル
+- `KEYCHAIN_PASSWORD`: キーチェーンパスワード
+- `APP_STORE_CONNECT_API_KEY_ID`: App Store Connect API キーID
+- `APP_STORE_CONNECT_ISSUER_ID`: App Store Connect Issuer ID
+- `APP_STORE_CONNECT_API_KEY`: App Store Connect API キー
 
 ## 📱 TestFlight ベータテスト
 
@@ -97,14 +97,22 @@ TestFlight自動配信のセットアップは [`APP_STORE_CONNECT_SETUP.md`](AP
 
 ```
 BottleKeep/
-├── BottleKeep/           # メインアプリケーション
-│   ├── Models/           # Core Data モデル
-│   ├── Views/            # SwiftUI ビュー
-│   ├── Services/         # ビジネスロジック
-│   └── Resources/        # アセット・設定ファイル
-├── Tests/                # ユニットテスト
-├── .github/workflows/    # GitHub Actions設定
-└── Package.swift         # Swift Package Manager設定
+├── BottleKeep.xcodeproj/     # Xcodeプロジェクト設定
+├── BottleKeep/               # メインアプリケーション
+│   ├── App/                  # アプリエントリーポイント
+│   ├── Models/               # Core Data モデル
+│   ├── Views/                # SwiftUI ビュー
+│   ├── ViewModels/           # ビューモデル（MVVM）
+│   ├── Services/             # ビジネスロジック
+│   ├── Repositories/         # データアクセス層
+│   ├── Utils/                # ユーティリティ
+│   ├── Assets.xcassets       # アプリアイコン・画像リソース
+│   ├── BottleKeep.xcdatamodeld # Core Data モデル
+│   ├── Preview Content/      # SwiftUI プレビュー用
+│   └── Info.plist           # アプリ設定
+├── BottleKeepTests/          # ユニットテスト
+├── BottleKeepUITests/        # UIテスト
+└── .github/workflows/        # GitHub Actions設定
 ```
 
 ## 🤝 コントリビューション
@@ -129,6 +137,3 @@ Private Repository - All Rights Reserved
 
 **Made with ❤️ for whiskey enthusiasts**
 
-## ライセンス
-
-Private Repository - All Rights Reserved
