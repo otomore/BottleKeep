@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Store Connect配信用の設定 -->
+    <key>method</key>
+    <string>app-store</string>
+
+    <!-- TestFlight配信を有効化 -->
+    <key>uploadBitcode</key>
+    <false/>
+
+    <!-- シンボル情報をアップロード -->
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- 自動的に証明書とプロビジョニングプロファイルを管理 -->
+    <key>manageAppVersionAndBuildNumber</key>
+    <true/>
+
+    <!-- Team ID -->
+    <key>teamID</key>
+    <string>KRVLW3Y2SL</string>
+
+    <!-- Bundle ID -->
+    <key>bundleIdentifier</key>
+    <string>com.bottlekeep.whiskey</string>
+
+    <!-- コード署名設定 -->
+    <key>signingStyle</key>
+    <string>automatic</string>
+
+    <!-- TestFlight専用設定 -->
+    <key>destination</key>
+    <string>upload</string>
+
+    <!-- コンパイル時の設定 -->
+    <key>compileBitcode</key>
+    <false/>
+
+    <!-- 署名証明書の設定 -->
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+
+    <!-- プロビジョニングプロファイル指定 -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.bottlekeep.whiskey</key>
+        <string>BottleKeep Distribution</string>
+    </dict>
+</dict>
+</plist>
