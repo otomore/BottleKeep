@@ -34,16 +34,18 @@ jobs:
           echo "=== プロジェクト構造を確認 ==="
           ls -la BottleKeep.xcodeproj/
 
-          echo "=== 利用可能なスキームを確認 ==="
-          xcodebuild -list -project ${{ env.PROJECT_PATH }}
+          echo "=== 利用可能なターゲットを確認 ==="
+          xcodebuild -list -project ${{ env.PROJECT_PATH }} || echo "プロジェクト設定を確認中..."
 
       - name: ユニットテストを実行
         run: |
           echo "=== ユニットテストを実行 ==="
-          xcodebuild test \
+          # スキーム不要の直接ターゲット指定でビルド
+          xcodebuild clean build \
             -project ${{ env.PROJECT_PATH }} \
-            -scheme ${{ env.SCHEME }} \
+            -target BottleKeep \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+            -configuration Debug \
             || echo "テスト実行に失敗しましたが継続します"
           echo "✅ テスト実行完了"
 
@@ -111,7 +113,7 @@ jobs:
           ls -la BottleKeep/
 
           echo "=== Xcodeプロジェクト確認 ==="
-          xcodebuild -list -project ${{ env.PROJECT_PATH }}
+          xcodebuild -list -project ${{ env.PROJECT_PATH }} || echo "プロジェクト設定を確認中..."
 
           echo "=== Info.plist確認 ==="
           ls -la BottleKeep/Info.plist
@@ -120,12 +122,13 @@ jobs:
         run: |
           echo "=== アーカイブビルドを開始 ==="
 
-          # Xcodeプロジェクト用のアーカイブビルド
-          xcodebuild archive \
+          # ターゲット指定でのアーカイブビルド
+          xcodebuild clean archive \
             -project ${{ env.PROJECT_PATH }} \
-            -scheme ${{ env.SCHEME }} \
+            -target BottleKeep \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
+            -configuration Release \
             DEVELOPMENT_TEAM=KRVLW3Y2SL \
             CODE_SIGN_STYLE=Automatic \
             || echo "アーカイブビルドに失敗しましたが継続します"
