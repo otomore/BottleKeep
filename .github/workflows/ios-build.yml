@@ -129,6 +129,7 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
             -configuration Release \
+            -allowProvisioningUpdates \
             DEVELOPMENT_TEAM=KRVLW3Y2SL \
             CODE_SIGN_STYLE=Automatic
 
