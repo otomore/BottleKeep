@@ -94,6 +94,7 @@
 		B8A100462B7B1A7200123495 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		B8A100472B7B1A7200123496 /* WishlistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistView.swift; sourceTree = "<group>"; };
 		B8A100492B7B1A7200123497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B8A100502B7B1A7200123498 /* BottleKeep.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeep.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,9 +348,9 @@
 		B8A100222B7B1A7200123460 /* BottleKeep.xcdatamodeld */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B8A100232B7B1A7200123460 /* BottleKeep.xcdatamodel */,
+				B8A100502B7B1A7200123498 /* BottleKeep.xcdatamodel */,
 			);
-			currentVersion = B8A100232B7B1A7200123460 /* BottleKeep.xcdatamodel */;
+			currentVersion = B8A100502B7B1A7200123498 /* BottleKeep.xcdatamodel */;
 			path = BottleKeep.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
