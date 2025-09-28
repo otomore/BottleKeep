@@ -1,6 +1,6 @@
 import XCTest
 import CoreData
-@testable import BottleKeep
+@testable import BottleKeeper
 
 class CoreDataIntegrationTests: XCTestCase {
 

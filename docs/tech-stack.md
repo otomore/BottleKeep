@@ -1,9 +1,9 @@
-# BottleKeep 技術スタック（現実版）
+# BottleKeeper 技術スタック（現実版）
 
 ## 1. 概要
 
 ### 1.1 目的
-BottleKeepアプリの技術選択を明確にして、さくっと作って楽しく使えるアプリを作る。趣味開発なので、複雑すぎない現実的な技術を選ぶ。
+BottleKeeperアプリの技術選択を明確にして、さくっと作って楽しく使えるアプリを作る。趣味開発なので、複雑すぎない現実的な技術を選ぶ。
 
 ### 1.2 技術選択の基本方針
 - **シンプル重視**: 複雑な設定は避けて、すぐ作り始められる
@@ -103,7 +103,7 @@ class CoreDataStack {
     static let shared = CoreDataStack()
 
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+        let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
         // CloudKit有効化
         let description = container.persistentStoreDescriptions.first!
@@ -195,7 +195,7 @@ class BottleListViewModel: ObservableObject {
 
 ### 6.2 プロジェクト構造
 ```
-BottleKeep/
+BottleKeeper/
 ├── Views/
 │   ├── BottleListView.swift
 │   ├── BottleDetailView.swift
@@ -204,7 +204,7 @@ BottleKeep/
 │   ├── BottleListViewModel.swift
 │   └── BottleDetailViewModel.swift
 ├── Models/
-│   └── BottleKeep.xcdatamodeld
+│   └── BottleKeeper.xcdatamodeld
 ├── Core/
 │   └── CoreDataStack.swift
 └── Resources/
@@ -223,7 +223,7 @@ BottleKeep/
 ```swift
 // とりあえず基本的なテストだけ書く
 import XCTest
-@testable import BottleKeep
+@testable import BottleKeeper
 
 class BottleTests: XCTestCase {
     func testBottleCreation() {
@@ -486,7 +486,7 @@ extension Bottle {
 ### 14.1 ユーザーフレンドリーなエラー
 ```swift
 // 趣味アプリだからこそ、エラーは親切に
-enum BottleKeepError: LocalizedError {
+enum BottleKeeperError: LocalizedError {
     case coreDataSaveFailure
     case photoTooLarge
     case cloudKitUnavailable

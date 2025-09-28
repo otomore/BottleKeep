@@ -5,15 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>ja</string>
 	<key>CFBundleDisplayName</key>
-	<string>BottleKeep</string>
+	<string>BottleKeeper</string>
 	<key>CFBundleExecutable</key>
-	<string>BottleKeep</string>
+	<string>BottleKeeper</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.bottlekeep.whiskey</string>
+	<string>com.bottlekeeper.whiskey</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>BottleKeep</string>
+	<string>BottleKeeper</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

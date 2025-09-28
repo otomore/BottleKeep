@@ -1,4 +1,4 @@
-# BottleKeep 開発ガイドライン・コーディング規約
+# BottleKeeper 開発ガイドライン・コーディング規約
 
 ## 1. 全般的な開発原則
 
@@ -691,7 +691,7 @@ class BottleRepositoryTests: XCTestCase {
 
 #### 5.2.1 基本的なUI テスト
 ```swift
-class BottleKeepUITests: XCTestCase {
+class BottleKeeperUITests: XCTestCase {
     var app: XCUIApplication!
 
     override func setUp() {
@@ -851,7 +851,7 @@ jobs:
     - name: Run tests
       run: |
         xcodebuild test \
-          -scheme BottleKeep \
+          -scheme BottleKeeper \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
           -configuration Debug \
           CODE_SIGN_IDENTITY="" \
@@ -922,7 +922,7 @@ quality_check:
   steps:
     - name: Code Coverage Check
       run: |
-        coverage=$(xcodebuild test -scheme BottleKeep | grep "Code coverage" | awk '{print $3}')
+        coverage=$(xcodebuild test -scheme BottleKeeper | grep "Code coverage" | awk '{print $3}')
         if (( $(echo "$coverage < 80" | bc -l) )); then
           echo "Code coverage $coverage% is below threshold"
           exit 1
@@ -931,7 +931,7 @@ quality_check:
     - name: Complexity Analysis
       run: |
         # 複雑度チェック
-        slather coverage --scheme BottleKeep
+        slather coverage --scheme BottleKeeper
         lizard -l swift -w Sources/
 ```
 

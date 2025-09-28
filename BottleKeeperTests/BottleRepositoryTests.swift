@@ -1,6 +1,6 @@
 import XCTest
 import CoreData
-@testable import BottleKeep
+@testable import BottleKeeper
 
 class BottleRepositoryTests: XCTestCase {
 
@@ -22,7 +22,7 @@ class BottleRepositoryTests: XCTestCase {
     // MARK: - Test Helpers
 
     private func createInMemoryContext() -> NSManagedObjectContext {
-        let container = NSPersistentContainer(name: "BottleKeep")
+        let container = NSPersistentContainer(name: "BottleKeeper")
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
         container.persistentStoreDescriptions = [description]

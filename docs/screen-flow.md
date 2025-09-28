@@ -1,9 +1,9 @@
-# BottleKeep 画面遷移図・ナビゲーション設計書
+# BottleKeeper 画面遷移図・ナビゲーション設計書
 
 ## 1. 概要
 
 ### 1.1 目的
-BottleKeepアプリの全画面とそれらの間の遷移フローを明確に定義し、一貫したナビゲーション体験を提供する。SwiftUIの実装時に正確な画面構造を構築できるよう、詳細な遷移ルールを記載する。
+BottleKeeperアプリの全画面とそれらの間の遷移フローを明確に定義し、一貫したナビゲーション体験を提供する。SwiftUIの実装時に正確な画面構造を構築できるよう、詳細な遷移ルールを記載する。
 
 ### 1.2 設計原則
 - **直感的なナビゲーション**: ユーザーが迷わない明確な動線
@@ -15,7 +15,7 @@ BottleKeepアプリの全画面とそれらの間の遷移フローを明確に�
 
 ### 2.1 基本ナビゲーション構造
 ```
-BottleKeepApp
+BottleKeeperApp
 └── ContentView (TabView)
     ├── BottleListTab (NavigationStack)
     ├── WishlistTab (NavigationStack)

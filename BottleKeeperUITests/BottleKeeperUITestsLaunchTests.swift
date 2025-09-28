@@ -1,6 +1,6 @@
 import XCTest
 
-final class BottleKeepUITestsLaunchTests: XCTestCase {
+final class BottleKeeperUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

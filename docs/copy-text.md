@@ -1,9 +1,9 @@
-# BottleKeep エラーメッセージ・文言集
+# BottleKeeper エラーメッセージ・文言集
 
 ## 1. 概要
 
 ### 1.1 目的
-BottleKeepアプリ内で使用する全ての文言を統一し、一貫したユーザー体験を提供する。エラーメッセージ、ボタンラベル、説明文等を日本語で整理し、Localizable.stringsファイルの作成に活用する。
+BottleKeeperアプリ内で使用する全ての文言を統一し、一貫したユーザー体験を提供する。エラーメッセージ、ボタンラベル、説明文等を日本語で整理し、Localizable.stringsファイルの作成に活用する。
 
 ### 1.2 文言設計原則
 - **明確性**: ユーザーが理解しやすい表現
@@ -483,7 +483,7 @@ BottleKeepアプリ内で使用する全ての文言を統一し、一貫した�
 ### 9.1 初回起動時
 ```swift
 // Key: "onboarding.welcome.title"
-"BottleKeepへようこそ"
+"BottleKeeperへようこそ"
 
 // Key: "onboarding.welcome.subtitle"
 "あなたのウイスキーコレクションを\n美しく管理しましょう"

@@ -1,4 +1,4 @@
-# BottleKeep ユーザーマニュアル
+# BottleKeeper ユーザーマニュアル
 
 ## 目次
 1. [はじめに](#1-はじめに)
@@ -14,8 +14,8 @@
 
 ## 1. はじめに
 
-### 1.1 BottleKeepについて
-BottleKeepは、ウイスキーコレクションを効率的に管理するためのiOS/iPadOSアプリです。お持ちのボトルの詳細情報、写真、テイスティングノート、評価などを記録し、あなたのコレクションを一元管理できます。
+### 1.1 BottleKeeperについて
+BottleKeeperは、ウイスキーコレクションを効率的に管理するためのiOS/iPadOSアプリです。お持ちのボトルの詳細情報、写真、テイスティングノート、評価などを記録し、あなたのコレクションを一元管理できます。
 
 ### 1.2 主な機能
 - **ボトル管理**: 詳細情報と写真で大切なコレクションを記録
@@ -38,7 +38,7 @@ BottleKeepは、ウイスキーコレクションを効率的に管理するた�
 ## 2. アプリの概要
 
 ### 2.1 画面構成
-BottleKeepは4つのメインタブで構成されています：
+BottleKeeperは4つのメインタブで構成されています：
 
 ```
 ┌─────────────────────────────────────┐
@@ -90,7 +90,7 @@ BottleKeepは4つのメインタブで構成されています：
 
 ### 3.1 アプリの初回起動
 
-1. **BottleKeepを起動**
+1. **BottleKeeperを起動**
    - ホーム画面のアプリアイコンをタップ
 
 2. **Welcome画面**
@@ -111,7 +111,7 @@ BottleKeepは4つのメインタブで構成されています：
 #### 手動設定の場合
 1. **iPhoneの設定アプリ**を開く
 2. **[あなたの名前] → iCloud**をタップ
-3. **BottleKeep**のスイッチをオンにする
+3. **BottleKeeper**のスイッチをオンにする
 4. アプリに戻り、同期状況を確認
 
 ### 3.3 初期データの準備
@@ -362,7 +362,7 @@ Macallan 18,Macallan,Speyside,Single Malt,43%,700ml,2023-09-21,45000,5
 **解決法**:
 1. **アプリを完全終了**してから再起動
    - ホームボタン2回押し（または上にスワイプ）
-   - BottleKeepを上にスワイプして終了
+   - BottleKeeperを上にスワイプして終了
    - 再度アプリアイコンをタップ
 
 2. **端末を再起動**
@@ -376,7 +376,7 @@ Macallan 18,Macallan,Speyside,Single Malt,43%,700ml,2023-09-21,45000,5
 **解決法**:
 1. **写真へのアクセス許可**を確認
    - 設定 → プライバシーとセキュリティ → 写真
-   - BottleKeep → 「すべての写真」を選択
+   - BottleKeeper → 「すべての写真」を選択
 
 2. **ストレージ容量**を確認
    - 設定 → 一般 → iPhone/iPadストレージ
@@ -388,7 +388,7 @@ Macallan 18,Macallan,Speyside,Single Malt,43%,700ml,2023-09-21,45000,5
 **解決法**:
 1. **iCloud設定**を確認
    - 設定 → [あなたの名前] → iCloud
-   - BottleKeepがオンになっていることを確認
+   - BottleKeeperがオンになっていることを確認
 
 2. **ネットワーク接続**を確認
    - Wi-Fiまたはモバイルデータ通信が有効
@@ -494,7 +494,7 @@ A: iCloud同期が有効になっているか確認し、十分な時間（最�
 
 **使用方法：**
 1. 設定 → アクセシビリティ → VoiceOver をオンにする
-2. BottleKeepを起動
+2. BottleKeeperを起動
 3. 画面上の要素をタップすると音声で説明されます
 
 **文字サイズ調整（Dynamic Type）対応**
@@ -532,9 +532,9 @@ A: iCloud同期が有効になっているか確認し、十分な時間（最�
 
 ### 10.2 Siri Shortcuts（将来対応）
 **音声コマンド例：**
-- 「BottleKeepで山崎を検索して」
-- 「BottleKeepで新しいボトルを追加」
-- 「BottleKeepで統計を表示」
+- 「BottleKeeperで山崎を検索して」
+- 「BottleKeeperで新しいボトルを追加」
+- 「BottleKeeperで統計を表示」
 
 ### 10.3 Apple Watch連携（将来対応）
 **腕時計での簡単操作：**
@@ -548,7 +548,7 @@ A: iCloud同期が有効になっているか確認し、十分な時間（最�
 
 ### 連絡先
 - **メール**: support@bottlekeep.app
-- **GitHub**: https://github.com/yourusername/BottleKeep/issues
+- **GitHub**: https://github.com/yourusername/BottleKeeper/issues
 
 ### アップデート情報
 - **App Store**: 自動アップデートが推奨
@@ -563,4 +563,4 @@ https://bottlekeep.app/privacy
 **ユーザーマニュアル バージョン**: 1.1
 **対応アプリバージョン**: 1.0.0
 **最終更新**: 2025-09-23
-**作成者**: BottleKeep開発チーム
+**作成者**: BottleKeeper開発チーム

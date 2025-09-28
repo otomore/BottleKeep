@@ -24,7 +24,7 @@
 
     <!-- Bundle ID -->
     <key>bundleIdentifier</key>
-    <string>com.bottlekeep.whiskey</string>
+    <string>com.bottlekeeper.whiskey</string>
 
     <!-- コード署名設定 -->
     <key>signingStyle</key>
@@ -45,8 +45,8 @@
     <!-- プロビジョニングプロファイル指定 -->
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.bottlekeep.whiskey</key>
-        <string>BottleKeep Distribution</string>
+        <key>com.bottlekeeper.whiskey</key>
+        <string>BottleKeeper Distribution</string>
     </dict>
 </dict>
 </plist>

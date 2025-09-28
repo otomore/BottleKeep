@@ -1,6 +1,6 @@
 import XCTest
 
-final class BottleKeepUITests: XCTestCase {
+final class BottleKeeperUITests: XCTestCase {
 
     var app: XCUIApplication!
 

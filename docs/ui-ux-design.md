@@ -1,4 +1,4 @@
-# BottleKeep UI/UX設計書
+# BottleKeeper UI/UX設計書
 
 ## 1. デザイン概要
 

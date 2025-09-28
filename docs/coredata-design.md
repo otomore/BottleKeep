@@ -1,4 +1,4 @@
-# BottleKeep Core Data設計書
+# BottleKeeper Core Data設計書
 
 ## 1. Core Dataモデル概要
 
@@ -184,7 +184,7 @@ class CoreDataManager: ObservableObject {
     static let shared = CoreDataManager()
 
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+        let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
         guard let description = container.persistentStoreDescriptions.first else {
             fatalError("Failed to retrieve persistent store description")
@@ -198,7 +198,7 @@ class CoreDataManager: ObservableObject {
 
         // CloudKit container identifier
         description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
-            containerIdentifier: "iCloud.com.yourname.BottleKeep"
+            containerIdentifier: "iCloud.com.yourname.BottleKeeper"
         )
 
         // プライベートデータベース使用（機密性確保）
@@ -242,7 +242,7 @@ class CoreDataManager: ObservableObject {
 ```swift
 // CloudKit Configuration
 let options = NSPersistentCloudKitContainerOptions(
-    containerIdentifier: "iCloud.com.yourname.BottleKeep"
+    containerIdentifier: "iCloud.com.yourname.BottleKeeper"
 )
 
 // レコードタイプ設定
@@ -359,14 +359,14 @@ extension BottleRepository {
 
 ### 5.1 Version管理
 ```swift
-// BottleKeep.xcdatamodeld versions:
-// - BottleKeep.xcdatamodel (v1.0)
-// - BottleKeep 2.xcdatamodel (v2.0) - future versions
+// BottleKeeper.xcdatamodeld versions:
+// - BottleKeeper.xcdatamodel (v1.0)
+// - BottleKeeper 2.xcdatamodel (v2.0) - future versions
 ```
 
 ### 5.2 Migration Policy
 ```swift
-class BottleKeepMigrationPolicy: NSEntityMigrationPolicy {
+class BottleKeeperMigrationPolicy: NSEntityMigrationPolicy {
     override func createDestinationInstances(
         forSource sInstance: NSManagedObject,
         in mapping: NSEntityMapping,

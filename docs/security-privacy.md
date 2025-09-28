@@ -1,9 +1,9 @@
-# BottleKeep セキュリティ・プライバシー要件
+# BottleKeeper セキュリティ・プライバシー要件
 
 ## 1. 概要
 
 ### 1.1 目的
-BottleKeepアプリのセキュリティとプライバシー保護要件を定義し、ユーザーデータの安全性を確保する。App Store審査と法的要件に準拠した実装ガイドラインを提供する。
+BottleKeeperアプリのセキュリティとプライバシー保護要件を定義し、ユーザーデータの安全性を確保する。App Store審査と法的要件に準拠した実装ガイドラインを提供する。
 
 ### 1.2 基本方針
 - **プライバシー・バイ・デザイン**: 設計段階からプライバシー保護を組み込み
@@ -73,7 +73,7 @@ enum AppDataType {
 // Core Data暗号化設定
 class SecureCoreDataStack {
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+        let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
         guard let description = container.persistentStoreDescriptions.first else {
             fatalError("Failed to retrieve persistent store description")
@@ -597,10 +597,10 @@ class DataDeletionManager {
 
 #### 6.1.2 プライバシーポリシー
 ```markdown
-# BottleKeep プライバシーポリシー
+# BottleKeeper プライバシーポリシー
 
 ## データの収集について
-BottleKeepは以下のデータを収集します：
+BottleKeeperは以下のデータを収集します：
 
 ### 必須データ
 - ボトル情報（銘柄、蒸留所、価格等）

@@ -1,9 +1,9 @@
-# BottleKeep データモデル定義書（現実版）
+# BottleKeeper データモデル定義書（現実版）
 
 ## 1. 概要
 
 ### 1.1 目的
-BottleKeepアプリのCore Dataモデルを定義し、すぐに実装できる形で提供する。趣味開発なので、まず動くものを作って、必要に応じて改善していく。
+BottleKeeperアプリのCore Dataモデルを定義し、すぐに実装できる形で提供する。趣味開発なので、まず動くものを作って、必要に応じて改善していく。
 
 ### 1.2 設計方針
 - **シンプル重視**: 複雑なデータ制約は避けて、基本機能に集中
@@ -28,7 +28,7 @@ class CoreDataStack {
     static let shared = CoreDataStack()
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "BottleKeep")
+        let container = NSPersistentContainer(name: "BottleKeeper")
         container.loadPersistentStores { _, error in
             if let error = error {
                 fatalError("Core Data error: \(error)")
@@ -337,7 +337,7 @@ func createBottleWithPhoto(name: String, distillery: String, image: UIImage) {
 // CloudKit対応版CoreDataStack（将来実装）
 /*
 lazy var persistentContainer: NSPersistentCloudKitContainer = {
-    let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+    let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
     // CloudKit有効化
     let description = container.persistentStoreDescriptions.first!
@@ -360,7 +360,7 @@ lazy var persistentContainer: NSPersistentCloudKitContainer = {
 
 1. **新しいData Modelファイル作成**
    - File → New → File → Core Data → Data Model
-   - 名前: "BottleKeep"
+   - 名前: "BottleKeeper"
 
 2. **Bottleエンティティ作成**
    - Entity名: Bottle
@@ -463,7 +463,7 @@ struct BottleRowView: View {
 // BottleRepositoryTests.swift
 import XCTest
 import CoreData
-@testable import BottleKeep
+@testable import BottleKeeper
 
 class BottleRepositoryTests: XCTestCase {
     var repository: BottleRepository!
@@ -506,7 +506,7 @@ class BottleRepositoryTests: XCTestCase {
     }
 
     private func createInMemoryContext() -> NSManagedObjectContext {
-        let container = NSPersistentContainer(name: "BottleKeep")
+        let container = NSPersistentContainer(name: "BottleKeeper")
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
         container.persistentStoreDescriptions = [description]

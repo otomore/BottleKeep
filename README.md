@@ -1,13 +1,13 @@
-# BottleKeep 🥃
+# BottleKeeper 🥃
 
 ウイスキーコレクション管理iOS/iPadアプリ
 
-[![iOS Build](https://github.com/otomore/BottleKeep/actions/workflows/ios-build.yml/badge.svg)](https://github.com/otomore/BottleKeep/actions/workflows/ios-build.yml)
+[![iOS Build](https://github.com/otomore/BottleKeeper/actions/workflows/ios-build.yml/badge.svg)](https://github.com/otomore/BottleKeeper/actions/workflows/ios-build.yml)
 [![TestFlight](https://img.shields.io/badge/TestFlight-Auto_Deploy-success)](https://testflight.apple.com/)
 
 ## 🎯 概要
 
-BottleKeepは、ウイスキー愛好家のためのコレクション管理アプリです。あなたの貴重なウイスキーコレクションを整理し、テイスティング体験を記録できます。
+BottleKeeperは、ウイスキー愛好家のためのコレクション管理アプリです。あなたの貴重なウイスキーコレクションを整理し、テイスティング体験を記録できます。
 
 ## ✨ 機能
 
@@ -46,28 +46,28 @@ BottleKeepは、ウイスキー愛好家のためのコレクション管理ア�
 ### 環境セットアップ
 1. リポジトリをクローン
 ```bash
-git clone https://github.com/otomore/BottleKeep.git
-cd BottleKeep
+git clone https://github.com/otomore/BottleKeeper.git
+cd BottleKeeper
 ```
 
 2. Xcodeでプロジェクトを開く
 ```bash
 # Xcodeプロジェクトファイルを開く
-open BottleKeep.xcodeproj
+open BottleKeeper.xcodeproj
 ```
 
-または、Xcode GUIから `BottleKeep.xcodeproj` を開いてください。
+または、Xcode GUIから `BottleKeeper.xcodeproj` を開いてください。
 
 ### ビルド & テスト
 ```bash
 # ビルド実行
-xcodebuild build -project BottleKeep.xcodeproj -scheme BottleKeep -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
+xcodebuild build -project BottleKeeper.xcodeproj -scheme BottleKeeper -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
 # テスト実行
-xcodebuild test -project BottleKeep.xcodeproj -scheme BottleKeep -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
+xcodebuild test -project BottleKeeper.xcodeproj -scheme BottleKeeper -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
 # アーカイブビルド（リリース用）
-xcodebuild archive -project BottleKeep.xcodeproj -scheme BottleKeep -destination 'generic/platform=iOS' -archivePath ./BottleKeep.xcarchive
+xcodebuild archive -project BottleKeeper.xcodeproj -scheme BottleKeeper -destination 'generic/platform=iOS' -archivePath ./BottleKeeper.xcarchive
 ```
 
 ## 🔧 CI/CD セットアップガイド
@@ -96,9 +96,9 @@ xcodebuild archive -project BottleKeep.xcodeproj -scheme BottleKeep -destination
 ## 🏗 アーキテクチャ
 
 ```
-BottleKeep/
-├── BottleKeep.xcodeproj/     # Xcodeプロジェクト設定
-├── BottleKeep/               # メインアプリケーション
+BottleKeeper/
+├── BottleKeeper.xcodeproj/     # Xcodeプロジェクト設定
+├── BottleKeeper/               # メインアプリケーション
 │   ├── App/                  # アプリエントリーポイント
 │   ├── Models/               # Core Data モデル
 │   ├── Views/                # SwiftUI ビュー
@@ -107,11 +107,11 @@ BottleKeep/
 │   ├── Repositories/         # データアクセス層
 │   ├── Utils/                # ユーティリティ
 │   ├── Assets.xcassets       # アプリアイコン・画像リソース
-│   ├── BottleKeep.xcdatamodeld # Core Data モデル
+│   ├── BottleKeeper.xcdatamodeld # Core Data モデル
 │   ├── Preview Content/      # SwiftUI プレビュー用
 │   └── Info.plist           # アプリ設定
-├── BottleKeepTests/          # ユニットテスト
-├── BottleKeepUITests/        # UIテスト
+├── BottleKeeperTests/          # ユニットテスト
+├── BottleKeeperUITests/        # UIテスト
 └── .github/workflows/        # GitHub Actions設定
 ```
 

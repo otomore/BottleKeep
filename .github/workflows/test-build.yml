@@ -22,8 +22,8 @@ jobs:
           echo "=== プロジェクト構造の確認 ==="
           ls -la
           echo ""
-          echo "=== BottleKeepディレクトリ ==="
-          ls -la BottleKeep/
+          echo "=== BottleKeeperディレクトリ ==="
+          ls -la BottleKeeper/
           echo ""
           echo "=== Swiftファイルの検索 ==="
           find . -name "*.swift" | head -10
@@ -55,10 +55,10 @@ jobs:
           echo "=== 手動でXcodeプロジェクトを作成 ==="
 
           # 基本的なiOSアプリプロジェクトの作成
-          mkdir -p BottleKeep.xcodeproj
+          mkdir -p BottleKeeper.xcodeproj
 
           # project.pbxprojファイルの基本構造を作成
-          cat > BottleKeep.xcodeproj/project.pbxproj << 'EOF'
+          cat > BottleKeeper.xcodeproj/project.pbxproj << 'EOF'
           // !$*UTF8*$!
           {
             archiveVersion = 1;
@@ -66,8 +66,8 @@ jobs:
             };
             objectVersion = 56;
             objects = {
-              /* Build configuration list for PBXProject "BottleKeep" */
-              1DEB928508733DD80010E9CD /* Build configuration list for PBXProject "BottleKeep" */ = {
+              /* Build configuration list for PBXProject "BottleKeeper" */
+              1DEB928508733DD80010E9CD /* Build configuration list for PBXProject "BottleKeeper" */ = {
                 isa = XCConfigurationList;
                 buildConfigurations = (
                   1DEB928608733DD80010E9CD /* Debug */,
@@ -76,8 +76,8 @@ jobs:
                 defaultConfigurationIsVisible = 0;
                 defaultConfigurationName = Release;
               };
-              /* Build configuration list for PBXNativeTarget "BottleKeep" */
-              1DEB928908733DD80010E9CD /* Build configuration list for PBXNativeTarget "BottleKeep" */ = {
+              /* Build configuration list for PBXNativeTarget "BottleKeeper" */
+              1DEB928908733DD80010E9CD /* Build configuration list for PBXNativeTarget "BottleKeeper" */ = {
                 isa = XCConfigurationList;
                 buildConfigurations = (
                   1DEB928A08733DD80010E9CD /* Debug */,

@@ -1,4 +1,4 @@
-# BottleKeep アーキテクチャ設計書
+# BottleKeeper アーキテクチャ設計書
 
 ## 1. システム概要
 
@@ -121,9 +121,9 @@ Search Input → ViewModel → NSPredicate → Core Data Fetch → Filtered Resu
 
 ### 4.1 ディレクトリ構造
 ```
-BottleKeep/
+BottleKeeper/
 ├── App/
-│   ├── BottleKeepApp.swift
+│   ├── BottleKeeperApp.swift
 │   └── ContentView.swift
 ├── Views/
 │   ├── Bottle/
@@ -146,7 +146,7 @@ BottleKeep/
 │   └── StatisticsViewModel.swift
 ├── Models/
 │   ├── CoreData/
-│   │   ├── BottleKeep.xcdatamodeld
+│   │   ├── BottleKeeper.xcdatamodeld
 │   │   ├── Bottle+CoreDataClass.swift
 │   │   ├── Bottle+CoreDataProperties.swift
 │   │   ├── PhotoEntity+CoreDataClass.swift
@@ -186,7 +186,7 @@ class CoreDataManager: ObservableObject {
     static let shared = CoreDataManager()
 
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+        let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
         // CloudKit configuration
         let description = container.persistentStoreDescriptions.first
@@ -251,7 +251,7 @@ class DIContainer {
 
 ### 6.1 エラー分類
 ```swift
-enum BottleKeepError: LocalizedError {
+enum BottleKeeperError: LocalizedError {
     case coreDataError(Error)
     case cloudKitError(Error)
     case photoProcessingError(String)

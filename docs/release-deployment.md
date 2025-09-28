@@ -1,4 +1,4 @@
-# BottleKeep リリース・デプロイメント手順書
+# BottleKeeper リリース・デプロイメント手順書
 
 ## 1. デプロイメント戦略概要
 
@@ -32,7 +32,7 @@ Development → Staging → Production
 #### 2.1.1 実機へのインストール
 ```bash
 # 1. Xcodeプロジェクトを開く
-open BottleKeep.xcodeproj
+open BottleKeeper.xcodeproj
 
 # 2. 実機を接続・選択
 # 3. Product → Archive (⌘+Shift+B)
@@ -53,7 +53,7 @@ open BottleKeep.xcodeproj
 3. **IPA生成・配布**
    ```bash
    # IPAファイルを配布用フォルダにコピー
-   cp ~/Desktop/BottleKeep.ipa ./releases/
+   cp ~/Desktop/BottleKeeper.ipa ./releases/
 
    # インストール手順書も同梱
    cp docs/installation-guide.md ./releases/
@@ -66,10 +66,10 @@ open BottleKeep.xcodeproj
 // Build Settings
 #if DEBUG
 let isDebugMode = true
-let cloudKitContainer = "iCloud.com.yourname.BottleKeep.dev"
+let cloudKitContainer = "iCloud.com.yourname.BottleKeeper.dev"
 #else
 let isDebugMode = false
-let cloudKitContainer = "iCloud.com.yourname.BottleKeep"
+let cloudKitContainer = "iCloud.com.yourname.BottleKeeper"
 #endif
 ```
 
@@ -96,13 +96,13 @@ Release Configuration:
 
 2. **新しいアプリ追加**
    - My Apps → + → New App
-   - Bundle ID: com.yourname.BottleKeep
-   - SKU: BottleKeep2025
+   - Bundle ID: com.yourname.BottleKeeper
+   - SKU: BottleKeeper2025
    - Primary Language: Japanese
 
 3. **アプリ情報設定**
    ```
-   Name: BottleKeep
+   Name: BottleKeeper
    Subtitle: ウイスキーコレクション管理
    Category: Lifestyle
    Content Rights: You retain all rights
@@ -132,7 +132,7 @@ Release Configuration:
 
 # 2. Release configurationでArchive
 # Xcode → Product → Archive
-# Scheme: BottleKeep
+# Scheme: BottleKeeper
 # Configuration: Release
 ```
 
@@ -233,7 +233,7 @@ swiftlint
 
 # Test実行
 xcodebuild test \
-  -scheme BottleKeep \
+  -scheme BottleKeeper \
   -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
 # Memory Leak確認
@@ -298,7 +298,7 @@ jobs:
     - name: Install Provisioning Profile
       uses: apple-actions/download-provisioning-profiles@v1
       with:
-        bundle-id: com.yourname.BottleKeep
+        bundle-id: com.yourname.BottleKeeper
         issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
         api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
@@ -306,23 +306,23 @@ jobs:
     - name: Build Archive
       run: |
         xcodebuild archive \
-          -scheme BottleKeep \
+          -scheme BottleKeeper \
           -configuration Release \
-          -archivePath build/BottleKeep.xcarchive \
+          -archivePath build/BottleKeeper.xcarchive \
           CODE_SIGN_IDENTITY="iPhone Distribution" \
-          PROVISIONING_PROFILE_SPECIFIER="BottleKeep Distribution"
+          PROVISIONING_PROFILE_SPECIFIER="BottleKeeper Distribution"
 
     - name: Export IPA
       run: |
         xcodebuild -exportArchive \
-          -archivePath build/BottleKeep.xcarchive \
+          -archivePath build/BottleKeeper.xcarchive \
           -exportPath build \
           -exportOptionsPlist ExportOptions.plist
 
     - name: Upload to App Store Connect
       uses: apple-actions/upload-testflight-build@v1
       with:
-        app-path: build/BottleKeep.ipa
+        app-path: build/BottleKeeper.ipa
         issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
         api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
@@ -349,11 +349,11 @@ platform :ios do
   desc "Build and upload to TestFlight"
   lane :beta do
     # Version increment
-    increment_build_number(xcodeproj: "BottleKeep.xcodeproj")
+    increment_build_number(xcodeproj: "BottleKeeper.xcodeproj")
 
     # Build
     build_app(
-      scheme: "BottleKeep",
+      scheme: "BottleKeeper",
       configuration: "Release"
     )
 
@@ -377,7 +377,7 @@ platform :ios do
 
     # Build
     build_app(
-      scheme: "BottleKeep",
+      scheme: "BottleKeeper",
       configuration: "Release"
     )
 
@@ -389,7 +389,7 @@ platform :ios do
 
     # Git tag
     add_git_tag(
-      tag: get_version_number(xcodeproj: "BottleKeep.xcodeproj")
+      tag: get_version_number(xcodeproj: "BottleKeeper.xcodeproj")
     )
     push_git_tags
   end
@@ -612,11 +612,11 @@ echo "=== リリース前セキュリティチェック ==="
 
 # 1. ハードコードされた秘密情報確認
 echo "1. 秘密情報確認"
-grep -r "api.*key\|password\|secret" BottleKeep/ --exclude-dir=docs || echo "✅ 秘密情報なし"
+grep -r "api.*key\|password\|secret" BottleKeeper/ --exclude-dir=docs || echo "✅ 秘密情報なし"
 
 # 2. デバッグ設定確認
 echo "2. デバッグ設定確認"
-if grep -r "DEBUG.*=.*1" BottleKeep.xcodeproj/; then
+if grep -r "DEBUG.*=.*1" BottleKeeper.xcodeproj/; then
   echo "⚠️ デバッグ設定が残っています"
 else
   echo "✅ デバッグ設定適切"
@@ -624,7 +624,7 @@ fi
 
 # 3. ログ出力確認
 echo "3. ログ出力確認"
-grep -r "print\|NSLog" BottleKeep/ | wc -l | awk '{if($1>0) print "⚠️ ログ出力が残っています: "$1" 箇所"; else print "✅ ログ出力なし"}'
+grep -r "print\|NSLog" BottleKeeper/ | wc -l | awk '{if($1>0) print "⚠️ ログ出力が残っています: "$1" 箇所"; else print "✅ ログ出力なし"}'
 
 # 4. 証明書有効期限確認
 echo "4. 証明書有効期限確認"
@@ -768,13 +768,13 @@ jobs:
     - name: Performance Benchmark
       run: |
         xcodebuild test \
-          -scheme BottleKeepPerformanceTests \
+          -scheme BottleKeeperPerformanceTests \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
     - name: UI Accessibility Test
       run: |
         xcodebuild test \
-          -scheme BottleKeepAccessibilityTests \
+          -scheme BottleKeeperAccessibilityTests \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
     - name: Code Coverage Check

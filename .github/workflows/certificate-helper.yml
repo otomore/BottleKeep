@@ -14,11 +14,11 @@ jobs:
           echo "=== iOS Distribution証明書の作成手順 ==="
 
           # 一時的なキーペアを生成
-          openssl genrsa -out BottleKeep_Distribution.key 2048
+          openssl genrsa -out BottleKeeper_Distribution.key 2048
 
           # CSR（証明書署名要求）を生成
-          openssl req -new -key BottleKeep_Distribution.key -out BottleKeep_Distribution.csr \
-            -subj "/C=JP/ST=Tokyo/L=Tokyo/O=BottleKeep/CN=BottleKeep Distribution"
+          openssl req -new -key BottleKeeper_Distribution.key -out BottleKeeper_Distribution.csr \
+            -subj "/C=JP/ST=Tokyo/L=Tokyo/O=BottleKeeper/CN=BottleKeeper Distribution"
 
           echo "CSRファイルが作成されました！"
 
@@ -35,8 +35,8 @@ jobs:
         with:
           name: certificate-signing-request
           path: |
-            BottleKeep_Distribution.csr
-            BottleKeep_Distribution.key
+            BottleKeeper_Distribution.csr
+            BottleKeeper_Distribution.key
 
       - name: Apple Developer Portal手順ガイド
         run: |
@@ -84,7 +84,7 @@ jobs:
           echo "security find-identity -v -p codesigning"
           echo "# 上記で表示された証明書のSHA-1を使用"
           echo ""
-          echo "security export -k ~/Library/Keychains/login.keychain -t identities -f pkcs12 -P 'YOUR_PASSWORD' -o BottleKeep_Distribution.p12"
+          echo "security export -k ~/Library/Keychains/login.keychain -t identities -f pkcs12 -P 'YOUR_PASSWORD' -o BottleKeeper_Distribution.p12"
 
           # テスト用の空のp12ファイルを作成（実際の証明書ではない）
           echo "テスト用のファイル構造を作成中..."
@@ -98,14 +98,14 @@ jobs:
           echo "前提: Apple Developer Portalから証明書(.cer)をダウンロード済み"
           echo ""
 
-          if [ ! -f "BottleKeep_Distribution.cer" ]; then
-            echo "エラー: BottleKeep_Distribution.cer ファイルが見つかりません"
+          if [ ! -f "BottleKeeper_Distribution.cer" ]; then
+            echo "エラー: BottleKeeper_Distribution.cer ファイルが見つかりません"
             echo "Apple Developer Portalから証明書をダウンロードして、このファイル名で保存してください"
             exit 1
           fi
 
           echo "証明書をキーチェーンに追加中..."
-          security import BottleKeep_Distribution.cer -k ~/Library/Keychains/login.keychain
+          security import BottleKeeper_Distribution.cer -k ~/Library/Keychains/login.keychain
 
           echo "P12ファイルを作成中..."
           echo "パスワードを入力してください（GitHub Secretsに設定するパスワード）:"
@@ -115,12 +115,12 @@ jobs:
             -t identities \
             -f pkcs12 \
             -P "$password" \
-            -o BottleKeep_Distribution.p12
+            -o BottleKeeper_Distribution.p12
 
-          echo "P12ファイルが作成されました: BottleKeep_Distribution.p12"
+          echo "P12ファイルが作成されました: BottleKeeper_Distribution.p12"
           echo ""
           echo "Base64エンコード用コマンド:"
-          echo "base64 -i BottleKeep_Distribution.p12 | pbcopy"
+          echo "base64 -i BottleKeeper_Distribution.p12 | pbcopy"
           EOF
 
           chmod +x convert_cert.sh

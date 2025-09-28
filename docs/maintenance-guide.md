@@ -1,4 +1,4 @@
-# BottleKeep 保守・メンテナンス手順書
+# BottleKeeper 保守・メンテナンス手順書
 
 ## 1. 保守戦略概要
 
@@ -137,7 +137,7 @@ class CloudKitHealthChecker {
 # アプリサイズ確認スクリプト
 #!/bin/bash
 
-ARCHIVE_PATH="build/BottleKeep.xcarchive"
+ARCHIVE_PATH="build/BottleKeeper.xcarchive"
 APP_SIZE=$(du -sh "$ARCHIVE_PATH" | cut -f1)
 
 echo "アプリサイズ: $APP_SIZE"
@@ -193,14 +193,14 @@ fi
 
 # TODO/FIXME検出
 echo "2. TODO/FIXME検出中..."
-grep -r "TODO\|FIXME" BottleKeep/ > todo_report.txt
+grep -r "TODO\|FIXME" BottleKeeper/ > todo_report.txt
 TODO_COUNT=$(cat todo_report.txt | wc -l)
 echo "TODO/FIXME件数: $TODO_COUNT"
 
 # テストカバレッジ確認
 echo "3. テストカバレッジ確認中..."
 xcodebuild test \
-  -scheme BottleKeep \
+  -scheme BottleKeeper \
   -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
   -enableCodeCoverage YES \
   -resultBundlePath TestResults
@@ -350,12 +350,12 @@ echo "2. 依存関係脆弱性チェック"
 
 # 3. API使用状況確認
 echo "3. 危険なAPI使用確認"
-grep -r "NSString stringWithFormat" BottleKeep/ || echo "✅ 安全でないAPI使用なし"
-grep -r "malloc\|free" BottleKeep/ || echo "✅ 手動メモリ管理なし"
+grep -r "NSString stringWithFormat" BottleKeeper/ || echo "✅ 安全でないAPI使用なし"
+grep -r "malloc\|free" BottleKeeper/ || echo "✅ 手動メモリ管理なし"
 
 # 4. ハードコードされた秘密情報確認
 echo "4. 秘密情報ハードコード確認"
-grep -r "password\|secret\|api.*key" BottleKeep/ --exclude-dir=docs || echo "✅ 秘密情報なし"
+grep -r "password\|secret\|api.*key" BottleKeeper/ --exclude-dir=docs || echo "✅ 秘密情報なし"
 
 echo "=== セキュリティ監査 完了 ==="
 ```
@@ -463,7 +463,7 @@ find "$ORGANIZER_PATH" -name "*.crash" -mtime -7 | while read crashfile; do
   symbolicatecrash "$crashfile" > "${crashfile}.symbolicated"
 
   # 共通パターン抽出
-  grep -A 5 -B 5 "BottleKeep" "${crashfile}.symbolicated"
+  grep -A 5 -B 5 "BottleKeeper" "${crashfile}.symbolicated"
 done
 
 echo "=== 解析完了 ==="
@@ -689,7 +689,7 @@ echo "=== メモリプロファイリング ==="
 instruments -t "Leaks" \
   -D memory_profile.trace \
   -l 60000 \
-  ~/Library/Developer/Xcode/DerivedData/BottleKeep-*/Build/Products/Debug-iphonesimulator/BottleKeep.app
+  ~/Library/Developer/Xcode/DerivedData/BottleKeeper-*/Build/Products/Debug-iphonesimulator/BottleKeeper.app
 
 # 結果解析
 echo "メモリプロファイル完了: memory_profile.trace"
@@ -818,16 +818,16 @@ extension BottleRepository {
 echo "=== 技術的負債レポート ==="
 
 # TODO/FIXME件数追跡
-TODO_COUNT=$(grep -r "TODO" BottleKeep/ | wc -l)
-FIXME_COUNT=$(grep -r "FIXME" BottleKeep/ | wc -l)
-HACK_COUNT=$(grep -r "HACK" BottleKeep/ | wc -l)
+TODO_COUNT=$(grep -r "TODO" BottleKeeper/ | wc -l)
+FIXME_COUNT=$(grep -r "FIXME" BottleKeeper/ | wc -l)
+HACK_COUNT=$(grep -r "HACK" BottleKeeper/ | wc -l)
 
 echo "TODO: $TODO_COUNT件"
 echo "FIXME: $FIXME_COUNT件"
 echo "HACK: $HACK_COUNT件"
 
 # 複雑度測定（概算）
-LARGE_FILES=$(find BottleKeep/ -name "*.swift" -exec wc -l {} + | awk '$1 > 300 {print $2}' | wc -l)
+LARGE_FILES=$(find BottleKeeper/ -name "*.swift" -exec wc -l {} + | awk '$1 > 300 {print $2}' | wc -l)
 echo "大きなファイル(300行超): $LARGE_FILES件"
 
 # 循環依存チェック

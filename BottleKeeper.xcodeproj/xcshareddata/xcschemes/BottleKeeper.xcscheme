@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B8A100152B7B1A7000123452"
-               BuildableName = "BottleKeep.app"
-               BlueprintName = "BottleKeep"
-               ReferencedContainer = "container:BottleKeep.xcodeproj">
+               BuildableName = "BottleKeeper.app"
+               BlueprintName = "BottleKeeper"
+               ReferencedContainer = "container:BottleKeeper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,20 +33,20 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BottleKeepTests"
-               BuildableName = "BottleKeepTests.xctest"
-               BlueprintName = "BottleKeepTests"
-               ReferencedContainer = "container:BottleKeep.xcodeproj">
+               BlueprintIdentifier = "BottleKeeperTests"
+               BuildableName = "BottleKeeperTests.xctest"
+               BlueprintName = "BottleKeeperTests"
+               ReferencedContainer = "container:BottleKeeper.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BottleKeepUITests"
-               BuildableName = "BottleKeepUITests.xctest"
-               BlueprintName = "BottleKeepUITests"
-               ReferencedContainer = "container:BottleKeep.xcodeproj">
+               BlueprintIdentifier = "BottleKeeperUITests"
+               BuildableName = "BottleKeeperUITests.xctest"
+               BlueprintName = "BottleKeeperUITests"
+               ReferencedContainer = "container:BottleKeeper.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -66,9 +66,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B8A100152B7B1A7000123452"
-            BuildableName = "BottleKeep.app"
-            BlueprintName = "BottleKeep"
-            ReferencedContainer = "container:BottleKeep.xcodeproj">
+            BuildableName = "BottleKeeper.app"
+            BlueprintName = "BottleKeeper"
+            ReferencedContainer = "container:BottleKeeper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -83,9 +83,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B8A100152B7B1A7000123452"
-            BuildableName = "BottleKeep.app"
-            BlueprintName = "BottleKeep"
-            ReferencedContainer = "container:BottleKeep.xcodeproj">
+            BuildableName = "BottleKeeper.app"
+            BlueprintName = "BottleKeeper"
+            ReferencedContainer = "container:BottleKeeper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

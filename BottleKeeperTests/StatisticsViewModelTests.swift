@@ -1,5 +1,5 @@
 import XCTest
-@testable import BottleKeep
+@testable import BottleKeeper
 
 @MainActor
 class StatisticsViewModelTests: XCTestCase {

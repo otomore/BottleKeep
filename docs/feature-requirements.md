@@ -1,4 +1,4 @@
-# BottleKeep 機能要件リスト
+# BottleKeeper 機能要件リスト
 
 ## 優先度説明
 - **P0 (必須)**: MVP実装に必要な機能

@@ -1,9 +1,9 @@
-# BottleKeep 技術スタック定義書（Enterprise Edition）
+# BottleKeeper 技術スタック定義書（Enterprise Edition）
 
 ## 1. 概要
 
 ### 1.1 目的
-BottleKeepアプリの技術選択を明確にして、さくっと作って楽しく使えるアプリを作る。趣味開発なので、複雑すぎない現実的な技術を選ぶ。
+BottleKeeperアプリの技術選択を明確にして、さくっと作って楽しく使えるアプリを作る。趣味開発なので、複雑すぎない現実的な技術を選ぶ。
 
 **注記**: この資料は詳細版です。通常の開発では `tech-stack.md` を参照してください。
 **更新要件**: 技術選択に変更があった場合、必ずこの文書と tech-stack.md の両方を更新してください。
@@ -78,7 +78,7 @@ iPad: iPadOS 16以降のiPad
 ✅ プレビュー → 開発効率大幅向上
 ✅ アニメーション → 簡潔な記述で高品質
 
-// UIKit優位点（BottleKeepでは重要度低）
+// UIKit優位点（BottleKeeperでは重要度低）
 ❌ 複雑なカスタムUI → MVP要件に含まれず
 ❌ 細かい制御 → 過剰仕様になるリスク
 ❌ 古いiOS対応 → iOS 16+でカバー十分
@@ -152,7 +152,7 @@ class CoreDataStack {
     static let shared = CoreDataStack()
 
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+        let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
         // CloudKit設定
         let storeDescription = container.persistentStoreDescriptions.first!
@@ -462,15 +462,15 @@ struct BottleListView: View {
 
 #### 6.3.1 フォルダ階層設計
 ```
-BottleKeep/
+BottleKeeper/
 ├── App/
-│   ├── BottleKeepApp.swift
+│   ├── BottleKeeperApp.swift
 │   ├── SceneDelegate.swift
 │   └── AppDelegate.swift
 ├── Core/
 │   ├── Data/
 │   │   ├── CoreData/
-│   │   │   ├── BottleKeep.xcdatamodeld
+│   │   │   ├── BottleKeeper.xcdatamodeld
 │   │   │   ├── CoreDataStack.swift
 │   │   │   └── Entities/
 │   │   │       ├── Bottle+CoreDataClass.swift
@@ -571,7 +571,7 @@ Development:
 
 Distribution:
   - CODE_SIGN_STYLE: Manual
-  - PROVISIONING_PROFILE_SPECIFIER: BottleKeep Distribution
+  - PROVISIONING_PROFILE_SPECIFIER: BottleKeeper Distribution
   - CODE_SIGN_IDENTITY: Apple Distribution
 ```
 
@@ -605,7 +605,7 @@ Testing Scheme:
 ```swift
 // とりあえず基本的なテストだけ書く
 import XCTest
-@testable import BottleKeep
+@testable import BottleKeeper
 
 class BottleTests: XCTestCase {
     func testBottleCreation() {
@@ -644,7 +644,7 @@ class BottleTests: XCTestCase {
       "testTargets": [
         {
           "target": {
-            "name": "BottleKeepTests"
+            "name": "BottleKeeperTests"
           },
           "enableCodeCoverage": true,
           "environmentVariableEntries": [
@@ -661,7 +661,7 @@ class BottleTests: XCTestCase {
       "testTargets": [
         {
           "target": {
-            "name": "BottleKeepUITests"
+            "name": "BottleKeeperUITests"
           },
           "enableCodeCoverage": false
         }
@@ -672,7 +672,7 @@ class BottleTests: XCTestCase {
     "codeCoverage": {
       "targets": [
         {
-          "name": "BottleKeep"
+          "name": "BottleKeeper"
         }
       ]
     }
@@ -721,8 +721,8 @@ jobs:
     - name: Build and Test
       run: |
         xcodebuild clean test \
-          -project BottleKeep.xcodeproj \
-          -scheme BottleKeep \
+          -project BottleKeeper.xcodeproj \
+          -scheme BottleKeeper \
           -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
           -enableCodeCoverage YES \
           | xcpretty
@@ -742,15 +742,15 @@ jobs:
     - name: Build Archive
       run: |
         xcodebuild archive \
-          -project BottleKeep.xcodeproj \
-          -scheme BottleKeep \
-          -archivePath ./BottleKeep.xcarchive \
+          -project BottleKeeper.xcodeproj \
+          -scheme BottleKeeper \
+          -archivePath ./BottleKeeper.xcarchive \
           -configuration Release
 
     - name: Export IPA
       run: |
         xcodebuild -exportArchive \
-          -archivePath ./BottleKeep.xcarchive \
+          -archivePath ./BottleKeeper.xcarchive \
           -exportPath ./export \
           -exportOptionsPlist ./ExportOptions.plist
 ```
@@ -764,8 +764,8 @@ platform :ios do
   desc "Run tests"
   lane :test do
     run_tests(
-      project: "BottleKeep.xcodeproj",
-      scheme: "BottleKeep",
+      project: "BottleKeeper.xcodeproj",
+      scheme: "BottleKeeper",
       devices: ["iPhone 15 Pro"]
     )
   end
@@ -773,8 +773,8 @@ platform :ios do
   desc "Build for testing"
   lane :build_for_testing do
     build_app(
-      project: "BottleKeep.xcodeproj",
-      scheme: "BottleKeep",
+      project: "BottleKeeper.xcodeproj",
+      scheme: "BottleKeeper",
       configuration: "Debug",
       skip_package_ipa: true
     )
@@ -782,11 +782,11 @@ platform :ios do
 
   desc "Deploy to TestFlight"
   lane :beta do
-    increment_build_number(xcodeproj: "BottleKeep.xcodeproj")
+    increment_build_number(xcodeproj: "BottleKeeper.xcodeproj")
 
     build_app(
-      project: "BottleKeep.xcodeproj",
-      scheme: "BottleKeep",
+      project: "BottleKeeper.xcodeproj",
+      scheme: "BottleKeeper",
       configuration: "Release"
     )
 
@@ -798,8 +798,8 @@ platform :ios do
   desc "Deploy to App Store"
   lane :release do
     build_app(
-      project: "BottleKeep.xcodeproj",
-      scheme: "BottleKeep",
+      project: "BottleKeeper.xcodeproj",
+      scheme: "BottleKeeper",
       configuration: "Release"
     )
 
@@ -1361,7 +1361,7 @@ import Security
 
 // アプリデータ暗号化
 class SecureDataManager {
-    private let keychain = Keychain(service: "com.yourcompany.BottleKeep")
+    private let keychain = Keychain(service: "com.yourcompany.BottleKeeper")
 
     // マスターキー生成・管理
     private func generateMasterKey() throws -> SymmetricKey {
@@ -1542,7 +1542,7 @@ class BiometricAuthManager: ObservableObject {
             return
         }
 
-        let reason = "BottleKeepのデータにアクセスするために認証が必要です"
+        let reason = "BottleKeeperのデータにアクセスするために認証が必要です"
 
         do {
             let success = try await context.evaluatePolicy(
@@ -1597,7 +1597,7 @@ struct AuthenticationView: View {
                         .font(.system(size: 50))
                         .foregroundColor(.blue)
 
-                    Text("BottleKeep")
+                    Text("BottleKeeper")
                         .font(.largeTitle)
                         .fontWeight(.bold)
 
@@ -1642,7 +1642,7 @@ struct AuthenticationView: View {
 #### 10.1.1 App Store Connect設定
 ```yaml
 App Information:
-  Name: BottleKeep
+  Name: BottleKeeper
   Bundle ID: com.yourcompany.bottlekeep
   SKU: bottlekeep-ios-2024
   Primary Language: Japanese
@@ -1750,10 +1750,10 @@ import OSLog
 
 // 構造化ログ実装
 extension Logger {
-    static let app = Logger(subsystem: "com.yourcompany.BottleKeep", category: "app")
-    static let coreData = Logger(subsystem: "com.yourcompany.BottleKeep", category: "coredata")
-    static let cloudKit = Logger(subsystem: "com.yourcompany.BottleKeep", category: "cloudkit")
-    static let ui = Logger(subsystem: "com.yourcompany.BottleKeep", category: "ui")
+    static let app = Logger(subsystem: "com.yourcompany.BottleKeeper", category: "app")
+    static let coreData = Logger(subsystem: "com.yourcompany.BottleKeeper", category: "coredata")
+    static let cloudKit = Logger(subsystem: "com.yourcompany.BottleKeeper", category: "cloudkit")
+    static let ui = Logger(subsystem: "com.yourcompany.BottleKeeper", category: "ui")
 }
 
 // クラッシュレポート強化
@@ -2825,33 +2825,33 @@ enum AppEnvironment {
     var cloudKitContainerIdentifier: String {
         switch self {
         case .development:
-            return "iCloud.com.yourcompany.BottleKeep.dev"
+            return "iCloud.com.yourcompany.BottleKeeper.dev"
         case .staging:
-            return "iCloud.com.yourcompany.BottleKeep.staging"
+            return "iCloud.com.yourcompany.BottleKeeper.staging"
         case .production:
-            return "iCloud.com.yourcompany.BottleKeep"
+            return "iCloud.com.yourcompany.BottleKeeper"
         }
     }
 
     var bundleIdentifier: String {
         switch self {
         case .development:
-            return "com.yourcompany.BottleKeep.dev"
+            return "com.yourcompany.BottleKeeper.dev"
         case .staging:
-            return "com.yourcompany.BottleKeep.staging"
+            return "com.yourcompany.BottleKeeper.staging"
         case .production:
-            return "com.yourcompany.BottleKeep"
+            return "com.yourcompany.BottleKeeper"
         }
     }
 
     var appName: String {
         switch self {
         case .development:
-            return "BottleKeep Dev"
+            return "BottleKeeper Dev"
         case .staging:
-            return "BottleKeep Staging"
+            return "BottleKeeper Staging"
         case .production:
-            return "BottleKeep"
+            return "BottleKeeper"
         }
     }
 
@@ -2870,7 +2870,7 @@ struct AppConfig {
     static let environment = AppEnvironment.current
 
     struct CoreData {
-        static let modelName = "BottleKeep"
+        static let modelName = "BottleKeeper"
         static let enableCloudKit = true
         static let enablePersistentHistoryTracking = true
 
@@ -2878,11 +2878,11 @@ struct AppConfig {
             let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             switch environment {
             case .development:
-                return documentsPath.appendingPathComponent("BottleKeep_dev.sqlite")
+                return documentsPath.appendingPathComponent("BottleKeeper_dev.sqlite")
             case .staging:
-                return documentsPath.appendingPathComponent("BottleKeep_staging.sqlite")
+                return documentsPath.appendingPathComponent("BottleKeeper_staging.sqlite")
             case .production:
-                return documentsPath.appendingPathComponent("BottleKeep.sqlite")
+                return documentsPath.appendingPathComponent("BottleKeeper.sqlite")
             }
         }
     }
@@ -2952,20 +2952,20 @@ class ConfigurationManager {
 Development Build Settings:
 - SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG DEVELOPMENT
 - GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 DEVELOPMENT=1
-- PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.BottleKeep.dev
-- PRODUCT_NAME = BottleKeep Dev
+- PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.BottleKeeper.dev
+- PRODUCT_NAME = BottleKeeper Dev
 
 Staging Build Settings:
 - SWIFT_ACTIVE_COMPILATION_CONDITIONS = STAGING
 - GCC_PREPROCESSOR_DEFINITIONS = STAGING=1
-- PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.BottleKeep.staging
-- PRODUCT_NAME = BottleKeep Staging
+- PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.BottleKeeper.staging
+- PRODUCT_NAME = BottleKeeper Staging
 
 Production Build Settings:
 - SWIFT_ACTIVE_COMPILATION_CONDITIONS = PRODUCTION
 - GCC_PREPROCESSOR_DEFINITIONS = PRODUCTION=1
-- PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.BottleKeep
-- PRODUCT_NAME = BottleKeep
+- PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.BottleKeeper
+- PRODUCT_NAME = BottleKeeper
 */
 
 // Info.plist環境別設定
@@ -2973,9 +2973,9 @@ Production Build Settings:
 Info-Development.plist:
 ```xml
 <key>CFBundleDisplayName</key>
-<string>BottleKeep Dev</string>
+<string>BottleKeeper Dev</string>
 <key>CloudKitContainerIdentifier</key>
-<string>iCloud.com.yourcompany.BottleKeep.dev</string>
+<string>iCloud.com.yourcompany.BottleKeeper.dev</string>
 <key>EnableTestingFeatures</key>
 <true/>
 ```
@@ -2983,9 +2983,9 @@ Info-Development.plist:
 Info-Production.plist:
 ```xml
 <key>CFBundleDisplayName</key>
-<string>BottleKeep</string>
+<string>BottleKeeper</string>
 <key>CloudKitContainerIdentifier</key>
-<string>iCloud.com.yourcompany.BottleKeep</string>
+<string>iCloud.com.yourcompany.BottleKeeper</string>
 <key>EnableTestingFeatures</key>
 <false/>
 ```
@@ -3253,15 +3253,15 @@ enum SyncStatus {
 import WidgetKit
 import SwiftUI
 
-// BottleKeepウィジェット
-struct BottleKeepWidget: Widget {
-    let kind: String = "BottleKeepWidget"
+// BottleKeeperウィジェット
+struct BottleKeeperWidget: Widget {
+    let kind: String = "BottleKeeperWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: BottleProvider()) { entry in
             BottleWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("BottleKeep")
+        .configurationDisplayName("BottleKeeper")
         .description("お気に入りボトルの残量を確認")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
@@ -3320,7 +3320,7 @@ import WatchKit
 import SwiftUI
 
 // Apple Watch アプリ
-struct BottleKeepWatchApp: App {
+struct BottleKeeperWatchApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -3336,7 +3336,7 @@ struct WatchBottleListView: View {
             List(bottles) { bottle in
                 WatchBottleRowView(bottle: bottle)
             }
-            .navigationTitle("BottleKeep")
+            .navigationTitle("BottleKeeper")
         }
         .onAppear {
             loadBottles()
@@ -3430,12 +3430,12 @@ class BottleRemainingIntentHandler: NSObject, BottleRemainingIntentHandling {
 struct ShortcutsIntegration {
     static func donateQuickActions() {
         // 在庫確認のショートカット
-        let activity = NSUserActivity(activityType: "com.yourcompany.BottleKeep.checkStock")
+        let activity = NSUserActivity(activityType: "com.yourcompany.BottleKeeper.checkStock")
         activity.title = "在庫確認"
         activity.isEligibleForSearch = true
         activity.isEligibleForPrediction = true
 
-        let attributes = CSSearchableItemAttributeSet(itemContentType: "com.yourcompany.BottleKeep.action")
+        let attributes = CSSearchableItemAttributeSet(itemContentType: "com.yourcompany.BottleKeeper.action")
         attributes.contentDescription = "ボトルの在庫状況を確認"
         activity.contentAttributeSet = attributes
 

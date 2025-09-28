@@ -1,4 +1,4 @@
-# BottleKeep 開発環境セットアップガイド
+# BottleKeeper 開発環境セットアップガイド
 
 ## 1. 前提条件
 
@@ -115,8 +115,8 @@ swiftformat --version
 cd ~/Development  # または任意のディレクトリ
 
 # リポジトリクローン
-git clone git@github.com:yourusername/BottleKeep.git
-cd BottleKeep
+git clone git@github.com:yourusername/BottleKeeper.git
+cd BottleKeeper
 
 # ブランチ確認
 git branch -a
@@ -125,9 +125,9 @@ git status
 
 ### 3.2 プロジェクト構造確認
 ```
-BottleKeep/
-├── BottleKeep.xcodeproj          # Xcodeプロジェクトファイル
-├── BottleKeep/                   # メインアプリケーション
+BottleKeeper/
+├── BottleKeeper.xcodeproj          # Xcodeプロジェクトファイル
+├── BottleKeeper/                   # メインアプリケーション
 │   ├── App/                      # アプリケーション起動
 │   ├── Views/                    # SwiftUI View
 │   ├── ViewModels/               # ViewModel
@@ -136,8 +136,8 @@ BottleKeep/
 │   ├── Services/                 # 外部サービス
 │   ├── Utils/                    # ユーティリティ
 │   └── Resources/                # リソースファイル
-├── BottleKeepTests/              # Unit Tests
-├── BottleKeepUITests/            # UI Tests
+├── BottleKeeperTests/              # Unit Tests
+├── BottleKeeperUITests/            # UI Tests
 ├── docs/                         # ドキュメント
 ├── .swiftlint.yml               # SwiftLint設定
 ├── .gitignore                   # Git無視ファイル
@@ -149,21 +149,21 @@ BottleKeep/
 #### 3.3.1 プロジェクトを開く
 ```bash
 # Xcodeでプロジェクトを開く
-open BottleKeep.xcodeproj
+open BottleKeeper.xcodeproj
 ```
 
 #### 3.3.2 Team設定（実機テスト時）
 1. Xcodeでプロジェクトを選択
-2. TARGETSで"BottleKeep"を選択
+2. TARGETSで"BottleKeeper"を選択
 3. "Signing & Capabilities"タブを開く
 4. TeamでApple Developer Accountを選択
-5. Bundle Identifierを設定（例：com.yourname.BottleKeep）
+5. Bundle Identifierを設定（例：com.yourname.BottleKeeper）
 
 #### 3.3.3 Build Settings確認
 ```
 General:
 - Deployment Target: iOS 16.0
-- Bundle Identifier: com.yourname.BottleKeep
+- Bundle Identifier: com.yourname.BottleKeeper
 - Version: 1.0
 - Build: 1
 
@@ -184,10 +184,10 @@ Signing & Capabilities:
 1. [Apple Developer Portal](https://developer.apple.com) にログイン
 2. "Certificates, Identifiers & Profiles" → "CloudKit Containers"
 3. "+" ボタンで新しいContainerを作成
-4. Container Identifier: `iCloud.com.yourname.BottleKeep`
+4. Container Identifier: `iCloud.com.yourname.BottleKeeper`
 
 #### 4.1.2 Xcode での CloudKit 設定
-1. PROJECT → BottleKeep → "Signing & Capabilities"
+1. PROJECT → BottleKeeper → "Signing & Capabilities"
 2. "+ Capability" → "iCloud"
 3. Services: "CloudKit" をチェック
 4. Containers: 作成したContainerを選択
@@ -195,11 +195,11 @@ Signing & Capabilities:
 #### 4.1.3 Core Data + CloudKit設定確認
 ```swift
 // CoreDataManager.swift での設定確認
-let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
 let description = container.persistentStoreDescriptions.first
 description?.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
-    containerIdentifier: "iCloud.com.yourname.BottleKeep"
+    containerIdentifier: "iCloud.com.yourname.BottleKeeper"
 )
 ```
 
@@ -225,11 +225,11 @@ description?.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
 ```yaml
 # .swiftlint.yml
 included:
-  - BottleKeep
-  - BottleKeepTests
+  - BottleKeeper
+  - BottleKeeperTests
 
 excluded:
-  - BottleKeep/Resources
+  - BottleKeeper/Resources
   - build
 
 disabled_rules:
@@ -251,7 +251,7 @@ function_body_length:
 ```
 
 #### 5.1.2 Xcode Build Phase追加
-1. PROJECT → BottleKeep → "Build Phases"
+1. PROJECT → BottleKeeper → "Build Phases"
 2. "+" → "New Run Script Phase"
 3. Scriptに以下を追加：
 ```bash
@@ -364,9 +364,9 @@ CLOUDKIT_DEBUG: 1
 import os.log
 
 struct Logger {
-    static let general = os.Logger(subsystem: "com.yourname.BottleKeep", category: "general")
-    static let coreData = os.Logger(subsystem: "com.yourname.BottleKeep", category: "coreData")
-    static let cloudKit = os.Logger(subsystem: "com.yourname.BottleKeep", category: "cloudKit")
+    static let general = os.Logger(subsystem: "com.yourname.BottleKeeper", category: "general")
+    static let coreData = os.Logger(subsystem: "com.yourname.BottleKeeper", category: "coreData")
+    static let cloudKit = os.Logger(subsystem: "com.yourname.BottleKeeper", category: "cloudKit")
 }
 #endif
 ```
@@ -376,15 +376,15 @@ struct Logger {
 ### 7.1 Unit Test設定
 
 #### 7.1.1 Test Target確認
-1. TARGETSで"BottleKeepTests"を選択
-2. General → "Host Application"が"BottleKeep"に設定されていることを確認
+1. TARGETSで"BottleKeeperTests"を選択
+2. General → "Host Application"が"BottleKeeper"に設定されていることを確認
 3. Build Settings → "Bundle Loader"設定確認
 
 #### 7.1.2 テスト実行
 ```bash
 # コマンドラインでのテスト実行
 xcodebuild test \
-  -scheme BottleKeep \
+  -scheme BottleKeeper \
   -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
   -configuration Debug
 
@@ -395,12 +395,12 @@ xcodebuild test \
 ### 7.2 UI Test設定
 
 #### 7.2.1 UI Test Target確認
-1. TARGETSで"BottleKeepUITests"を選択
-2. General → "Test Target"が"BottleKeep"に設定されていることを確認
+1. TARGETSで"BottleKeeperUITests"を選択
+2. General → "Test Target"が"BottleKeeper"に設定されていることを確認
 
 #### 7.2.2 UI Test用引数設定
 ```swift
-// BottleKeepUITests.swift
+// BottleKeeperUITests.swift
 override func setUp() {
     super.setUp()
     let app = XCUIApplication()
@@ -438,14 +438,14 @@ override func setUp() {
 #### 8.2.1 サンプル実行
 ```bash
 # プロジェクトディレクトリで以下を実行
-cd BottleKeep
+cd BottleKeeper
 
 # SwiftLintチェック
 swiftlint
 
 # テスト実行
 xcodebuild test \
-  -scheme BottleKeep \
+  -scheme BottleKeeper \
   -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
 echo "✅ セットアップ完了!"
@@ -584,7 +584,7 @@ git config --global credential.helper osxkeychain
 # 環境変数ファイル作成（.gitignore対象）
 cat > .env.local << EOF
 # 開発用設定（コミットしない）
-CLOUDKIT_CONTAINER_ID=iCloud.com.yourname.BottleKeep.dev
+CLOUDKIT_CONTAINER_ID=iCloud.com.yourname.BottleKeeper.dev
 DEBUG_MODE=true
 EOF
 
@@ -597,13 +597,13 @@ echo ".env.local" >> .gitignore
 // 環境別設定管理
 #if DEBUG
 struct Config {
-    static let cloudKitContainer = "iCloud.com.yourname.BottleKeep.dev"
+    static let cloudKitContainer = "iCloud.com.yourname.BottleKeeper.dev"
     static let enableLogging = true
     static let enableCloudKitConsoleOutput = true
 }
 #else
 struct Config {
-    static let cloudKitContainer = "iCloud.com.yourname.BottleKeep"
+    static let cloudKitContainer = "iCloud.com.yourname.BottleKeeper"
     static let enableLogging = false
     static let enableCloudKitConsoleOutput = false
 }

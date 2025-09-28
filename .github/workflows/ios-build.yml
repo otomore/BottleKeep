@@ -10,8 +10,8 @@ on:
 
 env:
   XCODE_VERSION: '15.0' # 使用するXcodeのバージョン
-  SCHEME: 'BottleKeep'
-  PROJECT_PATH: 'BottleKeep.xcodeproj' # プロジェクトファイルのパス
+  SCHEME: 'BottleKeeper'
+  PROJECT_PATH: 'BottleKeeper.xcodeproj' # プロジェクトファイルのパス
   BUNDLE_ID: 'com.bottlekeep.whiskey'
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
       - name: プロジェクトとスキームの確認
         run: |
           echo "=== プロジェクト構造を確認 ==="
-          ls -la BottleKeep.xcodeproj/
+          ls -la BottleKeeper.xcodeproj/
 
           echo "=== 利用可能なターゲットを確認 ==="
           xcodebuild -list -project ${{ env.PROJECT_PATH }} || echo "プロジェクト設定を確認中..."
@@ -43,7 +43,7 @@ jobs:
           # スキーム不要の直接ターゲット指定でビルド
           xcodebuild clean build \
             -project ${{ env.PROJECT_PATH }} \
-            -target BottleKeep \
+            -target BottleKeeper \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
             -configuration Debug \
             || echo "テスト実行に失敗しましたが継続します"
@@ -110,13 +110,13 @@ jobs:
       - name: プロジェクト構造とスキームを確認
         run: |
           echo "=== プロジェクト構造確認 ==="
-          ls -la BottleKeep/
+          ls -la BottleKeeper/
 
           echo "=== Xcodeプロジェクト確認 ==="
           xcodebuild -list -project ${{ env.PROJECT_PATH }} || echo "プロジェクト設定を確認中..."
 
           echo "=== Info.plist確認 ==="
-          ls -la BottleKeep/Info.plist
+          ls -la BottleKeeper/Info.plist
 
       - name: アーカイブをビルド
         run: |
@@ -140,7 +140,7 @@ jobs:
               -project ${{ env.PROJECT_PATH }} \
               -scheme ${{ env.SCHEME }} \
               -destination 'generic/platform=iOS' \
-              -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
+              -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
               -configuration Release \
               DEVELOPMENT_TEAM=KRVLW3Y2SL \
               CODE_SIGN_STYLE=Manual \
@@ -159,12 +159,12 @@ jobs:
             echo "✅ ExportOptions.plistが見つかりました"
 
             # アーカイブの存在確認
-            if [ -d "$RUNNER_TEMP/BottleKeep.xcarchive" ]; then
+            if [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
               echo "✅ アーカイブファイルが見つかりました"
 
               # IPAエクスポート実行
               xcodebuild -exportArchive \
-                -archivePath $RUNNER_TEMP/BottleKeep.xcarchive \
+                -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
                 -exportPath $RUNNER_TEMP/ipa \
                 -exportOptionsPlist ExportOptions.plist
 
@@ -183,7 +183,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
-          name: BottleKeep-IPA
+          name: BottleKeeper-IPA
           path: ${{ runner.temp }}/ipa/
 
       - name: クリーンアップ
@@ -208,7 +208,7 @@ jobs:
       - name: IPAをダウンロード
         uses: actions/download-artifact@v4
         with:
-          name: BottleKeep-IPA
+          name: BottleKeeper-IPA
           path: ./ipa
 
       - name: App Store Connect APIキーを設定
@@ -267,13 +267,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "BottleKeep v${{ github.run_number }} がTestFlightに配信されました！",
+              "text": "BottleKeeper v${{ github.run_number }} がTestFlightに配信されました！",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*🚀 BottleKeep がTestFlightに配信されました*\n• ビルド番号: ${{ github.run_number }}\n• ブランチ: ${{ github.ref_name }}\n• コミット: ${{ github.sha }}"
+                    "text": "*🚀 BottleKeeper がTestFlightに配信されました*\n• ビルド番号: ${{ github.run_number }}\n• ブランチ: ${{ github.ref_name }}\n• コミット: ${{ github.sha }}"
                   }
                 }
               ]

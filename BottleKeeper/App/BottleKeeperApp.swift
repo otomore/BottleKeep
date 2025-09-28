@@ -2,7 +2,7 @@ import SwiftUI
 import CoreData
 
 @main
-struct BottleKeepApp: App {
+struct BottleKeeperApp: App {
     // Core Data Stack
     let persistenceController = CoreDataManager.shared
 

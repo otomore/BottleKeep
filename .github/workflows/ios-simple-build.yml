@@ -29,7 +29,7 @@ jobs:
       - name: Swift Packageビルドテスト
         run: |
           echo "=== Swift Packageビルドテスト ==="
-          swift build --target BottleKeep || echo "Swift Package Manager ビルドに失敗"
+          swift build --target BottleKeeper || echo "Swift Package Manager ビルドに失敗"
 
       - name: xcodebuildを使用したビルドテスト
         run: |
@@ -37,7 +37,7 @@ jobs:
 
           # Swift Packageから直接ビルド
           xcodebuild build \
-            -scheme BottleKeep \
+            -scheme BottleKeeper \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
             -configuration Debug \
             -skipPackagePluginValidation \

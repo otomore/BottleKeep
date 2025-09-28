@@ -8,17 +8,17 @@ class CoreDataManager: ObservableObject {
 
     static let shared = CoreDataManager()
 
-    private let logger = Logger(subsystem: "com.bottlekeep.app", category: "CoreData")
+    private let logger = Logger(subsystem: "com.bottlekeeper.app", category: "CoreData")
 
     // MARK: - Core Data Stack
 
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "BottleKeep")
+        let container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
         // CloudKit設定
         let description = container.persistentStoreDescriptions.first!
         description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
-            containerIdentifier: "iCloud.com.bottlekeep.app"
+            containerIdentifier: "iCloud.com.bottlekeeper.app"
         )
 
         // リモート通知設定
@@ -89,7 +89,7 @@ class CoreDataManager: ObservableObject {
 
     /// CloudKit同期状態の確認
     func checkCloudKitAccountStatus() async -> CKAccountStatus {
-        let container = CKContainer(identifier: "iCloud.com.bottlekeep.app")
+        let container = CKContainer(identifier: "iCloud.com.bottlekeeper.app")
         do {
             let status = try await container.accountStatus()
             logger.info("CloudKit account status: \(status.rawValue)")

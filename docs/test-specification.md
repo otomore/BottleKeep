@@ -1,4 +1,4 @@
-# BottleKeep テスト仕様書
+# BottleKeeper テスト仕様書
 
 ## 1. テスト戦略概要
 
@@ -904,7 +904,7 @@ class CoreDataTestStack {
     static let shared = CoreDataTestStack()
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "BottleKeep")
+        let container = NSPersistentContainer(name: "BottleKeeper")
 
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -979,7 +979,7 @@ jobs:
     - name: Run Unit Tests
       run: |
         xcodebuild test \
-          -scheme BottleKeep \
+          -scheme BottleKeeper \
           -destination '${{ matrix.destination }}' \
           -configuration Debug \
           -enableCodeCoverage YES \
@@ -1013,7 +1013,7 @@ jobs:
 
 # Run tests and generate report
 xcodebuild test \
-  -scheme BottleKeep \
+  -scheme BottleKeeper \
   -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
   -configuration Debug \
   -enableCodeCoverage YES \
@@ -1129,8 +1129,8 @@ jobs:
     - name: Run ${{ matrix.test-target }}
       run: |
         xcodebuild test \
-          -scheme BottleKeep \
-          -only-testing:BottleKeepTests/${{ matrix.test-target }} \
+          -scheme BottleKeeper \
+          -only-testing:BottleKeeperTests/${{ matrix.test-target }} \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
   integration-tests:
@@ -1140,8 +1140,8 @@ jobs:
     - name: Run Integration Tests
       run: |
         xcodebuild test \
-          -scheme BottleKeep \
-          -only-testing:BottleKeepIntegrationTests \
+          -scheme BottleKeeper \
+          -only-testing:BottleKeeperIntegrationTests \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 
   ui-tests:
@@ -1157,8 +1157,8 @@ jobs:
     - name: Run ${{ matrix.ui-test-suite }}
       run: |
         xcodebuild test \
-          -scheme BottleKeep \
-          -only-testing:BottleKeepUITests/${{ matrix.ui-test-suite }} \
+          -scheme BottleKeeper \
+          -only-testing:BottleKeeperUITests/${{ matrix.ui-test-suite }} \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
 ```
 

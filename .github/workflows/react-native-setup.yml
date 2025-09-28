@@ -33,10 +33,10 @@ jobs:
       - name: React Native プロジェクト作成
         if: github.event.inputs.setup_type == 'expo'
         run: |
-          npx create-expo-app BottleKeepRN --template blank-typescript
+          npx create-expo-app BottleKeeperRN --template blank-typescript
 
       - name: 必要な依存関係を追加
-        working-directory: ./BottleKeepRN
+        working-directory: ./BottleKeeperRN
         run: |
           # ナビゲーション
           npm install @react-navigation/native @react-navigation/stack @react-navigation/bottom-tabs
@@ -57,7 +57,7 @@ jobs:
           expo install expo-barcode-scanner
 
       - name: 基本的なコンポーネント構造を作成
-        working-directory: ./BottleKeepRN
+        working-directory: ./BottleKeeperRN
         run: |
           mkdir -p src/{components,screens,services,types}
 
@@ -90,7 +90,7 @@ jobs:
 
             return (
               <View style={styles.container}>
-                <Text style={styles.title}>BottleKeep - ウイスキーコレクション</Text>
+                <Text style={styles.title}>BottleKeeper - ウイスキーコレクション</Text>
                 <FlatList
                   data={bottles}
                   keyExtractor={(item) => item.id}
@@ -132,7 +132,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bottlekeep-react-native
-          path: ./BottleKeepRN
+          path: ./BottleKeeperRN
 
       - name: Windows開発手順を出力
         run: |
@@ -150,7 +150,7 @@ jobs:
           3. 作成されたプロジェクトをダウンロードして展開
 
           4. 依存関係をインストール
-             cd BottleKeepRN
+             cd BottleKeeperRN
              npm install
 
           5. 開発サーバーを起動
