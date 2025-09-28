@@ -483,11 +483,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"BottleKeep/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"BottleKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = KRVLW3Y2SL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = BottleKeep/Info.plist;
+				INFOPLIST_FILE = BottleKeeper/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "ボトルの写真を撮影するためにカメラを使用します";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "ボトルの写真を選択するためにフォトライブラリにアクセスします";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -516,11 +516,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"BottleKeep/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"BottleKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = KRVLW3Y2SL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = BottleKeep/Info.plist;
+				INFOPLIST_FILE = BottleKeeper/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "ボトルの写真を撮影するためにカメラを使用します";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "ボトルの写真を選択するためにフォトライブラリにアクセスします";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -545,7 +545,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B8A100112B7B1A7000123449 /* Build configuration list for PBXProject "BottleKeep" */ = {
+		B8A100112B7B1A7000123449 /* Build configuration list for PBXProject "BottleKeeper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B8A100372B7B1A7200123506 /* Debug */,
@@ -554,7 +554,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B8A100392B7B1A7200123505 /* Build configuration list for PBXNativeTarget "BottleKeep" */ = {
+		B8A100392B7B1A7200123505 /* Build configuration list for PBXNativeTarget "BottleKeeper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B8A1003A2B7B1A7200123508 /* Debug */,
