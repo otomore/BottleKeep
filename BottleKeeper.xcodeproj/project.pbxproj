@@ -343,9 +343,9 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXVariantGroup section */
-		B8A100222B7B1A7200123460 /* BottleKeep.xcdatamodeld */ = {
-			isa = PBXVariantGroup;
+/* Begin XCVersionGroup section */
+		B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */ = {
+			isa = XCVersionGroup;
 			children = (
 				B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodel */,
 			);
@@ -354,7 +354,7 @@
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
-/* End PBXVariantGroup section */
+/* End XCVersionGroup section */
 
 /* Begin XCBuildConfiguration section */
 		B8A100372B7B1A7200123506 /* Debug */ = {
