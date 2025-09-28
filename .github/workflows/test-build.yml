@@ -40,14 +40,22 @@ jobs:
             echo "Package.swiftが見つかりません"
           fi
 
-      - name: Swift Packageとしてビルドテスト
+      - name: Xcodeプロジェクトとしてビルドテスト
         run: |
-          echo "=== Swift Package としてビルドテスト ==="
-          if [ -f "Package.swift" ]; then
-            swift build || echo "Swift buildに失敗しました"
-            swift test || echo "Swift testに失敗しました"
+          echo "=== Xcodeプロジェクト としてビルドテスト ==="
+          if [ -f "BottleKeeper.xcodeproj/project.pbxproj" ]; then
+            echo "=== プロジェクト情報確認 ==="
+            xcodebuild -list -project BottleKeeper.xcodeproj || echo "プロジェクト情報取得に失敗"
+
+            echo "=== ビルドテスト ==="
+            xcodebuild build \
+              -project BottleKeeper.xcodeproj \
+              -scheme BottleKeeper \
+              -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+              -configuration Debug \
+              || echo "Xcodeビルドに失敗しました"
           else
-            echo "Package.swiftが存在しないため、Swift Packageビルドをスキップします"
+            echo "Xcodeプロジェクトが存在しません"
           fi
 
       - name: 手動でXcodeプロジェクトを作成

@@ -34,6 +34,9 @@ jobs:
           echo "=== プロジェクト構造を確認 ==="
           ls -la BottleKeeper.xcodeproj/
 
+          echo "=== BottleKeeperディレクトリ確認 ==="
+          ls -la BottleKeeper/
+
           echo "=== 利用可能なターゲットを確認 ==="
           xcodebuild -list -project ${{ env.PROJECT_PATH }} || echo "プロジェクト設定を確認中..."
 
@@ -43,7 +46,7 @@ jobs:
           # スキーム不要の直接ターゲット指定でビルド
           xcodebuild clean build \
             -project ${{ env.PROJECT_PATH }} \
-            -target BottleKeeper \
+            -scheme BottleKeeper \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
             -configuration Debug \
             || echo "テスト実行に失敗しましたが継続します"

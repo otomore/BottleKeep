@@ -17,30 +17,30 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.0.app
           xcodebuild -version
 
-      - name: Swift Package情報を確認
+      - name: プロジェクト構造を確認
         run: |
-          echo "=== Swift Package情報を確認 ==="
-          swift package describe --type json || echo "Package.swift確認"
-          cat Package.swift
+          echo "=== プロジェクト構造を確認 ==="
+          ls -la
+          echo "=== Xcodeプロジェクトの確認 ==="
+          ls -la BottleKeeper.xcodeproj/
+          echo "=== ソースディレクトリの確認 ==="
+          ls -la BottleKeeper/
 
-          echo "=== 利用可能なターゲットを確認 ==="
-          swift package show-dependencies || echo "依存関係なし"
-
-      - name: Swift Packageビルドテスト
+      - name: Xcodeプロジェクト情報を確認
         run: |
-          echo "=== Swift Packageビルドテスト ==="
-          swift build --target BottleKeeper || echo "Swift Package Manager ビルドに失敗"
+          echo "=== Xcodeプロジェクト情報 ==="
+          xcodebuild -list -project BottleKeeper.xcodeproj || echo "プロジェクト情報取得に失敗"
 
       - name: xcodebuildを使用したビルドテスト
         run: |
-          echo "=== xcodebuildを使用してSwift Packageを直接ビルド ==="
+          echo "=== xcodebuildを使用してXcodeプロジェクトをビルド ==="
 
-          # Swift Packageから直接ビルド
+          # Xcodeプロジェクトから直接ビルド
           xcodebuild build \
+            -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
             -configuration Debug \
-            -skipPackagePluginValidation \
             || echo "xcodebuildビルドに失敗しましたが、続行します"
 
       - name: 詳細ログ表示
@@ -49,8 +49,8 @@ jobs:
           echo "=== 最終的な構造確認 ==="
           find . -name "*.xcodeproj" -exec ls -la {} \;
 
-          echo "=== Swift Package情報 ==="
-          swift package describe --type json | jq '.' || echo "jqが利用できません"
+          echo "=== スキーマ情報 ==="
+          ls -la BottleKeeper.xcodeproj/xcshareddata/xcschemes/ || echo "スキーマディレクトリが見つかりません"
 
       - name: 証明書設定テスト
         run: |
