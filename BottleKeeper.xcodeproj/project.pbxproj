@@ -7,97 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B8A1001A2B7B1A7000123456 /* BottleKeeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100192B7B1A7000123456 /* BottleKeeperApp.swift */; };
-		B8A1001C2B7B1A7000123457 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1001B2B7B1A7000123457 /* ContentView.swift */; };
-		B8A1001E2B7B1A7200123458 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8A1001D2B7B1A7200123458 /* Assets.xcassets */; };
-		B8A100212B7B1A7200123459 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8A100202B7B1A7200123459 /* Preview Assets.xcassets */; };
-		B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */; };
-		B8A100252B7B1A7200123461 /* Bottle+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100242B7B1A7200123461 /* Bottle+CoreDataClass.swift */; };
-		B8A100262B7B1A7200123462 /* Bottle+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100252B7B1A7200123462 /* Bottle+CoreDataProperties.swift */; };
-		B8A100272B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100262B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift */; };
-		B8A100282B7B1A7200123464 /* BottlePhoto+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100272B7B1A7200123464 /* BottlePhoto+CoreDataProperties.swift */; };
-		B8A100292B7B1A7200123465 /* WishlistItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100282B7B1A7200123465 /* WishlistItem+CoreDataClass.swift */; };
-		B8A1002A2B7B1A7200123466 /* WishlistItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100292B7B1A7200123466 /* WishlistItem+CoreDataProperties.swift */; };
-		B8A1002B2B7B1A7200123467 /* BottleRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1002A2B7B1A7200123467 /* BottleRepository.swift */; };
-		B8A1002C2B7B1A7200123468 /* BottleRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1002B2B7B1A7200123468 /* BottleRepositoryProtocol.swift */; };
-		B8A1002D2B7B1A7200123469 /* WishlistRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1002C2B7B1A7200123469 /* WishlistRepository.swift */; };
-		B8A1002E2B7B1A7200123470 /* WishlistRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1002D2B7B1A7200123470 /* WishlistRepositoryProtocol.swift */; };
-		B8A1002F2B7B1A7200123471 /* AdvancedSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1002E2B7B1A7200123471 /* AdvancedSearchManager.swift */; };
-		B8A100302B7B1A7200123472 /* BackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1002F2B7B1A7200123472 /* BackupManager.swift */; };
-		B8A100312B7B1A7200123473 /* BarcodeScannerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100302B7B1A7200123473 /* BarcodeScannerManager.swift */; };
-		B8A100322B7B1A7200123474 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100312B7B1A7200123474 /* CoreDataManager.swift */; };
-		B8A100332B7B1A7200123475 /* DataExportImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100322B7B1A7200123475 /* DataExportImportManager.swift */; };
-		B8A100342B7B1A7200123476 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100332B7B1A7200123476 /* DIContainer.swift */; };
-		B8A100352B7B1A7200123477 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100342B7B1A7200123477 /* NotificationManager.swift */; };
-		B8A100362B7B1A7200123478 /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100352B7B1A7200123478 /* PhotoManager.swift */; };
-		B8A100372B7B1A7200123479 /* SharingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100362B7B1A7200123479 /* SharingManager.swift */; };
-		B8A100382B7B1A7200123480 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100372B7B1A7200123480 /* WatchConnectivityManager.swift */; };
-		B8A100392B7B1A7200123481 /* BottleDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100382B7B1A7200123481 /* BottleDetailViewModel.swift */; };
-		B8A1003A2B7B1A7200123482 /* BottleFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100392B7B1A7200123482 /* BottleFormViewModel.swift */; };
-		B8A1003B2B7B1A7200123483 /* BottleListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1003A2B7B1A7200123483 /* BottleListViewModel.swift */; };
-		B8A1003C2B7B1A7200123484 /* StatisticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1003B2B7B1A7200123484 /* StatisticsViewModel.swift */; };
-		B8A1003D2B7B1A7200123485 /* WishlistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1003C2B7B1A7200123485 /* WishlistViewModel.swift */; };
-		B8A1003E2B7B1A7200123486 /* AccessibilitySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1003D2B7B1A7200123486 /* AccessibilitySettingsView.swift */; };
-		B8A1003F2B7B1A7200123487 /* AdvancedSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1003E2B7B1A7200123487 /* AdvancedSearchView.swift */; };
-		B8A100402B7B1A7200123488 /* AppearanceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1003F2B7B1A7200123488 /* AppearanceSettingsView.swift */; };
-		B8A100412B7B1A7200123489 /* BottleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100402B7B1A7200123489 /* BottleDetailView.swift */; };
-		B8A100422B7B1A7200123490 /* BottleFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100412B7B1A7200123490 /* BottleFormView.swift */; };
-		B8A100432B7B1A7200123491 /* BottleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100422B7B1A7200123491 /* BottleListView.swift */; };
-		B8A100442B7B1A7200123492 /* FilterOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100432B7B1A7200123492 /* FilterOptionsView.swift */; };
-		B8A100452B7B1A7200123493 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100442B7B1A7200123493 /* NotificationSettingsView.swift */; };
-		B8A100462B7B1A7200123494 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100452B7B1A7200123494 /* SettingsView.swift */; };
-		B8A100472B7B1A7200123495 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100462B7B1A7200123495 /* StatisticsView.swift */; };
-		B8A100482B7B1A7200123496 /* WishlistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100472B7B1A7200123496 /* WishlistView.swift */; };
+		A1234567890ABCDEF0000001 /* BottleKeeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1234567890ABCDEF0000001 /* BottleKeeperApp.swift */; };
+		A1234567890ABCDEF0000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1234567890ABCDEF0000002 /* ContentView.swift */; };
+		A1234567890ABCDEF0000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1234567890ABCDEF0000003 /* Assets.xcassets */; };
+		A1234567890ABCDEF0000004 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1234567890ABCDEF0000004 /* Preview Assets.xcassets */; };
+		A1234567890ABCDEF0000005 /* BottleKeeper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B1234567890ABCDEF0000005 /* BottleKeeper.xcdatamodeld */; };
+		A1234567890ABCDEF0000006 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1234567890ABCDEF0000006 /* CoreDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B8A100162B7B1A7000123450 /* BottleKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BottleKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B8A100192B7B1A7000123456 /* BottleKeeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleKeeperApp.swift; sourceTree = "<group>"; };
-		B8A1001B2B7B1A7000123457 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B8A1001D2B7B1A7200123458 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B8A100202B7B1A7200123459 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeeper.xcdatamodeld; sourceTree = "<group>"; };
-		B8A100242B7B1A7200123461 /* Bottle+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bottle+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B8A100252B7B1A7200123462 /* Bottle+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bottle+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B8A100262B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BottlePhoto+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B8A100272B7B1A7200123464 /* BottlePhoto+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BottlePhoto+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B8A100282B7B1A7200123465 /* WishlistItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B8A100292B7B1A7200123466 /* WishlistItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B8A1002A2B7B1A7200123467 /* BottleRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleRepository.swift; sourceTree = "<group>"; };
-		B8A1002B2B7B1A7200123468 /* BottleRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleRepositoryProtocol.swift; sourceTree = "<group>"; };
-		B8A1002C2B7B1A7200123469 /* WishlistRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistRepository.swift; sourceTree = "<group>"; };
-		B8A1002D2B7B1A7200123470 /* WishlistRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistRepositoryProtocol.swift; sourceTree = "<group>"; };
-		B8A1002E2B7B1A7200123471 /* AdvancedSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchManager.swift; sourceTree = "<group>"; };
-		B8A1002F2B7B1A7200123472 /* BackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManager.swift; sourceTree = "<group>"; };
-		B8A100302B7B1A7200123473 /* BarcodeScannerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerManager.swift; sourceTree = "<group>"; };
-		B8A100312B7B1A7200123474 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
-		B8A100322B7B1A7200123475 /* DataExportImportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportImportManager.swift; sourceTree = "<group>"; };
-		B8A100332B7B1A7200123476 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
-		B8A100342B7B1A7200123477 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
-		B8A100352B7B1A7200123478 /* PhotoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
-		B8A100362B7B1A7200123479 /* SharingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingManager.swift; sourceTree = "<group>"; };
-		B8A100372B7B1A7200123480 /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
-		B8A100382B7B1A7200123481 /* BottleDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleDetailViewModel.swift; sourceTree = "<group>"; };
-		B8A100392B7B1A7200123482 /* BottleFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleFormViewModel.swift; sourceTree = "<group>"; };
-		B8A1003A2B7B1A7200123483 /* BottleListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleListViewModel.swift; sourceTree = "<group>"; };
-		B8A1003B2B7B1A7200123484 /* StatisticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewModel.swift; sourceTree = "<group>"; };
-		B8A1003C2B7B1A7200123485 /* WishlistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistViewModel.swift; sourceTree = "<group>"; };
-		B8A1003D2B7B1A7200123486 /* AccessibilitySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilitySettingsView.swift; sourceTree = "<group>"; };
-		B8A1003E2B7B1A7200123487 /* AdvancedSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchView.swift; sourceTree = "<group>"; };
-		B8A1003F2B7B1A7200123488 /* AppearanceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsView.swift; sourceTree = "<group>"; };
-		B8A100402B7B1A7200123489 /* BottleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleDetailView.swift; sourceTree = "<group>"; };
-		B8A100412B7B1A7200123490 /* BottleFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleFormView.swift; sourceTree = "<group>"; };
-		B8A100422B7B1A7200123491 /* BottleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleListView.swift; sourceTree = "<group>"; };
-		B8A100432B7B1A7200123492 /* FilterOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterOptionsView.swift; sourceTree = "<group>"; };
-		B8A100442B7B1A7200123493 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
-		B8A100452B7B1A7200123494 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		B8A100462B7B1A7200123495 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
-		B8A100472B7B1A7200123496 /* WishlistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistView.swift; sourceTree = "<group>"; };
-		B8A100492B7B1A7200123497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1234567890ABCDEF0000001 /* BottleKeeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleKeeperApp.swift; sourceTree = "<group>"; };
+		B1234567890ABCDEF0000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B1234567890ABCDEF0000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B1234567890ABCDEF0000004 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B1234567890ABCDEF0000005 /* BottleKeeper.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeeper.xcdatamodeld; sourceTree = "<group>"; };
+		B1234567890ABCDEF0000006 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		C1234567890ABCDEF0000001 /* BottleKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BottleKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1234567890ABCDEF0000007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B8A100132B7B1A7000123453 /* Frameworks */ = {
+		D1234567890ABCDEF0000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -107,137 +37,78 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B8A1000D2B7B1A7000123451 = {
+		E1234567890ABCDEF0000001 = {
 			isa = PBXGroup;
 			children = (
-				B8A100182B7B1A7000123455 /* BottleKeeper */,
-				B8A100172B7B1A7000123454 /* Products */,
+				F1234567890ABCDEF0000001 /* BottleKeeper */,
+				G1234567890ABCDEF0000001 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		B8A100172B7B1A7000123454 /* Products */ = {
+		F1234567890ABCDEF0000001 /* BottleKeeper */ = {
 			isa = PBXGroup;
 			children = (
-				B8A100162B7B1A7000123450 /* BottleKeeper.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		B8A100182B7B1A7000123455 /* BottleKeeper */ = {
-			isa = PBXGroup;
-			children = (
-				B8A100492B7B1A7200123497 /* Info.plist */,
-				B8A1004A2B7B1A7200123498 /* App */,
-				B8A1004B2B7B1A7200123499 /* Models */,
-				B8A1004C2B7B1A7200123500 /* Repositories */,
-				B8A1004D2B7B1A7200123501 /* Services */,
-				B8A1004E2B7B1A7200123502 /* ViewModels */,
-				B8A1004F2B7B1A7200123503 /* Views */,
-				B8A1001D2B7B1A7200123458 /* Assets.xcassets */,
-				B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */,
-				B8A1001F2B7B1A7200123504 /* Preview Content */,
+				F1234567890ABCDEF0000002 /* App */,
+				F1234567890ABCDEF0000003 /* Services */,
+				F1234567890ABCDEF0000004 /* Views */,
+				B1234567890ABCDEF0000003 /* Assets.xcassets */,
+				B1234567890ABCDEF0000005 /* BottleKeeper.xcdatamodeld */,
+				B1234567890ABCDEF0000007 /* Info.plist */,
+				F1234567890ABCDEF0000005 /* Preview Content */,
 			);
 			path = BottleKeeper;
 			sourceTree = "<group>";
 		};
-		B8A1001F2B7B1A7200123504 /* Preview Content */ = {
+		F1234567890ABCDEF0000002 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				B8A100202B7B1A7200123459 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		B8A1004A2B7B1A7200123498 /* App */ = {
-			isa = PBXGroup;
-			children = (
-				B8A100192B7B1A7000123456 /* BottleKeeperApp.swift */,
+				B1234567890ABCDEF0000001 /* BottleKeeperApp.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
 		};
-		B8A1004B2B7B1A7200123499 /* Models */ = {
+		F1234567890ABCDEF0000003 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				B8A100242B7B1A7200123461 /* Bottle+CoreDataClass.swift */,
-				B8A100252B7B1A7200123462 /* Bottle+CoreDataProperties.swift */,
-				B8A100262B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift */,
-				B8A100272B7B1A7200123464 /* BottlePhoto+CoreDataProperties.swift */,
-				B8A100282B7B1A7200123465 /* WishlistItem+CoreDataClass.swift */,
-				B8A100292B7B1A7200123466 /* WishlistItem+CoreDataProperties.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		B8A1004C2B7B1A7200123500 /* Repositories */ = {
-			isa = PBXGroup;
-			children = (
-				B8A1002A2B7B1A7200123467 /* BottleRepository.swift */,
-				B8A1002B2B7B1A7200123468 /* BottleRepositoryProtocol.swift */,
-				B8A1002C2B7B1A7200123469 /* WishlistRepository.swift */,
-				B8A1002D2B7B1A7200123470 /* WishlistRepositoryProtocol.swift */,
-			);
-			path = Repositories;
-			sourceTree = "<group>";
-		};
-		B8A1004D2B7B1A7200123501 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				B8A1002E2B7B1A7200123471 /* AdvancedSearchManager.swift */,
-				B8A1002F2B7B1A7200123472 /* BackupManager.swift */,
-				B8A100302B7B1A7200123473 /* BarcodeScannerManager.swift */,
-				B8A100312B7B1A7200123474 /* CoreDataManager.swift */,
-				B8A100322B7B1A7200123475 /* DataExportImportManager.swift */,
-				B8A100332B7B1A7200123476 /* DIContainer.swift */,
-				B8A100342B7B1A7200123477 /* NotificationManager.swift */,
-				B8A100352B7B1A7200123478 /* PhotoManager.swift */,
-				B8A100362B7B1A7200123479 /* SharingManager.swift */,
-				B8A100372B7B1A7200123480 /* WatchConnectivityManager.swift */,
+				B1234567890ABCDEF0000006 /* CoreDataManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		B8A1004E2B7B1A7200123502 /* ViewModels */ = {
+		F1234567890ABCDEF0000004 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B8A100382B7B1A7200123481 /* BottleDetailViewModel.swift */,
-				B8A100392B7B1A7200123482 /* BottleFormViewModel.swift */,
-				B8A1003A2B7B1A7200123483 /* BottleListViewModel.swift */,
-				B8A1003B2B7B1A7200123484 /* StatisticsViewModel.swift */,
-				B8A1003C2B7B1A7200123485 /* WishlistViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		B8A1004F2B7B1A7200123503 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				B8A1001B2B7B1A7000123457 /* ContentView.swift */,
-				B8A1003D2B7B1A7200123486 /* AccessibilitySettingsView.swift */,
-				B8A1003E2B7B1A7200123487 /* AdvancedSearchView.swift */,
-				B8A1003F2B7B1A7200123488 /* AppearanceSettingsView.swift */,
-				B8A100402B7B1A7200123489 /* BottleDetailView.swift */,
-				B8A100412B7B1A7200123490 /* BottleFormView.swift */,
-				B8A100422B7B1A7200123491 /* BottleListView.swift */,
-				B8A100432B7B1A7200123492 /* FilterOptionsView.swift */,
-				B8A100442B7B1A7200123493 /* NotificationSettingsView.swift */,
-				B8A100452B7B1A7200123494 /* SettingsView.swift */,
-				B8A100462B7B1A7200123495 /* StatisticsView.swift */,
-				B8A100472B7B1A7200123496 /* WishlistView.swift */,
+				B1234567890ABCDEF0000002 /* ContentView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		F1234567890ABCDEF0000005 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B1234567890ABCDEF0000004 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		G1234567890ABCDEF0000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C1234567890ABCDEF0000001 /* BottleKeeper.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B8A100152B7B1A7000123452 /* BottleKeeper */ = {
+		H1234567890ABCDEF0000001 /* BottleKeeper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B8A100392B7B1A7200123505 /* Build configuration list for PBXNativeTarget "BottleKeeper" */;
+			buildConfigurationList = I1234567890ABCDEF0000002 /* Build configuration list for PBXNativeTarget "BottleKeeper" */;
 			buildPhases = (
-				B8A100122B7B1A7000123447 /* Sources */,
-				B8A100132B7B1A7000123453 /* Frameworks */,
-				B8A100142B7B1A7000123454 /* Resources */,
+				J1234567890ABCDEF0000001 /* Sources */,
+				D1234567890ABCDEF0000001 /* Frameworks */,
+				K1234567890ABCDEF0000001 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -245,119 +116,70 @@
 			);
 			name = BottleKeeper;
 			productName = BottleKeeper;
-			productReference = B8A100162B7B1A7000123450 /* BottleKeeper.app */;
+			productReference = C1234567890ABCDEF0000001 /* BottleKeeper.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		B8A1000E2B7B1A7000123448 /* Project object */ = {
+		L1234567890ABCDEF0000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					B8A100152B7B1A7000123452 = {
+					H1234567890ABCDEF0000001 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = B8A100112B7B1A7000123449 /* Build configuration list for PBXProject "BottleKeeper" */;
+			buildConfigurationList = I1234567890ABCDEF0000001 /* Build configuration list for PBXProject "BottleKeeper" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = ja;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				ja,
 				en,
-				Base,
+				ja,
 			);
-			mainGroup = B8A1000D2B7B1A7000123451;
-			productRefGroup = B8A100172B7B1A7000123454 /* Products */;
+			mainGroup = E1234567890ABCDEF0000001;
+			productRefGroup = G1234567890ABCDEF0000001 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B8A100152B7B1A7000123452 /* BottleKeeper */,
+				H1234567890ABCDEF0000001 /* BottleKeeper */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		B8A100142B7B1A7000123454 /* Resources */ = {
+		K1234567890ABCDEF0000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B8A100212B7B1A7200123459 /* Preview Assets.xcassets in Resources */,
-				B8A1001E2B7B1A7200123458 /* Assets.xcassets in Resources */,
+				A1234567890ABCDEF0000004 /* Preview Assets.xcassets in Resources */,
+				A1234567890ABCDEF0000003 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B8A100122B7B1A7000123447 /* Sources */ = {
+		J1234567890ABCDEF0000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodeld in Sources */,
-				B8A1001C2B7B1A7000123457 /* ContentView.swift in Sources */,
-				B8A1001A2B7B1A7000123456 /* BottleKeeperApp.swift in Sources */,
-				B8A100252B7B1A7200123461 /* Bottle+CoreDataClass.swift in Sources */,
-				B8A100262B7B1A7200123462 /* Bottle+CoreDataProperties.swift in Sources */,
-				B8A100272B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift in Sources */,
-				B8A100282B7B1A7200123464 /* BottlePhoto+CoreDataProperties.swift in Sources */,
-				B8A100292B7B1A7200123465 /* WishlistItem+CoreDataClass.swift in Sources */,
-				B8A1002A2B7B1A7200123466 /* WishlistItem+CoreDataProperties.swift in Sources */,
-				B8A1002B2B7B1A7200123467 /* BottleRepository.swift in Sources */,
-				B8A1002C2B7B1A7200123468 /* BottleRepositoryProtocol.swift in Sources */,
-				B8A1002D2B7B1A7200123469 /* WishlistRepository.swift in Sources */,
-				B8A1002E2B7B1A7200123470 /* WishlistRepositoryProtocol.swift in Sources */,
-				B8A1002F2B7B1A7200123471 /* AdvancedSearchManager.swift in Sources */,
-				B8A100302B7B1A7200123472 /* BackupManager.swift in Sources */,
-				B8A100312B7B1A7200123473 /* BarcodeScannerManager.swift in Sources */,
-				B8A100322B7B1A7200123474 /* CoreDataManager.swift in Sources */,
-				B8A100332B7B1A7200123475 /* DataExportImportManager.swift in Sources */,
-				B8A100342B7B1A7200123476 /* DIContainer.swift in Sources */,
-				B8A100352B7B1A7200123477 /* NotificationManager.swift in Sources */,
-				B8A100362B7B1A7200123478 /* PhotoManager.swift in Sources */,
-				B8A100372B7B1A7200123479 /* SharingManager.swift in Sources */,
-				B8A100382B7B1A7200123480 /* WatchConnectivityManager.swift in Sources */,
-				B8A100392B7B1A7200123481 /* BottleDetailViewModel.swift in Sources */,
-				B8A1003A2B7B1A7200123482 /* BottleFormViewModel.swift in Sources */,
-				B8A1003B2B7B1A7200123483 /* BottleListViewModel.swift in Sources */,
-				B8A1003C2B7B1A7200123484 /* StatisticsViewModel.swift in Sources */,
-				B8A1003D2B7B1A7200123485 /* WishlistViewModel.swift in Sources */,
-				B8A1003E2B7B1A7200123486 /* AccessibilitySettingsView.swift in Sources */,
-				B8A1003F2B7B1A7200123487 /* AdvancedSearchView.swift in Sources */,
-				B8A100402B7B1A7200123488 /* AppearanceSettingsView.swift in Sources */,
-				B8A100412B7B1A7200123489 /* BottleDetailView.swift in Sources */,
-				B8A100422B7B1A7200123490 /* BottleFormView.swift in Sources */,
-				B8A100432B7B1A7200123491 /* BottleListView.swift in Sources */,
-				B8A100442B7B1A7200123492 /* FilterOptionsView.swift in Sources */,
-				B8A100452B7B1A7200123493 /* NotificationSettingsView.swift in Sources */,
-				B8A100462B7B1A7200123494 /* SettingsView.swift in Sources */,
-				B8A100472B7B1A7200123495 /* StatisticsView.swift in Sources */,
-				B8A100482B7B1A7200123496 /* WishlistView.swift in Sources */,
+				A1234567890ABCDEF0000001 /* BottleKeeperApp.swift in Sources */,
+				A1234567890ABCDEF0000002 /* ContentView.swift in Sources */,
+				A1234567890ABCDEF0000005 /* BottleKeeper.xcdatamodeld in Sources */,
+				A1234567890ABCDEF0000006 /* CoreDataManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin XCVersionGroup section */
-		B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodel */,
-			);
-			currentVersion = B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodel */;
-			path = BottleKeeper.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
-
 /* Begin XCBuildConfiguration section */
-		B8A100372B7B1A7200123506 /* Debug */ = {
+		M1234567890ABCDEF0000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -394,8 +216,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -409,18 +230,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		B8A100382B7B1A7200123507 /* Release */ = {
+		M1234567890ABCDEF0000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -457,8 +277,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -466,17 +285,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		B8A1003A2B7B1A7200123508 /* Debug */ = {
+		M1234567890ABCDEF0000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -495,13 +314,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.bottlekeep.whiskey;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bottlekeep.whiskey";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -509,7 +327,7 @@
 			};
 			name = Debug;
 		};
-		B8A1003B2B7B1A7200123509 /* Release */ = {
+		M1234567890ABCDEF0000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -525,16 +343,15 @@
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "ボトルの写真を選択するためにフォトライブラリにアクセスします";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Screen_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.bottlekeep.whiskey;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bottlekeep.whiskey";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -545,25 +362,37 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B8A100112B7B1A7000123449 /* Build configuration list for PBXProject "BottleKeeper" */ = {
+		I1234567890ABCDEF0000001 /* Build configuration list for PBXProject "BottleKeeper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B8A100372B7B1A7200123506 /* Debug */,
-				B8A100382B7B1A7200123507 /* Release */,
+				M1234567890ABCDEF0000001 /* Debug */,
+				M1234567890ABCDEF0000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B8A100392B7B1A7200123505 /* Build configuration list for PBXNativeTarget "BottleKeeper" */ = {
+		I1234567890ABCDEF0000002 /* Build configuration list for PBXNativeTarget "BottleKeeper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B8A1003A2B7B1A7200123508 /* Debug */,
-				B8A1003B2B7B1A7200123509 /* Release */,
+				M1234567890ABCDEF0000003 /* Debug */,
+				M1234567890ABCDEF0000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		B1234567890ABCDEF0000005 /* BottleKeeper.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+			);
+			currentVersion = "";
+			path = BottleKeeper.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
-	rootObject = B8A1000E2B7B1A7000123448 /* Project object */;
+	rootObject = L1234567890ABCDEF0000001 /* Project object */;
 }

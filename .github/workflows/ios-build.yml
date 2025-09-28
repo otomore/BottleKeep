@@ -44,8 +44,8 @@ jobs:
         run: |
           echo "=== ユニットテストを実行 ==="
           # スキーム不要の直接ターゲット指定でビルド
-          xcodebuild clean build \
-            -project ${{ env.PROJECT_PATH }} \
+          xcodebuild build \
+            -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
             -configuration Debug \
@@ -126,9 +126,9 @@ jobs:
           echo "=== アーカイブビルドを開始 ==="
 
           # まず、開発用ビルドを試みる（署名不要）
-          xcodebuild clean build \
-            -project ${{ env.PROJECT_PATH }} \
-            -scheme ${{ env.SCHEME }} \
+          xcodebuild build \
+            -project BottleKeeper.xcodeproj \
+            -scheme BottleKeeper \
             -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
             CODE_SIGNING_REQUIRED=NO \
@@ -139,9 +139,9 @@ jobs:
           # 本番用アーカイブビルド（証明書が利用可能な場合のみ）
           if [ -n "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" ]; then
             echo "=== リリース用アーカイブビルドを試行 ==="
-            xcodebuild clean archive \
-              -project ${{ env.PROJECT_PATH }} \
-              -scheme ${{ env.SCHEME }} \
+            xcodebuild archive \
+              -project BottleKeeper.xcodeproj \
+              -scheme BottleKeeper \
               -destination 'generic/platform=iOS' \
               -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
               -configuration Release \

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B8A100152B7B1A7000123452"
+               BlueprintIdentifier = "H1234567890ABCDEF0000001"
                BuildableName = "BottleKeeper.app"
                BlueprintName = "BottleKeeper"
                ReferencedContainer = "container:BottleKeeper.xcodeproj">
@@ -28,28 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
-      <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BottleKeeperTests"
-               BuildableName = "BottleKeeperTests.xctest"
-               BlueprintName = "BottleKeeperTests"
-               ReferencedContainer = "container:BottleKeeper.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BottleKeeperUITests"
-               BuildableName = "BottleKeeperUITests.xctest"
-               BlueprintName = "BottleKeeperUITests"
-               ReferencedContainer = "container:BottleKeeper.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -65,7 +43,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B8A100152B7B1A7000123452"
+            BlueprintIdentifier = "H1234567890ABCDEF0000001"
             BuildableName = "BottleKeeper.app"
             BlueprintName = "BottleKeeper"
             ReferencedContainer = "container:BottleKeeper.xcodeproj">
@@ -82,7 +60,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B8A100152B7B1A7000123452"
+            BlueprintIdentifier = "H1234567890ABCDEF0000001"
             BuildableName = "BottleKeeper.app"
             BlueprintName = "BottleKeeper"
             ReferencedContainer = "container:BottleKeeper.xcodeproj">
@@ -95,5 +73,5 @@
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
-   </ArchiveAction>
+   </AnalyzeAction>
 </Scheme>
