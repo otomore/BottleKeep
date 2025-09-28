@@ -110,7 +110,7 @@
 		B8A1000D2B7B1A7000123451 = {
 			isa = PBXGroup;
 			children = (
-				B8A100182B7B1A7000123455 /* BottleKeep */,
+				B8A100182B7B1A7000123455 /* BottleKeeper */,
 				B8A100172B7B1A7000123454 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -123,7 +123,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B8A100182B7B1A7000123455 /* BottleKeep */ = {
+		B8A100182B7B1A7000123455 /* BottleKeeper */ = {
 			isa = PBXGroup;
 			children = (
 				B8A100492B7B1A7200123497 /* Info.plist */,
@@ -231,9 +231,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B8A100152B7B1A7000123452 /* BottleKeep */ = {
+		B8A100152B7B1A7000123452 /* BottleKeeper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B8A100392B7B1A7200123505 /* Build configuration list for PBXNativeTarget "BottleKeep" */;
+			buildConfigurationList = B8A100392B7B1A7200123505 /* Build configuration list for PBXNativeTarget "BottleKeeper" */;
 			buildPhases = (
 				B8A100122B7B1A7000123447 /* Sources */,
 				B8A100132B7B1A7000123453 /* Frameworks */,
@@ -263,7 +263,7 @@
 					};
 				};
 			};
-			buildConfigurationList = B8A100112B7B1A7000123449 /* Build configuration list for PBXProject "BottleKeep" */;
+			buildConfigurationList = B8A100112B7B1A7000123449 /* Build configuration list for PBXProject "BottleKeeper" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = ja;
 			hasScannedForEncodings = 0;
@@ -277,7 +277,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B8A100152B7B1A7000123452 /* BottleKeep */,
+				B8A100152B7B1A7000123452 /* BottleKeeper */,
 			);
 		};
 /* End PBXProject section */
