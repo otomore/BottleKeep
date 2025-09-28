@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B8A1001A2B7B1A7000123456 /* BottleKeepApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100192B7B1A7000123456 /* BottleKeepApp.swift */; };
+		B8A1001A2B7B1A7000123456 /* BottleKeeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100192B7B1A7000123456 /* BottleKeeperApp.swift */; };
 		B8A1001C2B7B1A7000123457 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1001B2B7B1A7000123457 /* ContentView.swift */; };
 		B8A1001E2B7B1A7200123458 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8A1001D2B7B1A7200123458 /* Assets.xcassets */; };
 		B8A100212B7B1A7200123459 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8A100202B7B1A7200123459 /* Preview Assets.xcassets */; };
-		B8A100232B7B1A7200123460 /* BottleKeep.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B8A100222B7B1A7200123460 /* BottleKeep.xcdatamodeld */; };
+		B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */; };
 		B8A100252B7B1A7200123461 /* Bottle+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100242B7B1A7200123461 /* Bottle+CoreDataClass.swift */; };
 		B8A100262B7B1A7200123462 /* Bottle+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100252B7B1A7200123462 /* Bottle+CoreDataProperties.swift */; };
 		B8A100272B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A100262B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift */; };
@@ -51,12 +51,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B8A100162B7B1A7000123450 /* BottleKeep.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BottleKeep.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B8A100192B7B1A7000123456 /* BottleKeepApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleKeepApp.swift; sourceTree = "<group>"; };
+		B8A100162B7B1A7000123450 /* BottleKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BottleKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8A100192B7B1A7000123456 /* BottleKeeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleKeeperApp.swift; sourceTree = "<group>"; };
 		B8A1001B2B7B1A7000123457 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B8A1001D2B7B1A7200123458 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B8A100202B7B1A7200123459 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B8A100222B7B1A7200123460 /* BottleKeep.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeep.xcdatamodeld; sourceTree = "<group>"; };
+		B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeeper.xcdatamodeld; sourceTree = "<group>"; };
 		B8A100242B7B1A7200123461 /* Bottle+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bottle+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B8A100252B7B1A7200123462 /* Bottle+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bottle+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B8A100262B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BottlePhoto+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -118,7 +118,7 @@
 		B8A100172B7B1A7000123454 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B8A100162B7B1A7000123450 /* BottleKeep.app */,
+				B8A100162B7B1A7000123450 /* BottleKeeper.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -134,10 +134,10 @@
 				B8A1004E2B7B1A7200123502 /* ViewModels */,
 				B8A1004F2B7B1A7200123503 /* Views */,
 				B8A1001D2B7B1A7200123458 /* Assets.xcassets */,
-				B8A100222B7B1A7200123460 /* BottleKeep.xcdatamodeld */,
+				B8A100222B7B1A7200123460 /* BottleKeeper.xcdatamodeld */,
 				B8A1001F2B7B1A7200123504 /* Preview Content */,
 			);
-			path = BottleKeep;
+			path = BottleKeeper;
 			sourceTree = "<group>";
 		};
 		B8A1001F2B7B1A7200123504 /* Preview Content */ = {
@@ -151,7 +151,7 @@
 		B8A1004A2B7B1A7200123498 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				B8A100192B7B1A7000123456 /* BottleKeepApp.swift */,
+				B8A100192B7B1A7000123456 /* BottleKeeperApp.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -243,9 +243,9 @@
 			);
 			dependencies = (
 			);
-			name = BottleKeep;
-			productName = BottleKeep;
-			productReference = B8A100162B7B1A7000123450 /* BottleKeep.app */;
+			name = BottleKeeper;
+			productName = BottleKeeper;
+			productReference = B8A100162B7B1A7000123450 /* BottleKeeper.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -299,9 +299,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B8A100232B7B1A7200123460 /* BottleKeep.xcdatamodeld in Sources */,
+				B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodeld in Sources */,
 				B8A1001C2B7B1A7000123457 /* ContentView.swift in Sources */,
-				B8A1001A2B7B1A7000123456 /* BottleKeepApp.swift in Sources */,
+				B8A1001A2B7B1A7000123456 /* BottleKeeperApp.swift in Sources */,
 				B8A100252B7B1A7200123461 /* Bottle+CoreDataClass.swift in Sources */,
 				B8A100262B7B1A7200123462 /* Bottle+CoreDataProperties.swift in Sources */,
 				B8A100272B7B1A7200123463 /* BottlePhoto+CoreDataClass.swift in Sources */,
@@ -347,10 +347,10 @@
 		B8A100222B7B1A7200123460 /* BottleKeep.xcdatamodeld */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B8A100232B7B1A7200123460 /* BottleKeep.xcdatamodel */,
+				B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodel */,
 			);
-			currentVersion = B8A100232B7B1A7200123460 /* BottleKeep.xcdatamodel */;
-			path = BottleKeep.xcdatamodeld;
+			currentVersion = B8A100232B7B1A7200123460 /* BottleKeeper.xcdatamodel */;
+			path = BottleKeeper.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
