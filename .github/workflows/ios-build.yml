@@ -106,9 +106,33 @@ jobs:
 
           # インストールされたプロファイルの名前を動的に取得
           echo "=== インストールされたプロビジョニングプロファイルを確認 ==="
-          PROFILE_NAME=$(security cms -D -i $PP_PATH | plutil -extract Name raw -)
-          PROFILE_UUID=$(security cms -D -i $PP_PATH | plutil -extract UUID raw -)
-          PROFILE_TEAM_ID=$(security cms -D -i $PP_PATH | plutil -extract Entitlements.com.apple.developer.team-identifier raw -)
+
+          # プロビジョニングプロファイルの内容をデコード
+          PROFILE_CONTENT=$(security cms -D -i $PP_PATH)
+
+          # 各値を安全に抽出（エラーハンドリング付き）
+          PROFILE_NAME=$(echo "$PROFILE_CONTENT" | plutil -extract Name raw - 2>/dev/null || echo "")
+          PROFILE_UUID=$(echo "$PROFILE_CONTENT" | plutil -extract UUID raw - 2>/dev/null || echo "")
+
+          # Team IDは複数の場所にある可能性があるので、順番に試行
+          PROFILE_TEAM_ID=""
+          if [ -z "$PROFILE_TEAM_ID" ]; then
+            PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract TeamIdentifier raw - 2>/dev/null || echo "")
+          fi
+          if [ -z "$PROFILE_TEAM_ID" ]; then
+            PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract Entitlements.com.apple.developer.team-identifier raw - 2>/dev/null || echo "")
+          fi
+          if [ -z "$PROFILE_TEAM_ID" ]; then
+            # TeamIdentifierが配列の場合
+            PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract TeamIdentifier.0 raw - 2>/dev/null || echo "")
+          fi
+
+          # デフォルトのTeam IDを設定
+          if [ -z "$PROFILE_TEAM_ID" ]; then
+            PROFILE_TEAM_ID="KRVLW3Y2SL"
+            echo "⚠️ Team IDが抽出できませんでした。デフォルト値を使用します: $PROFILE_TEAM_ID"
+          fi
+
           echo "プロファイル名: $PROFILE_NAME"
           echo "プロファイルUUID: $PROFILE_UUID"
           echo "プロファイルTeam ID: $PROFILE_TEAM_ID"
