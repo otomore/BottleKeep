@@ -175,8 +175,8 @@ jobs:
           # 元のExportOptions.plistをコピーして動的に更新
           cp ExportOptions.plist $RUNNER_TEMP/ExportOptions.plist
 
-          # sedでプロビジョニングプロファイル名を動的に置換
-          sed -i "s/BottleKeeper Distribution/$DYNAMIC_PROFILE_NAME/g" $RUNNER_TEMP/ExportOptions.plist
+          # sedでプロビジョニングプロファイル名を動的に置換（macOS対応）
+          sed -i '' "s/BottleKeeper Distribution/$DYNAMIC_PROFILE_NAME/g" $RUNNER_TEMP/ExportOptions.plist
 
           echo "✅ 動的ExportOptions.plist生成完了"
           cat $RUNNER_TEMP/ExportOptions.plist
