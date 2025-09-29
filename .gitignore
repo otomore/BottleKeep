@@ -117,6 +117,7 @@ Temporary Items
 *.pem
 *.key
 *.p12
+*.p8
 *.pfx
 *.cer
 *.crt
@@ -133,3 +134,4 @@ CLAUDE.md
 claude-ja.bat
 claude-ja.shcert_encoded.txt
 encoded.txt
+SECRET_INFO.md
