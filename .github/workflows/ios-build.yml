@@ -328,7 +328,8 @@ jobs:
 
           # API Key ファイルを作成（Base64デコード）
           mkdir -p ~/private_keys
-          echo "$APP_STORE_CONNECT_API_KEY" | base64 --decode > ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
+          # 改行を除去してからBase64デコード
+          echo "$APP_STORE_CONNECT_API_KEY" | tr -d '\n' | base64 --decode > ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
 
           # APIキーファイルの確認
           if [ -f ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 ]; then
