@@ -194,9 +194,12 @@ jobs:
             echo "使用するプロビジョニングプロファイルUUID: ${PROFILE_UUID:-N/A}"
             echo "使用するTeam ID: ${PROFILE_TEAM_ID:-KRVLW3Y2SL}"
 
+            # アーカイブビルドを実行（失敗時は明確にエラーを出力）
+            ARCHIVE_SUCCESS=false
+
             # まず名前で試行
             echo "=== 名前でアーカイブビルドを試行 ==="
-            if ! xcodebuild archive \
+            if xcodebuild archive \
               -project BottleKeeper.xcodeproj \
               -scheme BottleKeeper \
               -destination 'generic/platform=iOS' \
@@ -205,13 +208,15 @@ jobs:
               DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
               CODE_SIGN_STYLE=Manual \
               PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}"; then
-
+              echo "✅ 名前でのアーカイブビルド成功"
+              ARCHIVE_SUCCESS=true
+            else
               echo "名前でのビルドに失敗しました。UUIDで再試行します。"
 
               # UUIDで再試行
               if [ -n "$PROFILE_UUID" ]; then
                 echo "=== UUIDでアーカイブビルドを試行 ==="
-                xcodebuild archive \
+                if xcodebuild archive \
                   -project BottleKeeper.xcodeproj \
                   -scheme BottleKeeper \
                   -destination 'generic/platform=iOS' \
@@ -219,12 +224,26 @@ jobs:
                   -configuration Release \
                   DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
                   CODE_SIGN_STYLE=Manual \
-                  PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" || echo "アーカイブビルドに失敗しました"
+                  PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"; then
+                  echo "✅ UUIDでのアーカイブビルド成功"
+                  ARCHIVE_SUCCESS=true
+                else
+                  echo "❌ UUIDでのアーカイブビルドも失敗しました"
+                fi
               else
-                echo "UUIDが利用できません。アーカイブビルドに失敗しました"
+                echo "❌ UUIDが利用できません"
               fi
+            fi
+
+            # アーカイブの存在確認
+            if [ "$ARCHIVE_SUCCESS" = true ] && [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
+              echo "✅ アーカイブファイルが正常に作成されました"
+              ls -la $RUNNER_TEMP/BottleKeeper.xcarchive
             else
-              echo "✅ 名前でのアーカイブビルド成功"
+              echo "❌ アーカイブの作成に失敗しました"
+              echo "RUNNER_TEMP内容:"
+              ls -la $RUNNER_TEMP/
+              exit 1
             fi
           fi
 
