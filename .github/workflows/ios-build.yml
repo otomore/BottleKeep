@@ -328,40 +328,43 @@ jobs:
 
           # API Key ファイルを作成（Base64デコード）
           mkdir -p ~/private_keys
-          # より安全なBase64デコード方法
-          printf "%s" "$APP_STORE_CONNECT_API_KEY" | base64 -d > ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
 
-          # APIキーファイルの確認
+          # Base64デコードの改善版 - 改行文字を除去してからデコード
+          echo "$APP_STORE_CONNECT_API_KEY" | tr -d '\n' | base64 -d > ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
+
+          # ファイル権限を設定
+          chmod 600 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
+
+          # APIキーファイルの確認と検証
           if [ -f ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 ]; then
             FILE_SIZE=$(stat -f%z ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8)
             echo "✅ APIキーファイル作成完了 (サイズ: ${FILE_SIZE} bytes)"
 
-            # ファイルの最初と最後の行を確認（デバッグ用）
+            # ファイルの最初と最後の行を確認
             echo "ファイル内容の確認:"
             head -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
             tail -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
 
             # APIキーの形式確認
-            echo "APIキーの形式チェック:"
             if head -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | grep -q "BEGIN PRIVATE KEY"; then
               echo "✅ 正しいPEMフォーマット"
+
+              # OpenSSLでAPIキーを検証
+              if openssl ec -in ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 -noout 2>/dev/null; then
+                echo "✅ OpenSSLで有効なECキーが確認されました"
+              else
+                echo "❌ OpenSSLでキーの検証に失敗"
+                echo "OpenSSLエラー詳細:"
+                openssl ec -in ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 -noout 2>&1 || true
+                exit 1
+              fi
             else
               echo "❌ 不正なPEMフォーマット"
-              echo "実際の最初の行:"
+              echo "実際の最初の行 (hex):"
               head -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | xxd
-            fi
-
-            # ファイル全体のhex dump（デバッグ用、最初の100文字）
-            echo "ファイルの最初の100文字 (hex):"
-            head -c 100 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | xxd
-
-            # OpenSSLでAPIキーを検証
-            echo "OpenSSLでのAPIキー検証:"
-            if openssl ec -in ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 -noout 2>/dev/null; then
-              echo "✅ OpenSSLで有効なECキー"
-            else
-              echo "❌ OpenSSLで無効なキー - 詳細:"
-              openssl ec -in ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 -noout 2>&1 || true
+              echo "Secret内容の最初の100文字 (hex):"
+              echo "$APP_STORE_CONNECT_API_KEY" | head -c 100 | xxd
+              exit 1
             fi
           else
             echo "❌ APIキーファイルの作成に失敗しました"
