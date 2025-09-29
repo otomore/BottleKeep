@@ -49,6 +49,7 @@
 		8D1F4A5D2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BottlePhoto+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataClass.swift"; sourceTree = "<group>"; };
 		8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		8D1F4A632C9E5CD000A1B2C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +90,7 @@
 				8D1F4A492C9E5B9900A1B2C3 /* Repositories */,
 				8D1F4A2F2C9E5B4400A1B2C3 /* Assets.xcassets */,
 				8D1F4A3C2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld */,
+				8D1F4A632C9E5CD000A1B2C3 /* Info.plist */,
 				8D1F4A312C9E5B4400A1B2C3 /* Preview Content */,
 			);
 			path = BottleKeeper;
