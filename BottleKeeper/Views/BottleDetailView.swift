@@ -56,7 +56,7 @@ struct BottleDetailView: View {
                     DetailRowView(title: "蒸留所", value: bottle.wrappedDistillery)
                     DetailRowView(title: "地域", value: bottle.wrappedRegion)
                     DetailRowView(title: "タイプ", value: bottle.wrappedType)
-                    DetailRowView(title: "アルコール度数", value: "\(bottle.abv, specifier: "%.1f")%")
+                    DetailRowView(title: "アルコール度数", value: "\(String(format: "%.1f", bottle.abv))%")
                     DetailRowView(title: "容量", value: "\(bottle.volume)ml")
 
                     if bottle.vintage > 0 {
