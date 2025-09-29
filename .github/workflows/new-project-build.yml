@@ -77,17 +77,22 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
           xcodebuild -version
 
-      - name: iOS 26対応シミュレータで基本ビルド
+      - name: iOS シミュレータで基本ビルド
         run: |
           echo "=== iOS シミュレータでビルドテスト ==="
+
+          # 利用可能なシミュレータを確認
+          echo "=== 利用可能なシミュレータ ==="
+          xcrun simctl list devices available | grep iPhone
+
+          echo "=== 基本ビルド実行 ==="
           xcodebuild build \
             -project ${{ env.PROJECT_PATH }} \
             -scheme ${{ env.SCHEME }} \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -destination 'platform=iOS Simulator,id=dvtdevice-DVTiOSDeviceSimulatorPlaceholder-iphonesimulator:placeholder,name=Any iOS Simulator Device' \
             -configuration Debug \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            -quiet
+            CODE_SIGNING_ALLOWED=NO
 
           echo "✅ iOS シミュレータビルド成功"
 
