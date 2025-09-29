@@ -113,6 +113,16 @@ jobs:
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
 
+          # プロビジョニングプロファイルのインストール状況を詳細確認
+          echo "=== プロビジョニングプロファイルディレクトリの内容確認 ==="
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+
+          echo "=== プロファイルの詳細情報確認 ==="
+          security cms -D -i $PP_PATH | plutil -p -
+
+          echo "=== システムのプロビジョニングプロファイル一覧 ==="
+          find ~/Library/MobileDevice/Provisioning\ Profiles/ -name "*.mobileprovision" -exec basename {} \; 2>/dev/null || echo "プロファイルが見つかりません"
+
       - name: ビルド番号を設定
         run: |
           BUILD_NUMBER=$GITHUB_RUN_NUMBER
@@ -148,8 +158,12 @@ jobs:
           # 本番用アーカイブビルド（証明書が利用可能な場合のみ）
           if [ -n "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" ]; then
             echo "=== リリース用アーカイブビルドを試行 ==="
-            echo "使用するプロビジョニングプロファイル: ${PROFILE_NAME:-BottleKeeper Distribution}"
-            xcodebuild archive \
+            echo "使用するプロビジョニングプロファイル名: ${PROFILE_NAME:-BottleKeeper Distribution}"
+            echo "使用するプロビジョニングプロファイルUUID: ${PROFILE_UUID:-N/A}"
+
+            # まず名前で試行
+            echo "=== 名前でアーカイブビルドを試行 ==="
+            if ! xcodebuild archive \
               -project BottleKeeper.xcodeproj \
               -scheme BottleKeeper \
               -destination 'generic/platform=iOS' \
@@ -157,7 +171,28 @@ jobs:
               -configuration Release \
               DEVELOPMENT_TEAM=KRVLW3Y2SL \
               CODE_SIGN_STYLE=Manual \
-              PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}" || echo "アーカイブビルドに失敗しました"
+              PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}"; then
+
+              echo "名前でのビルドに失敗しました。UUIDで再試行します。"
+
+              # UUIDで再試行
+              if [ -n "$PROFILE_UUID" ]; then
+                echo "=== UUIDでアーカイブビルドを試行 ==="
+                xcodebuild archive \
+                  -project BottleKeeper.xcodeproj \
+                  -scheme BottleKeeper \
+                  -destination 'generic/platform=iOS' \
+                  -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
+                  -configuration Release \
+                  DEVELOPMENT_TEAM=KRVLW3Y2SL \
+                  CODE_SIGN_STYLE=Manual \
+                  PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" || echo "アーカイブビルドに失敗しました"
+              else
+                echo "UUIDが利用できません。アーカイブビルドに失敗しました"
+              fi
+            else
+              echo "✅ 名前でのアーカイブビルド成功"
+            fi
           fi
 
           echo "✅ ビルド処理完了"
