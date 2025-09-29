@@ -36,6 +36,19 @@
 		8D1F4A322C9E5B4400A1B2C3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8D1F4A3A2C9E5B6000A1B2C3 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		8D1F4A3D2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeeper.xcdatamodel; sourceTree = "<group>"; };
+		8D1F4A492C9E5C0000A1B2C3 /* BottleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleListView.swift; sourceTree = "<group>"; };
+		8D1F4A4B2C9E5C1000A1B2C3 /* BottleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleDetailView.swift; sourceTree = "<group>"; };
+		8D1F4A4D2C9E5C2000A1B2C3 /* BottleFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleFormView.swift; sourceTree = "<group>"; };
+		8D1F4A4F2C9E5C3000A1B2C3 /* WishlistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistView.swift; sourceTree = "<group>"; };
+		8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemainingVolumeUpdateView.swift; sourceTree = "<group>"; };
+		8D1F4A572C9E5C7000A1B2C3 /* Bottle+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bottle+CoreDataClass.swift"; sourceTree = "<group>"; };
+		8D1F4A592C9E5C8000A1B2C3 /* Bottle+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bottle+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		8D1F4A5B2C9E5C9000A1B2C3 /* BottlePhoto+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BottlePhoto+CoreDataClass.swift"; sourceTree = "<group>"; };
+		8D1F4A5D2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BottlePhoto+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataClass.swift"; sourceTree = "<group>"; };
+		8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +114,13 @@
 			isa = PBXGroup;
 			children = (
 				8D1F4A2D2C9E5B4300A1B2C3 /* ContentView.swift */,
+				8D1F4A492C9E5C0000A1B2C3 /* BottleListView.swift */,
+				8D1F4A4B2C9E5C1000A1B2C3 /* BottleDetailView.swift */,
+				8D1F4A4D2C9E5C2000A1B2C3 /* BottleFormView.swift */,
+				8D1F4A4F2C9E5C3000A1B2C3 /* WishlistView.swift */,
+				8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */,
+				8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */,
+				8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -115,6 +135,12 @@
 		8D1F4A472C9E5B8F00A1B2C3 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				8D1F4A572C9E5C7000A1B2C3 /* Bottle+CoreDataClass.swift */,
+				8D1F4A592C9E5C8000A1B2C3 /* Bottle+CoreDataProperties.swift */,
+				8D1F4A5B2C9E5C9000A1B2C3 /* BottlePhoto+CoreDataClass.swift */,
+				8D1F4A5D2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift */,
+				8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */,
+				8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
