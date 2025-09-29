@@ -117,11 +117,12 @@ jobs:
           # Team IDは複数の場所にある可能性があるので、順番に試行
           PROFILE_TEAM_ID=""
           if [ -z "$PROFILE_TEAM_ID" ]; then
-            PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract Entitlements.com.apple.developer.team-identifier raw - 2>/dev/null || echo "")
+            # ApplicationIdentifierPrefixの最初の要素を取得（最も確実）
+            PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract ApplicationIdentifierPrefix.0 raw - 2>/dev/null || echo "")
           fi
           if [ -z "$PROFILE_TEAM_ID" ]; then
-            # ApplicationIdentifierPrefixの最初の要素を取得
-            PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract ApplicationIdentifierPrefix.0 raw - 2>/dev/null || echo "")
+            # Entitlements内のcom.apple.developer.team-identifier
+            PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract Entitlements.com.apple.developer.team-identifier raw - 2>/dev/null || echo "")
           fi
           if [ -z "$PROFILE_TEAM_ID" ]; then
             PROFILE_TEAM_ID=$(echo "$PROFILE_CONTENT" | plutil -extract TeamIdentifier raw - 2>/dev/null || echo "")
