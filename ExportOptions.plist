@@ -32,7 +32,7 @@
 
     <!-- TestFlight専用設定 -->
     <key>destination</key>
-    <string>upload</string>
+    <string>export</string>
 
     <!-- コンパイル時の設定 -->
     <key>compileBitcode</key>
