@@ -236,6 +236,19 @@
 				8D1F4A3B2C9E5B6000A1B2C3 /* CoreDataManager.swift in Sources */,
 				8D1F4A3E2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld in Sources */,
 				8D1F4A2C2C9E5B4300A1B2C3 /* BottleKeeperApp.swift in Sources */,
+				8D1F4A4A2C9E5C0000A1B2C3 /* BottleListView.swift in Sources */,
+				8D1F4A4C2C9E5C1000A1B2C3 /* BottleDetailView.swift in Sources */,
+				8D1F4A4E2C9E5C2000A1B2C3 /* BottleFormView.swift in Sources */,
+				8D1F4A502C9E5C3000A1B2C3 /* WishlistView.swift in Sources */,
+				8D1F4A522C9E5C4000A1B2C3 /* StatisticsView.swift in Sources */,
+				8D1F4A542C9E5C5000A1B2C3 /* SettingsView.swift in Sources */,
+				8D1F4A562C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift in Sources */,
+				8D1F4A582C9E5C7000A1B2C3 /* Bottle+CoreDataClass.swift in Sources */,
+				8D1F4A5A2C9E5C8000A1B2C3 /* Bottle+CoreDataProperties.swift in Sources */,
+				8D1F4A5C2C9E5C9000A1B2C3 /* BottlePhoto+CoreDataClass.swift in Sources */,
+				8D1F4A5E2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift in Sources */,
+				8D1F4A602C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift in Sources */,
+				8D1F4A622C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
