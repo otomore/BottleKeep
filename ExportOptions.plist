@@ -48,5 +48,15 @@
         <key>com.bottlekeep.whiskey</key>
         <string>BottleKeeper Distribution</string>
     </dict>
+
+    <!-- App Store Connect API認証 -->
+    <key>apiKeyPath</key>
+    <string>~/private_keys/AuthKey_3HFGXYNO7U2Q.p8</string>
+
+    <key>apiKeyID</key>
+    <string>3HFGXYNO7U2Q</string>
+
+    <key>apiKeyIssuerId</key>
+    <string>69a6de80-2c1a-47e3-e053-5b8c7c11a4d1</string>
 </dict>
 </plist>
