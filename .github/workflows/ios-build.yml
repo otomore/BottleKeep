@@ -108,10 +108,13 @@ jobs:
           echo "=== インストールされたプロビジョニングプロファイルを確認 ==="
           PROFILE_NAME=$(security cms -D -i $PP_PATH | plutil -extract Name raw -)
           PROFILE_UUID=$(security cms -D -i $PP_PATH | plutil -extract UUID raw -)
+          PROFILE_TEAM_ID=$(security cms -D -i $PP_PATH | plutil -extract Entitlements.com.apple.developer.team-identifier raw -)
           echo "プロファイル名: $PROFILE_NAME"
           echo "プロファイルUUID: $PROFILE_UUID"
+          echo "プロファイルTeam ID: $PROFILE_TEAM_ID"
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+          echo "PROFILE_TEAM_ID=$PROFILE_TEAM_ID" >> $GITHUB_ENV
 
           # プロビジョニングプロファイルのインストール状況を詳細確認
           echo "=== プロビジョニングプロファイルディレクトリの内容確認 ==="
@@ -160,6 +163,7 @@ jobs:
             echo "=== リリース用アーカイブビルドを試行 ==="
             echo "使用するプロビジョニングプロファイル名: ${PROFILE_NAME:-BottleKeeper Distribution}"
             echo "使用するプロビジョニングプロファイルUUID: ${PROFILE_UUID:-N/A}"
+            echo "使用するTeam ID: ${PROFILE_TEAM_ID:-KRVLW3Y2SL}"
 
             # まず名前で試行
             echo "=== 名前でアーカイブビルドを試行 ==="
@@ -169,7 +173,7 @@ jobs:
               -destination 'generic/platform=iOS' \
               -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
               -configuration Release \
-              DEVELOPMENT_TEAM=KRVLW3Y2SL \
+              DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
               CODE_SIGN_STYLE=Manual \
               PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}"; then
 
@@ -184,7 +188,7 @@ jobs:
                   -destination 'generic/platform=iOS' \
                   -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
                   -configuration Release \
-                  DEVELOPMENT_TEAM=KRVLW3Y2SL \
+                  DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
                   CODE_SIGN_STYLE=Manual \
                   PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" || echo "アーカイブビルドに失敗しました"
               else
