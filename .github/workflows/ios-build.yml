@@ -334,10 +334,25 @@ jobs:
           if [ -f ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 ]; then
             FILE_SIZE=$(stat -f%z ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8)
             echo "✅ APIキーファイル作成完了 (サイズ: ${FILE_SIZE} bytes)"
+
             # ファイルの最初と最後の行を確認（デバッグ用）
             echo "ファイル内容の確認:"
             head -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
             tail -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
+
+            # APIキーの形式確認
+            echo "APIキーの形式チェック:"
+            if head -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | grep -q "BEGIN PRIVATE KEY"; then
+              echo "✅ 正しいPEMフォーマット"
+            else
+              echo "❌ 不正なPEMフォーマット"
+              echo "実際の最初の行:"
+              head -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | xxd
+            fi
+
+            # ファイル全体のhex dump（デバッグ用、最初の50文字のみ）
+            echo "ファイルの最初の50文字 (hex):"
+            head -c 50 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | xxd
           else
             echo "❌ APIキーファイルの作成に失敗しました"
             exit 1
