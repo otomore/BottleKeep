@@ -1,4 +1,5 @@
 import CoreData
+import Foundation
 
 class CoreDataManager {
     static let shared = CoreDataManager()
@@ -8,16 +9,16 @@ class CoreDataManager {
 
         // プレビュー用のサンプルデータを作成
         for i in 0..<5 {
-            let newBottle = Bottle(context: viewContext)
-            newBottle.id = UUID()
-            newBottle.name = "サンプルウイスキー \(i + 1)"
-            newBottle.distillery = "サンプル蒸留所"
-            newBottle.abv = 40.0 + Double(i)
-            newBottle.volume = 700
-            newBottle.remainingVolume = Int32(700 - (i * 100))
-            newBottle.purchaseDate = Date()
-            newBottle.createdAt = Date()
-            newBottle.updatedAt = Date()
+            let newBottle = NSEntityDescription.insertNewObject(forEntityName: "Bottle", into: viewContext) as! NSManagedObject
+            newBottle.setValue(UUID(), forKey: "id")
+            newBottle.setValue("サンプルウイスキー \(i + 1)", forKey: "name")
+            newBottle.setValue("サンプル蒸留所", forKey: "distillery")
+            newBottle.setValue(40.0 + Double(i), forKey: "abv")
+            newBottle.setValue(700, forKey: "volume")
+            newBottle.setValue(Int32(700 - (i * 100)), forKey: "remainingVolume")
+            newBottle.setValue(Date(), forKey: "purchaseDate")
+            newBottle.setValue(Date(), forKey: "createdAt")
+            newBottle.setValue(Date(), forKey: "updatedAt")
         }
 
         do {
