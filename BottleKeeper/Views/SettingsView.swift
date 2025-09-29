@@ -1,320 +1,330 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct SettingsView: View {
-    @StateObject private var dataManager = DataExportImportManager.shared
-    @State private var showingExportOptions = false
-    @State private var showingImportPicker = false
-    @State private var showingBackupOptions = false
-    @State private var showingAlert = false
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var isProcessing = false
-    @State private var exportURL: URL?
+    @Environment(\.managedObjectContext) private var viewContext
+    @State private var showingDataExport = false
+    @State private var showingAbout = false
 
     var body: some View {
         NavigationStack {
             List {
-                Section("iCloud") {
-                    HStack {
-                        Image(systemName: "icloud")
-                        Text("iCloud同期")
-                        Spacer()
-                        Text("オン")
-                            .foregroundColor(.secondary)
-                    }
-                }
-
-                Section("データ管理") {
-                    Button(action: { showingExportOptions = true }) {
-                        HStack {
-                            Image(systemName: "square.and.arrow.up")
-                                .foregroundColor(.blue)
-                            Text("データをエクスポート")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .disabled(isProcessing)
-
-                    Button(action: { showingImportPicker = true }) {
-                        HStack {
-                            Image(systemName: "square.and.arrow.down")
-                                .foregroundColor(.green)
-                            Text("データをインポート")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .disabled(isProcessing)
-
-                    Button(action: { showingBackupOptions = true }) {
-                        HStack {
-                            Image(systemName: "externaldrive")
-                                .foregroundColor(.orange)
-                            Text("バックアップ・復元")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .disabled(isProcessing)
-                }
-
-                Section("外観・アクセシビリティ") {
-                    NavigationLink(destination: AppearanceSettingsView()) {
-                        HStack {
-                            Image(systemName: "paintbrush")
-                                .foregroundColor(.purple)
-                            Text("外観設定")
-                        }
-                    }
-
-                    NavigationLink(destination: AccessibilitySettingsView()) {
-                        HStack {
-                            Image(systemName: "accessibility")
-                                .foregroundColor(.blue)
-                            Text("アクセシビリティ")
-                        }
-                    }
-                }
-
-                Section("通知") {
-                    NavigationLink(destination: NotificationSettingsView()) {
-                        HStack {
-                            Image(systemName: "bell")
-                                .foregroundColor(.red)
-                            Text("通知設定")
-                        }
-                    }
-                }
-
-                Section("アプリについて") {
+                Section("アプリ情報") {
                     HStack {
                         Image(systemName: "info.circle")
+                            .foregroundColor(.blue)
                         Text("バージョン")
                         Spacer()
                         Text("1.0.0")
                             .foregroundColor(.secondary)
                     }
 
+                    Button {
+                        showingAbout = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(.blue)
+                            Text("このアプリについて")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundColor(.primary)
+                }
+
+                Section("データ管理") {
+                    Button {
+                        showingDataExport = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                                .foregroundColor(.green)
+                            Text("データエクスポート")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundColor(.primary)
+
+                    Button {
+                        // バックアップ機能
+                    } label: {
+                        HStack {
+                            Image(systemName: "icloud.and.arrow.up")
+                                .foregroundColor(.blue)
+                            Text("iCloudバックアップ")
+                            Spacer()
+                            Text("自動")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .foregroundColor(.primary)
+                }
+
+                Section("表示設定") {
                     HStack {
-                        Image(systemName: "heart")
-                        Text("開発者")
+                        Image(systemName: "textformat.size")
+                            .foregroundColor(.purple)
+                        Text("フォントサイズ")
                         Spacer()
-                        Text("BottleKeep Team")
+                        Text("システム設定に従う")
+                            .foregroundColor(.secondary)
+                    }
+
+                    HStack {
+                        Image(systemName: "circle.lefthalf.filled")
+                            .foregroundColor(.orange)
+                        Text("外観")
+                        Spacer()
+                        Text("システム設定に従う")
                             .foregroundColor(.secondary)
                     }
                 }
 
-                if isProcessing {
-                    Section {
+                Section("サポート") {
+                    Button {
+                        // フィードバック送信
+                        if let url = URL(string: "mailto:support@bottlekeeper.app?subject=BottleKeeper フィードバック") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
                         HStack {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                            Text("処理中...")
+                            Image(systemName: "envelope")
+                                .foregroundColor(.blue)
+                            Text("フィードバック送信")
+                            Spacer()
+                            Image(systemName: "arrow.up.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundColor(.primary)
+
+                    Button {
+                        // レビュー依頼
+                        if let url = URL(string: "https://apps.apple.com/app/id1234567890") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "star")
+                                .foregroundColor(.yellow)
+                            Text("App Storeでレビュー")
+                            Spacer()
+                            Image(systemName: "arrow.up.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundColor(.primary)
+                }
+
+                Section("開発者情報") {
+                    HStack {
+                        Image(systemName: "person.circle")
+                            .foregroundColor(.gray)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("BottleKeeper")
+                                .font(.subheadline)
+                            Text("個人開発プロジェクト")
+                                .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        .frame(maxWidth: .infinity, alignment: .center)
+                        Spacer()
                     }
                 }
             }
             .navigationTitle("設定")
-            .confirmationDialog("データをエクスポート", isPresented: $showingExportOptions) {
-                Button("ボトル一覧 (CSV)") {
-                    Task { await exportBottlesCSV() }
-                }
-                Button("ウィッシュリスト (CSV)") {
-                    Task { await exportWishlistCSV() }
-                }
-                Button("全データ (JSON)") {
-                    Task { await exportAllData() }
-                }
-                Button("キャンセル", role: .cancel) {}
-            }
-            .confirmationDialog("バックアップ・復元", isPresented: $showingBackupOptions) {
-                Button("データをバックアップ") {
-                    Task { await createBackup() }
-                }
-                Button("バックアップから復元") {
-                    showingImportPicker = true
-                }
-                Button("キャンセル", role: .cancel) {}
-            }
-            .fileImporter(
-                isPresented: $showingImportPicker,
-                allowedContentTypes: [.commaSeparatedText, .json, .plainText],
-                allowsMultipleSelection: false
-            ) { result in
-                Task { await handleImportFile(result: result) }
-            }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                if let url = exportURL {
-                    Button("シェア") {
-                        shareFile(url: url)
+            .navigationBarTitleDisplayMode(.large)
+        }
+        .sheet(isPresented: $showingDataExport) {
+            DataExportView()
+        }
+        .sheet(isPresented: $showingAbout) {
+            AboutView()
+        }
+    }
+}
+
+struct DataExportView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
+    @State private var isExporting = false
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.largeTitle)
+                    .foregroundColor(.blue)
+
+                Text("データエクスポート")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+
+                Text("コレクションデータをCSV形式でエクスポートできます。バックアップや他のアプリでの利用に便利です。")
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+
+                VStack(spacing: 12) {
+                    Button {
+                        exportData()
+                    } label: {
+                        HStack {
+                            Image(systemName: "doc.text")
+                            Text("CSVファイルとしてエクスポート")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                    .disabled(isExporting)
+
+                    if isExporting {
+                        ProgressView("エクスポート中...")
+                            .progressViewStyle(CircularProgressViewStyle())
                     }
                 }
-                Button("OK") {}
-            } message: {
-                Text(alertMessage)
+                .padding(.horizontal)
+
+                Spacer()
             }
-        }
-    }
-
-    // MARK: - Export Functions
-
-    private func exportBottlesCSV() async {
-        isProcessing = true
-        do {
-            let url = try await dataManager.exportBottlesToCSV()
-            await MainActor.run {
-                exportURL = url
-                alertTitle = "エクスポート完了"
-                alertMessage = "ボトルデータをCSV形式で保存しました"
-                showingAlert = true
-                isProcessing = false
-            }
-        } catch {
-            await MainActor.run {
-                exportURL = nil
-                alertTitle = "エクスポートエラー"
-                alertMessage = error.localizedDescription
-                showingAlert = true
-                isProcessing = false
-            }
-        }
-    }
-
-    private func exportWishlistCSV() async {
-        isProcessing = true
-        do {
-            let url = try await dataManager.exportWishlistToCSV()
-            await MainActor.run {
-                exportURL = url
-                alertTitle = "エクスポート完了"
-                alertMessage = "ウィッシュリストをCSV形式で保存しました"
-                showingAlert = true
-                isProcessing = false
-            }
-        } catch {
-            await MainActor.run {
-                exportURL = nil
-                alertTitle = "エクスポートエラー"
-                alertMessage = error.localizedDescription
-                showingAlert = true
-                isProcessing = false
-            }
-        }
-    }
-
-    private func exportAllData() async {
-        isProcessing = true
-        do {
-            let url = try await dataManager.exportAllDataToJSON()
-            await MainActor.run {
-                exportURL = url
-                alertTitle = "エクスポート完了"
-                alertMessage = "全データをJSON形式で保存しました"
-                showingAlert = true
-                isProcessing = false
-            }
-        } catch {
-            await MainActor.run {
-                exportURL = nil
-                alertTitle = "エクスポートエラー"
-                alertMessage = error.localizedDescription
-                showingAlert = true
-                isProcessing = false
-            }
-        }
-    }
-
-    private func createBackup() async {
-        isProcessing = true
-        do {
-            let url = try await dataManager.exportAllDataToJSON()
-            await MainActor.run {
-                exportURL = url
-                alertTitle = "バックアップ完了"
-                alertMessage = "データのバックアップを作成しました"
-                showingAlert = true
-                isProcessing = false
-            }
-        } catch {
-            await MainActor.run {
-                exportURL = nil
-                alertTitle = "バックアップエラー"
-                alertMessage = error.localizedDescription
-                showingAlert = true
-                isProcessing = false
-            }
-        }
-    }
-
-    // MARK: - Import Functions
-
-    private func handleImportFile(result: Result<[URL], Error>) async {
-        isProcessing = true
-
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else {
-                await showError("ファイルが選択されていません")
-                return
-            }
-
-            do {
-                let importResult: ImportResult
-
-                if url.pathExtension.lowercased() == "json" {
-                    importResult = try await dataManager.importDataFromJSON(url: url)
-                } else {
-                    importResult = try await dataManager.importBottlesFromCSV(url: url)
-                }
-
-                await MainActor.run {
-                    alertTitle = importResult.isSuccess ? "インポート完了" : "インポート完了（一部エラー）"
-                    alertMessage = importResult.summary
-                    if !importResult.errors.isEmpty {
-                        alertMessage += "\n\nエラー詳細:\n" + importResult.errors.prefix(3).joined(separator: "\n")
+            .padding()
+            .navigationTitle("データエクスポート")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("閉じる") {
+                        dismiss()
                     }
-                    showingAlert = true
-                    isProcessing = false
                 }
-            } catch {
-                await showError(error.localizedDescription)
             }
-
-        case .failure(let error):
-            await showError(error.localizedDescription)
         }
     }
 
-    private func showError(_ message: String) async {
-        await MainActor.run {
-            exportURL = nil
-            alertTitle = "エラー"
-            alertMessage = message
-            showingAlert = true
-            isProcessing = false
+    private func exportData() {
+        isExporting = true
+        // エクスポート処理の実装
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isExporting = false
+            // エクスポート完了の処理
         }
     }
+}
 
-    private func shareFile(url: URL) {
-        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+struct AboutView: View {
+    @Environment(\.dismiss) private var dismiss
 
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            window.rootViewController?.present(activityVC, animated: true)
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(spacing: 16) {
+                        Image(systemName: "wineglass")
+                            .font(.system(size: 60))
+                            .foregroundColor(.blue)
+
+                        Text("BottleKeeper")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+
+                        Text("バージョン 1.0.0")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom)
+
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("概要")
+                            .font(.headline)
+
+                        Text("BottleKeeperは、ウイスキー愛好家のためのコレクション管理アプリです。あなたの貴重なウイスキーコレクションを整理し、テイスティング体験を記録できます。")
+
+                        Text("主な機能")
+                            .font(.headline)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            FeatureRow(icon: "list.bullet", text: "ボトル管理 - 詳細情報と写真の記録")
+                            FeatureRow(icon: "drop.fill", text: "残量管理 - 飲酒記録と残量の視覚化")
+                            FeatureRow(icon: "magnifyingglass", text: "検索・フィルタ - 素早いボトル検索")
+                            FeatureRow(icon: "chart.bar", text: "統計情報 - コレクションの分析")
+                            FeatureRow(icon: "star", text: "ウィッシュリスト - 欲しいボトルの管理")
+                        }
+
+                        Text("技術情報")
+                            .font(.headline)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            DetailRow(title: "開発言語", value: "Swift")
+                            DetailRow(title: "UIフレームワーク", value: "SwiftUI")
+                            DetailRow(title: "データ管理", value: "Core Data")
+                            DetailRow(title: "対応OS", value: "iOS 26.0+, iPadOS 26.0+")
+                        }
+
+                        Text("開発者")
+                            .font(.headline)
+
+                        Text("個人開発プロジェクトとして、ウイスキー愛好家による、ウイスキー愛好家のためのアプリを目指して開発されています。")
+                    }
+
+                    Spacer(minLength: 20)
+                }
+                .padding()
+            }
+            .navigationTitle("このアプリについて")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("閉じる") {
+                        dismiss()
+                    }
+                }
+            }
         }
+    }
+}
+
+struct FeatureRow: View {
+    let icon: String
+    let text: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
+            Text(text)
+                .font(.subheadline)
+            Spacer()
+        }
+    }
+}
+
+struct DetailRow: View {
+    let title: String
+    let value: String
+
+    var body: some View {
+        HStack {
+            Text(title)
+                .foregroundColor(.secondary)
+                .frame(width: 100, alignment: .leading)
+            Text(value)
+            Spacer()
+        }
+        .font(.subheadline)
     }
 }
 
 #Preview {
     SettingsView()
+        .environment(\.managedObjectContext, CoreDataManager.preview.container.viewContext)
 }

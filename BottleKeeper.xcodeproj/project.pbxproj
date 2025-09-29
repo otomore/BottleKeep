@@ -7,25 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A01F2A0F2C9B1234ABCD0001 /* BottleKeeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F2A0E2C9B1234ABCD0001 /* BottleKeeperApp.swift */; };
-		A01F2A112C9B1234ABCD0002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F2A102C9B1234ABCD0002 /* ContentView.swift */; };
-		A01F2A132C9B1234ABCD0003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A01F2A122C9B1234ABCD0003 /* Assets.xcassets */; };
-		A01F2A162C9B1234ABCD0004 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A01F2A152C9B1234ABCD0004 /* Preview Assets.xcassets */; };
-		A01F2A182C9B1234ABCD0005 /* BottleKeeper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A01F2A172C9B1234ABCD0005 /* BottleKeeper.xcdatamodeld */; };
+		8D1F4A2C2C9E5B4300A1B2C3 /* BottleKeeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A2B2C9E5B4300A1B2C3 /* BottleKeeperApp.swift */; };
+		8D1F4A2E2C9E5B4300A1B2C3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A2D2C9E5B4300A1B2C3 /* ContentView.swift */; };
+		8D1F4A302C9E5B4400A1B2C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D1F4A2F2C9E5B4400A1B2C3 /* Assets.xcassets */; };
+		8D1F4A332C9E5B4400A1B2C3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D1F4A322C9E5B4400A1B2C3 /* Preview Assets.xcassets */; };
+		8D1F4A3B2C9E5B6000A1B2C3 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A3A2C9E5B6000A1B2C3 /* CoreDataManager.swift */; };
+		8D1F4A3E2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A3C2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld */; };
+		8D1F4A4A2C9E5C0000A1B2C3 /* BottleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A492C9E5C0000A1B2C3 /* BottleListView.swift */; };
+		8D1F4A4C2C9E5C1000A1B2C3 /* BottleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A4B2C9E5C1000A1B2C3 /* BottleDetailView.swift */; };
+		8D1F4A4E2C9E5C2000A1B2C3 /* BottleFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A4D2C9E5C2000A1B2C3 /* BottleFormView.swift */; };
+		8D1F4A502C9E5C3000A1B2C3 /* WishlistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A4F2C9E5C3000A1B2C3 /* WishlistView.swift */; };
+		8D1F4A522C9E5C4000A1B2C3 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */; };
+		8D1F4A542C9E5C5000A1B2C3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */; };
+		8D1F4A562C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */; };
+		8D1F4A582C9E5C7000A1B2C3 /* Bottle+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A572C9E5C7000A1B2C3 /* Bottle+CoreDataClass.swift */; };
+		8D1F4A5A2C9E5C8000A1B2C3 /* Bottle+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A592C9E5C8000A1B2C3 /* Bottle+CoreDataProperties.swift */; };
+		8D1F4A5C2C9E5C9000A1B2C3 /* BottlePhoto+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A5B2C9E5C9000A1B2C3 /* BottlePhoto+CoreDataClass.swift */; };
+		8D1F4A5E2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A5D2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift */; };
+		8D1F4A602C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */; };
+		8D1F4A622C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A01F2A0B2C9B1234ABCD0006 /* BottleKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BottleKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A01F2A0E2C9B1234ABCD0001 /* BottleKeeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleKeeperApp.swift; sourceTree = "<group>"; };
-		A01F2A102C9B1234ABCD0002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		A01F2A122C9B1234ABCD0003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A01F2A152C9B1234ABCD0004 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		A01F2A172C9B1234ABCD0007 /* BottleKeeper.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeeper.xcdatamodel; sourceTree = "<group>"; };
-		A01F2A1E2C9B1234ABCD0008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8D1F4A282C9E5B4300A1B2C3 /* BottleKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BottleKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1F4A2B2C9E5B4300A1B2C3 /* BottleKeeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleKeeperApp.swift; sourceTree = "<group>"; };
+		8D1F4A2D2C9E5B4300A1B2C3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8D1F4A2F2C9E5B4400A1B2C3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8D1F4A322C9E5B4400A1B2C3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		8D1F4A3A2C9E5B6000A1B2C3 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		8D1F4A3D2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BottleKeeper.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A01F2A082C9B1234ABCD0009 /* Frameworks */ = {
+		8D1F4A252C9E5B4300A1B2C3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -35,53 +49,101 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A01F2A022C9B1234ABCD0010 = {
+		8D1F4A1F2C9E5B4300A1B2C3 = {
 			isa = PBXGroup;
 			children = (
-				A01F2A0D2C9B1234ABCD0011 /* BottleKeeper */,
-				A01F2A0C2C9B1234ABCD0012 /* Products */,
+				8D1F4A2A2C9E5B4300A1B2C3 /* BottleKeeper */,
+				8D1F4A292C9E5B4300A1B2C3 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A01F2A0C2C9B1234ABCD0012 /* Products */ = {
+		8D1F4A292C9E5B4300A1B2C3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A01F2A0B2C9B1234ABCD0006 /* BottleKeeper.app */,
+				8D1F4A282C9E5B4300A1B2C3 /* BottleKeeper.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A01F2A0D2C9B1234ABCD0011 /* BottleKeeper */ = {
+		8D1F4A2A2C9E5B4300A1B2C3 /* BottleKeeper */ = {
 			isa = PBXGroup;
 			children = (
-				A01F2A0E2C9B1234ABCD0001 /* BottleKeeperApp.swift */,
-				A01F2A102C9B1234ABCD0002 /* ContentView.swift */,
-				A01F2A122C9B1234ABCD0003 /* Assets.xcassets */,
-				A01F2A172C9B1234ABCD0005 /* BottleKeeper.xcdatamodeld */,
-				A01F2A1E2C9B1234ABCD0008 /* Info.plist */,
-				A01F2A142C9B1234ABCD0013 /* Preview Content */,
+				8D1F4A442C9E5B8000A1B2C3 /* App */,
+				8D1F4A452C9E5B8500A1B2C3 /* Views */,
+				8D1F4A462C9E5B8A00A1B2C3 /* ViewModels */,
+				8D1F4A472C9E5B8F00A1B2C3 /* Models */,
+				8D1F4A482C9E5B9400A1B2C3 /* Services */,
+				8D1F4A492C9E5B9900A1B2C3 /* Repositories */,
+				8D1F4A2F2C9E5B4400A1B2C3 /* Assets.xcassets */,
+				8D1F4A3C2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld */,
+				8D1F4A312C9E5B4400A1B2C3 /* Preview Content */,
 			);
 			path = BottleKeeper;
 			sourceTree = "<group>";
 		};
-		A01F2A142C9B1234ABCD0013 /* Preview Content */ = {
+		8D1F4A312C9E5B4400A1B2C3 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				A01F2A152C9B1234ABCD0004 /* Preview Assets.xcassets */,
+				8D1F4A322C9E5B4400A1B2C3 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		8D1F4A442C9E5B8000A1B2C3 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				8D1F4A2B2C9E5B4300A1B2C3 /* BottleKeeperApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		8D1F4A452C9E5B8500A1B2C3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8D1F4A2D2C9E5B4300A1B2C3 /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8D1F4A462C9E5B8A00A1B2C3 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		8D1F4A472C9E5B8F00A1B2C3 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8D1F4A482C9E5B9400A1B2C3 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				8D1F4A3A2C9E5B6000A1B2C3 /* CoreDataManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		8D1F4A492C9E5B9900A1B2C3 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Repositories;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A01F2A0A2C9B1234ABCD0014 /* BottleKeeper */ = {
+		8D1F4A272C9E5B4300A1B2C3 /* BottleKeeper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A01F2A1F2C9B1234ABCD0015 /* Build configuration list for PBXNativeTarget "BottleKeeper" */;
+			buildConfigurationList = 8D1F4A362C9E5B4400A1B2C3 /* Build configuration list for PBXNativeTarget "BottleKeeper" */;
 			buildPhases = (
-				A01F2A072C9B1234ABCD0016 /* Sources */,
-				A01F2A082C9B1234ABCD0009 /* Frameworks */,
-				A01F2A092C9B1234ABCD0017 /* Resources */,
+				8D1F4A242C9E5B4300A1B2C3 /* Sources */,
+				8D1F4A252C9E5B4300A1B2C3 /* Frameworks */,
+				8D1F4A262C9E5B4300A1B2C3 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -89,25 +151,25 @@
 			);
 			name = BottleKeeper;
 			productName = BottleKeeper;
-			productReference = A01F2A0B2C9B1234ABCD0006 /* BottleKeeper.app */;
+			productReference = 8D1F4A282C9E5B4300A1B2C3 /* BottleKeeper.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		A01F2A032C9B1234ABCD0018 /* Project object */ = {
+		8D1F4A202C9E5B4300A1B2C3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
-					A01F2A0A2C9B1234ABCD0014 = {
-						CreatedOnToolsVersion = 15.0;
+					8D1F4A272C9E5B4300A1B2C3 = {
+						CreatedOnToolsVersion = 15.4;
 					};
 				};
 			};
-			buildConfigurationList = A01F2A062C9B1234ABCD0019 /* Build configuration list for PBXProject "BottleKeeper" */;
+			buildConfigurationList = 8D1F4A232C9E5B4300A1B2C3 /* Build configuration list for PBXProject "BottleKeeper" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -115,43 +177,44 @@
 				en,
 				Base,
 			);
-			mainGroup = A01F2A022C9B1234ABCD0010;
-			productRefGroup = A01F2A0C2C9B1234ABCD0012 /* Products */;
+			mainGroup = 8D1F4A1F2C9E5B4300A1B2C3;
+			productRefGroup = 8D1F4A292C9E5B4300A1B2C3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A01F2A0A2C9B1234ABCD0014 /* BottleKeeper */,
+				8D1F4A272C9E5B4300A1B2C3 /* BottleKeeper */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A01F2A092C9B1234ABCD0017 /* Resources */ = {
+		8D1F4A262C9E5B4300A1B2C3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A01F2A162C9B1234ABCD0004 /* Preview Assets.xcassets in Resources */,
-				A01F2A132C9B1234ABCD0003 /* Assets.xcassets in Resources */,
+				8D1F4A332C9E5B4400A1B2C3 /* Preview Assets.xcassets in Resources */,
+				8D1F4A302C9E5B4400A1B2C3 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A01F2A072C9B1234ABCD0016 /* Sources */ = {
+		8D1F4A242C9E5B4300A1B2C3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A01F2A182C9B1234ABCD0005 /* BottleKeeper.xcdatamodeld in Sources */,
-				A01F2A112C9B1234ABCD0002 /* ContentView.swift in Sources */,
-				A01F2A0F2C9B1234ABCD0001 /* BottleKeeperApp.swift in Sources */,
+				8D1F4A2E2C9E5B4300A1B2C3 /* ContentView.swift in Sources */,
+				8D1F4A3B2C9E5B6000A1B2C3 /* CoreDataManager.swift in Sources */,
+				8D1F4A3E2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld in Sources */,
+				8D1F4A2C2C9E5B4300A1B2C3 /* BottleKeeperApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		A01F2A1D2C9B1234ABCD0020 /* Debug */ = {
+		8D1F4A342C9E5B4400A1B2C3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -203,7 +266,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -214,7 +277,7 @@
 			};
 			name = Debug;
 		};
-		A01F2A1E2C9B1234ABCD0021 /* Release */ = {
+		8D1F4A352C9E5B4400A1B2C3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -239,7 +302,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -260,7 +323,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -270,7 +333,7 @@
 			};
 			name = Release;
 		};
-		A01F2A202C9B1234ABCD0022 /* Debug */ = {
+		8D1F4A372C9E5B4400A1B2C3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -278,28 +341,32 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BottleKeeper/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BottleKeeper/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.BottleKeeper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bottlekeep.whiskey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		A01F2A212C9B1234ABCD0023 /* Release */ = {
+		8D1F4A382C9E5B4400A1B2C3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -307,21 +374,25 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BottleKeeper/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BottleKeeper/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.BottleKeeper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bottlekeep.whiskey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -331,20 +402,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A01F2A062C9B1234ABCD0019 /* Build configuration list for PBXProject "BottleKeeper" */ = {
+		8D1F4A232C9E5B4300A1B2C3 /* Build configuration list for PBXProject "BottleKeeper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A01F2A1D2C9B1234ABCD0020 /* Debug */,
-				A01F2A1E2C9B1234ABCD0021 /* Release */,
+				8D1F4A342C9E5B4400A1B2C3 /* Debug */,
+				8D1F4A352C9E5B4400A1B2C3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A01F2A1F2C9B1234ABCD0015 /* Build configuration list for PBXNativeTarget "BottleKeeper" */ = {
+		8D1F4A362C9E5B4400A1B2C3 /* Build configuration list for PBXNativeTarget "BottleKeeper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A01F2A202C9B1234ABCD0022 /* Debug */,
-				A01F2A212C9B1234ABCD0023 /* Release */,
+				8D1F4A372C9E5B4400A1B2C3 /* Debug */,
+				8D1F4A382C9E5B4400A1B2C3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -352,17 +423,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		A01F2A172C9B1234ABCD0005 /* BottleKeeper.xcdatamodeld */ = {
+		8D1F4A3C2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				A01F2A172C9B1234ABCD0007 /* BottleKeeper.xcdatamodel */,
+				8D1F4A3D2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodel */,
 			);
-			currentVersion = A01F2A172C9B1234ABCD0007 /* BottleKeeper.xcdatamodel */;
+			currentVersion = 8D1F4A3D2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodel */;
 			path = BottleKeeper.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
 /* End XCVersionGroup section */
 	};
-	rootObject = A01F2A032C9B1234ABCD0018 /* Project object */;
+	rootObject = 8D1F4A202C9E5B4300A1B2C3 /* Project object */;
 }

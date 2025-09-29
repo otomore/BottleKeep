@@ -1,49 +1,116 @@
 import SwiftUI
 
 struct BottleFormView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.dismiss) private var dismiss
+
     let bottle: Bottle?
 
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var diContainer: DIContainer
-
-    // フォーム入力値
-    @State private var name: String = ""
-    @State private var distillery: String = ""
-    @State private var region: String = ""
-    @State private var type: String = ""
-    @State private var abv: Double = 0
+    @State private var name = ""
+    @State private var distillery = ""
+    @State private var region = ""
+    @State private var type = ""
+    @State private var abv = 40.0
     @State private var volume: Int32 = 700
     @State private var vintage: Int32 = 0
-
-    @State private var purchaseDate: Date = Date()
-    @State private var purchasePrice: String = ""
-    @State private var shop: String = ""
-
-    @State private var openedDate: Date = Date()
-    @State private var hasOpenedDate: Bool = false
+    @State private var purchaseDate = Date()
+    @State private var purchasePrice = ""
+    @State private var shop = ""
     @State private var rating: Int16 = 0
-    @State private var notes: String = ""
+    @State private var notes = ""
+    @State private var openedDate: Date?
+    @State private var isOpened = false
 
-    @State private var isLoading: Bool = false
-    @State private var errorMessage: String?
-
-    var isEditing: Bool {
-        return bottle != nil
+    private var isEditing: Bool {
+        bottle != nil
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                // 基本情報セクション
-                basicInfoSection
+                Section("基本情報") {
+                    TextField("銘柄名", text: $name)
+                    TextField("蒸留所", text: $distillery)
+                    TextField("地域", text: $region)
+                    TextField("タイプ", text: $type)
 
-                // 購入情報セクション
-                purchaseInfoSection
+                    HStack {
+                        Text("アルコール度数")
+                        Spacer()
+                        TextField("40.0", value: $abv, format: .number)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 80)
+                        Text("%")
+                    }
 
-                // テイスティング情報セクション
-                tastingInfoSection
+                    HStack {
+                        Text("容量")
+                        Spacer()
+                        TextField("700", value: $volume, format: .number)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 80)
+                        Text("ml")
+                    }
+
+                    HStack {
+                        Text("年代")
+                        Spacer()
+                        TextField("任意", value: $vintage, format: .number)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 80)
+                        Text("年")
+                    }
+                }
+
+                Section("購入情報") {
+                    DatePicker("購入日", selection: $purchaseDate, displayedComponents: .date)
+
+                    HStack {
+                        Text("購入価格")
+                        Spacer()
+                        TextField("任意", text: $purchasePrice)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 100)
+                        Text("円")
+                    }
+
+                    TextField("購入店舗（任意）", text: $shop)
+                }
+
+                Section("開栓情報") {
+                    Toggle("開栓済み", isOn: $isOpened)
+
+                    if isOpened {
+                        DatePicker("開栓日", selection: Binding(
+                            get: { openedDate ?? Date() },
+                            set: { openedDate = $0 }
+                        ), displayedComponents: .date)
+                    }
+                }
+
+                Section("評価・ノート") {
+                    HStack {
+                        Text("評価")
+                        Spacer()
+                        ForEach(1...5, id: \.self) { star in
+                            Button {
+                                rating = Int16(star)
+                            } label: {
+                                Image(systemName: star <= rating ? "star.fill" : "star")
+                                    .foregroundColor(.yellow)
+                            }
+                        }
+                    }
+
+                    TextField("テイスティングノート（任意）", text: $notes, axis: .vertical)
+                        .lineLimit(3...6)
+                }
             }
-            .navigationTitle(isEditing ? "ボトル編集" : "ボトル追加")
+            .navigationTitle(isEditing ? "ボトル編集" : "新規ボトル")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -53,217 +120,82 @@ struct BottleFormView: View {
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(isEditing ? "更新" : "保存") {
-                        Task {
-                            await saveBottle()
-                        }
+                    Button("保存") {
+                        saveBottle()
                     }
-                    .disabled(isLoading || !isValidForm)
+                    .disabled(name.isEmpty || distillery.isEmpty)
                 }
             }
-            .onAppear {
-                loadBottleData()
-            }
         }
-        .alert("エラー", isPresented: Binding<Bool>(
-            get: { errorMessage != nil },
-            set: { _ in errorMessage = nil }
-        )) {
-            Button("OK") {}
-        } message: {
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
+        .onAppear {
+            if let bottle = bottle {
+                loadBottleData(bottle)
             }
         }
     }
 
-    // MARK: - Form Sections
-
-    private var basicInfoSection: some View {
-        Section("基本情報") {
-            TextField("ボトル名", text: $name)
-            TextField("蒸留所", text: $distillery)
-            TextField("地域", text: $region)
-            TextField("タイプ", text: $type)
-
-            HStack {
-                Text("アルコール度数")
-                Spacer()
-                TextField("43.0", value: $abv, format: .number)
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                Text("%")
-            }
-
-            HStack {
-                Text("容量")
-                Spacer()
-                TextField("700", value: $volume, format: .number)
-                    .keyboardType(.numberPad)
-                    .multilineTextAlignment(.trailing)
-                Text("ml")
-            }
-
-            HStack {
-                Text("ヴィンテージ")
-                Spacer()
-                TextField("年", value: $vintage, format: .number)
-                    .keyboardType(.numberPad)
-                    .multilineTextAlignment(.trailing)
-            }
-        }
-    }
-
-    private var purchaseInfoSection: some View {
-        Section("購入情報") {
-            DatePicker("購入日", selection: $purchaseDate, displayedComponents: .date)
-
-            TextField("購入価格（円）", text: $purchasePrice)
-                .keyboardType(.numberPad)
-
-            TextField("購入店舗", text: $shop)
-        }
-    }
-
-    private var tastingInfoSection: some View {
-        Section("テイスティング情報") {
-            Toggle("開栓済み", isOn: $hasOpenedDate)
-
-            if hasOpenedDate {
-                DatePicker("開栓日", selection: $openedDate, displayedComponents: .date)
-            }
-
-            // 評価
-            VStack(alignment: .leading, spacing: 8) {
-                Text("評価")
-                HStack {
-                    ForEach(1...5, id: \.self) { star in
-                        Button(action: {
-                            rating = Int16(star)
-                        }) {
-                            Image(systemName: star <= rating ? "star.fill" : "star")
-                                .foregroundColor(.yellow)
-                                .font(.title2)
-                        }
-                    }
-                    Spacer()
-                    if rating > 0 {
-                        Button("クリア") {
-                            rating = 0
-                        }
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    }
-                }
-            }
-
-            TextField("テイスティングノート", text: $notes, axis: .vertical)
-                .lineLimit(3...6)
-        }
-    }
-
-    // MARK: - Computed Properties
-
-    private var isValidForm: Bool {
-        return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-               !distillery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-
-    // MARK: - Methods
-
-    private func loadBottleData() {
-        guard let bottle = bottle else { return }
-
-        name = bottle.name
-        distillery = bottle.distillery
-        region = bottle.region ?? ""
-        type = bottle.type ?? ""
+    private func loadBottleData(_ bottle: Bottle) {
+        name = bottle.wrappedName
+        distillery = bottle.wrappedDistillery
+        region = bottle.wrappedRegion
+        type = bottle.wrappedType
         abv = bottle.abv
         volume = bottle.volume
         vintage = bottle.vintage
-
-        if let purchaseDateValue = bottle.purchaseDate {
-            purchaseDate = purchaseDateValue
+        purchaseDate = bottle.purchaseDate ?? Date()
+        if let price = bottle.purchasePrice {
+            purchasePrice = price.stringValue
         }
-
-        if let priceValue = bottle.purchasePrice {
-            purchasePrice = String(priceValue.intValue)
-        }
-
-        shop = bottle.shop ?? ""
-
-        if let openedDateValue = bottle.openedDate {
-            openedDate = openedDateValue
-            hasOpenedDate = true
-        }
-
+        shop = bottle.wrappedShop
         rating = bottle.rating
-        notes = bottle.notes ?? ""
+        notes = bottle.wrappedNotes
+        openedDate = bottle.openedDate
+        isOpened = bottle.isOpened
     }
 
-    private func saveBottle() async {
-        isLoading = true
-        errorMessage = nil
-
-        do {
-            let repository = diContainer.getBottleRepository()
-
+    private func saveBottle() {
+        withAnimation {
+            let targetBottle: Bottle
             if let existingBottle = bottle {
-                // 既存ボトルの更新
-                existingBottle.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-                existingBottle.distillery = distillery.trimmingCharacters(in: .whitespacesAndNewlines)
-                existingBottle.region = region.isEmpty ? nil : region
-                existingBottle.type = type.isEmpty ? nil : type
-                existingBottle.abv = abv
-                existingBottle.volume = volume
-                existingBottle.vintage = vintage
-
-                existingBottle.purchaseDate = purchaseDate
-                existingBottle.purchasePrice = purchasePrice.isEmpty ? nil : NSDecimalNumber(string: purchasePrice)
-                existingBottle.shop = shop.isEmpty ? nil : shop
-
-                existingBottle.openedDate = hasOpenedDate ? openedDate : nil
-                existingBottle.rating = rating
-                existingBottle.notes = notes.isEmpty ? nil : notes
-
-                try await repository.saveBottle(existingBottle)
+                targetBottle = existingBottle
             } else {
-                // 新規ボトルの作成
-                let newBottle = try await repository.createBottle(
-                    name: name.trimmingCharacters(in: .whitespacesAndNewlines),
-                    distillery: distillery.trimmingCharacters(in: .whitespacesAndNewlines)
-                )
-
-                newBottle.region = region.isEmpty ? nil : region
-                newBottle.type = type.isEmpty ? nil : type
-                newBottle.abv = abv
-                newBottle.volume = volume
-                newBottle.vintage = vintage
-
-                newBottle.purchaseDate = purchaseDate
-                newBottle.purchasePrice = purchasePrice.isEmpty ? nil : NSDecimalNumber(string: purchasePrice)
-                newBottle.shop = shop.isEmpty ? nil : shop
-
-                newBottle.openedDate = hasOpenedDate ? openedDate : nil
-                newBottle.rating = rating
-                newBottle.notes = notes.isEmpty ? nil : notes
-
-                try await repository.saveBottle(newBottle)
+                targetBottle = Bottle(context: viewContext)
+                targetBottle.id = UUID()
+                targetBottle.createdAt = Date()
+                targetBottle.remainingVolume = volume // 新規の場合は満タン
             }
 
-            isLoading = false
-            dismiss()
+            targetBottle.name = name
+            targetBottle.distillery = distillery
+            targetBottle.region = region.isEmpty ? nil : region
+            targetBottle.type = type.isEmpty ? nil : type
+            targetBottle.abv = abv
+            targetBottle.volume = volume
+            targetBottle.vintage = vintage
+            targetBottle.purchaseDate = purchaseDate
 
-        } catch {
-            errorMessage = error.localizedDescription
-            isLoading = false
+            if !purchasePrice.isEmpty, let price = Decimal(string: purchasePrice) {
+                targetBottle.purchasePrice = NSDecimalNumber(decimal: price)
+            }
+
+            targetBottle.shop = shop.isEmpty ? nil : shop
+            targetBottle.rating = rating
+            targetBottle.notes = notes.isEmpty ? nil : notes
+            targetBottle.openedDate = isOpened ? (openedDate ?? Date()) : nil
+            targetBottle.updatedAt = Date()
+
+            do {
+                try viewContext.save()
+                dismiss()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
         }
     }
 }
 
-// MARK: - Preview
-
 #Preview {
     BottleFormView(bottle: nil)
-        .environmentObject(DIContainer())
+        .environment(\.managedObjectContext, CoreDataManager.preview.container.viewContext)
 }

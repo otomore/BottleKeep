@@ -1,34 +1,161 @@
 import SwiftUI
 
 struct BottleDetailView: View {
-    let bottle: Bottle
-
-    @State private var showingEditForm = false
+    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
+
+    let bottle: Bottle
+    @State private var showingEditForm = false
+    @State private var showingRemainingVolumeSheet = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // 写真セクション
-                photoSection
+                if !bottle.photosArray.isEmpty {
+                    TabView {
+                        ForEach(bottle.photosArray, id: \.id) { photo in
+                            AsyncImage(url: nil) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } placeholder: {
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .overlay(
+                                        ProgressView()
+                                    )
+                            }
+                        }
+                    }
+                    .frame(height: 300)
+                    .tabViewStyle(PageTabViewStyle())
+                } else {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(height: 300)
+                        .overlay(
+                            VStack {
+                                Image(systemName: "photo")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.gray)
+                                Text("写真が追加されていません")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                        )
+                        .cornerRadius(12)
+                }
 
                 // 基本情報セクション
-                basicInfoSection
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("基本情報")
+                        .font(.headline)
+
+                    DetailRowView(title: "銘柄", value: bottle.wrappedName)
+                    DetailRowView(title: "蒸留所", value: bottle.wrappedDistillery)
+                    DetailRowView(title: "地域", value: bottle.wrappedRegion)
+                    DetailRowView(title: "タイプ", value: bottle.wrappedType)
+                    DetailRowView(title: "アルコール度数", value: "\(bottle.abv, specifier: "%.1f")%")
+                    DetailRowView(title: "容量", value: "\(bottle.volume)ml")
+
+                    if bottle.vintage > 0 {
+                        DetailRowView(title: "年代", value: "\(bottle.vintage)年")
+                    }
+                }
+
+                // 残量情報セクション
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("残量情報")
+                            .font(.headline)
+                        Spacer()
+                        Button("更新") {
+                            showingRemainingVolumeSheet = true
+                        }
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("残り: \(bottle.remainingVolume)ml / \(bottle.volume)ml")
+                            .font(.subheadline)
+
+                        ProgressView(value: bottle.remainingPercentage, total: 100)
+                            .progressViewStyle(LinearProgressViewStyle(tint: progressColor(for: bottle.remainingPercentage)))
+
+                        Text("\(bottle.remainingPercentage, specifier: "%.1f")%")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        if bottle.isOpened {
+                            if let openedDate = bottle.openedDate {
+                                Text("開栓日: \(openedDate, formatter: dateFormatter)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        } else {
+                            Text("未開栓")
+                                .font(.caption)
+                                .foregroundColor(.green)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 2)
+                                .background(Color.green.opacity(0.2))
+                                .cornerRadius(4)
+                        }
+                    }
+                }
 
                 // 購入情報セクション
-                if hasePurchaseInfo {
-                    purchaseInfoSection
+                if bottle.purchaseDate != nil || bottle.purchasePrice != nil || !bottle.wrappedShop.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("購入情報")
+                            .font(.headline)
+
+                        if let purchaseDate = bottle.purchaseDate {
+                            DetailRowView(title: "購入日", value: dateFormatter.string(from: purchaseDate))
+                        }
+
+                        if let purchasePrice = bottle.purchasePrice {
+                            DetailRowView(title: "購入価格", value: "¥\(purchasePrice)")
+                        }
+
+                        if !bottle.wrappedShop.isEmpty && bottle.wrappedShop != "不明" {
+                            DetailRowView(title: "購入店舗", value: bottle.wrappedShop)
+                        }
+                    }
                 }
 
-                // テイスティング情報セクション
-                if bottle.isOpened || bottle.rating > 0 {
-                    tastingInfoSection
+                // 評価・ノートセクション
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("評価・ノート")
+                        .font(.headline)
+
+                    if bottle.rating > 0 {
+                        HStack {
+                            Text("評価:")
+                                .foregroundColor(.secondary)
+                            ForEach(1...5, id: \.self) { star in
+                                Image(systemName: star <= bottle.rating ? "star.fill" : "star")
+                                    .foregroundColor(.yellow)
+                            }
+                        }
+                    }
+
+                    if !bottle.wrappedNotes.isEmpty {
+                        Text(bottle.wrappedNotes)
+                            .padding()
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                    }
                 }
+
+                Spacer(minLength: 20)
             }
             .padding()
         }
-        .navigationTitle(bottle.name)
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle(bottle.wrappedName)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("編集") {
@@ -39,189 +166,65 @@ struct BottleDetailView: View {
         .sheet(isPresented: $showingEditForm) {
             BottleFormView(bottle: bottle)
         }
-    }
-
-    // MARK: - View Components
-
-    private var photoSection: some View {
-        VStack {
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(height: 300)
-                .overlay(
-                    Image(systemName: "wineglass")
-                        .font(.system(size: 64))
-                        .foregroundColor(.gray)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+        .sheet(isPresented: $showingRemainingVolumeSheet) {
+            RemainingVolumeUpdateView(bottle: bottle)
         }
     }
 
-    private var basicInfoSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("基本情報")
-                .font(.headline)
-                .foregroundColor(.primary)
-
-            VStack(spacing: 8) {
-                InfoRow(label: "銘柄", value: bottle.name)
-                InfoRow(label: "蒸留所", value: bottle.distillery)
-
-                if let region = bottle.region {
-                    InfoRow(label: "地域", value: region)
-                }
-
-                if let type = bottle.type {
-                    InfoRow(label: "タイプ", value: type)
-                }
-
-                if bottle.abv > 0 {
-                    InfoRow(label: "アルコール度数", value: "\(bottle.abv, specifier: "%.1f")%")
-                }
-
-                if bottle.volume > 0 {
-                    InfoRow(label: "容量", value: "\(bottle.volume)ml")
-                }
-
-                if bottle.vintage > 0 {
-                    InfoRow(label: "ヴィンテージ", value: "\(bottle.vintage)年")
-                }
-            }
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+    private func progressColor(for percentage: Double) -> Color {
+        switch percentage {
+        case 50...100:
+            return .green
+        case 20..<50:
+            return .orange
+        default:
+            return .red
         }
     }
 
-    private var purchaseInfoSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("購入情報")
-                .font(.headline)
-                .foregroundColor(.primary)
-
-            VStack(spacing: 8) {
-                if let purchaseDate = bottle.purchaseDate {
-                    InfoRow(label: "購入日", value: purchaseDate, formatter: .dateOnly)
-                }
-
-                if let purchasePrice = bottle.purchasePrice {
-                    InfoRow(label: "購入価格", value: "¥\(purchasePrice.intValue)")
-                }
-
-                if let shop = bottle.shop {
-                    InfoRow(label: "購入店舗", value: shop)
-                }
-            }
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-    }
-
-    private var tastingInfoSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("テイスティング情報")
-                .font(.headline)
-                .foregroundColor(.primary)
-
-            VStack(spacing: 8) {
-                if let openedDate = bottle.openedDate {
-                    InfoRow(label: "開栓日", value: openedDate, formatter: .dateOnly)
-                }
-
-                if bottle.volume > 0 {
-                    InfoRow(label: "残量", value: "\(bottle.remainingVolume)ml / \(bottle.volume)ml")
-
-                    // 残量バー
-                    ProgressView(value: bottle.remainingPercentage / 100.0)
-                        .progressViewStyle(LinearProgressViewStyle())
-                        .scaleEffect(x: 1, y: 2, anchor: .center)
-                }
-
-                if bottle.rating > 0 {
-                    HStack {
-                        Text("評価")
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        HStack(spacing: 2) {
-                            ForEach(1...5, id: \.self) { star in
-                                Image(systemName: star <= bottle.rating ? "star.fill" : "star")
-                                    .foregroundColor(.yellow)
-                                    .font(.caption)
-                            }
-                        }
-                    }
-                }
-
-                if let notes = bottle.notes, !notes.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("テイスティングノート")
-                            .foregroundColor(.secondary)
-                        Text(notes)
-                    }
-                }
-            }
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-    }
-
-    // MARK: - Computed Properties
-
-    private var hasePurchaseInfo: Bool {
-        return bottle.purchaseDate != nil ||
-               bottle.purchasePrice != nil ||
-               bottle.shop != nil
-    }
-}
-
-// MARK: - Supporting Views
-
-struct InfoRow: View {
-    let label: String
-    let value: String
-
-    init(label: String, value: String) {
-        self.label = label
-        self.value = value
-    }
-
-    init(label: String, value: Date, formatter: DateFormatter) {
-        self.label = label
-        self.value = formatter.string(from: value)
-    }
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .foregroundColor(.secondary)
-            Spacer()
-            Text(value)
-                .fontWeight(.medium)
-        }
-    }
-}
-
-// MARK: - Extensions
-
-extension DateFormatter {
-    static let dateOnly: DateFormatter = {
+    private var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "ja_JP")
         return formatter
-    }()
+    }
 }
 
-// MARK: - Preview
+struct DetailRowView: View {
+    let title: String
+    let value: String
+
+    var body: some View {
+        HStack {
+            Text(title)
+                .foregroundColor(.secondary)
+                .frame(width: 80, alignment: .leading)
+            Text(value)
+            Spacer()
+        }
+    }
+}
 
 #Preview {
-    NavigationStack {
-        BottleDetailView(bottle: Bottle.createTestBottle(
-            context: CoreDataManager.shared.context,
-            name: "山崎 12年",
-            distillery: "サントリー"
-        ))
+    NavigationView {
+        BottleDetailView(bottle: {
+            let context = CoreDataManager.preview.container.viewContext
+            let bottle = Bottle(context: context)
+            bottle.id = UUID()
+            bottle.name = "山崎 12年"
+            bottle.distillery = "サントリー"
+            bottle.region = "日本"
+            bottle.type = "シングルモルト"
+            bottle.abv = 43.0
+            bottle.volume = 700
+            bottle.remainingVolume = 500
+            bottle.rating = 5
+            bottle.notes = "華やかな香りと深い味わい。バランスが素晴らしい。"
+            bottle.purchaseDate = Date()
+            bottle.openedDate = Date()
+            return bottle
+        }())
     }
+    .environment(\.managedObjectContext, CoreDataManager.preview.container.viewContext)
 }

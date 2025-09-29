@@ -1,245 +1,341 @@
 import SwiftUI
-import Charts
+import CoreData
 
 struct StatisticsView: View {
-    @StateObject private var viewModel: StatisticsViewModel
-
-    init(diContainer: DIContainer = DIContainer()) {
-        _viewModel = StateObject(wrappedValue: diContainer.makeStatisticsViewModel())
-    }
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Bottle.createdAt, ascending: false)],
+        animation: .default)
+    private var bottles: FetchedResults<Bottle>
 
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.isLoading {
-                    ProgressView("統計データを読み込み中...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let errorMessage = viewModel.errorMessage {
-                    VStack(spacing: 16) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.largeTitle)
-                            .foregroundColor(.red)
-                        Text("エラーが発生しました")
-                            .font(.headline)
-                        Text(errorMessage)
-                            .foregroundColor(.secondary)
-                        Button("再試行") {
-                            Task { await viewModel.refreshData() }
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                    .padding()
-                } else {
-                    statisticsContent
+            ScrollView {
+                LazyVStack(spacing: 20) {
+                    // 基本統計
+                    BasicStatsSection(bottles: Array(bottles))
+
+                    // 地域別統計
+                    RegionStatsSection(bottles: Array(bottles))
+
+                    // 残量統計
+                    RemainingVolumeStatsSection(bottles: Array(bottles))
+
+                    // 評価統計
+                    RatingStatsSection(bottles: Array(bottles))
                 }
+                .padding()
             }
             .navigationTitle("統計")
-            .refreshable {
-                await viewModel.refreshData()
-            }
-            .task {
-                await viewModel.loadStatistics()
-            }
+            .navigationBarTitleDisplayMode(.large)
         }
     }
+}
 
-    @ViewBuilder
-    private var statisticsContent: some View {
-        ScrollView {
-            LazyVStack(spacing: 24) {
-                // 概要統計
-                overviewSection
+struct BasicStatsSection: View {
+    let bottles: [Bottle]
 
-                // チャートセクション
-                if viewModel.totalCount > 0 {
-                    chartsSection
-                    distributionSection
-                }
-            }
-            .padding()
-        }
+    var totalBottles: Int { bottles.count }
+    var totalValue: Decimal {
+        bottles.compactMap { $0.purchasePrice?.decimalValue }.reduce(0, +)
+    }
+    var averageValue: Decimal {
+        guard totalBottles > 0 else { return 0 }
+        return totalValue / Decimal(totalBottles)
+    }
+    var openedBottles: Int {
+        bottles.filter { $0.isOpened }.count
     }
 
-    @ViewBuilder
-    private var overviewSection: some View {
+    var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("概要")
-                .font(.title2)
-                .fontWeight(.bold)
+            Text("基本統計")
+                .font(.headline)
 
             LazyVGrid(columns: [
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 16) {
-                StatisticCard(
+                StatCardView(
                     title: "総ボトル数",
-                    value: "\(viewModel.totalCount)本",
-                    icon: "bottle.fill",
+                    value: "\(totalBottles)本",
+                    icon: "list.bullet",
                     color: .blue
                 )
 
-                StatisticCard(
+                StatCardView(
                     title: "開栓済み",
-                    value: "\(viewModel.openedCount)本",
-                    icon: "checkmark.circle.fill",
-                    color: .green
-                )
-
-                StatisticCard(
-                    title: "未開栓",
-                    value: "\(viewModel.unopenedCount)本",
-                    icon: "circle",
+                    value: "\(openedBottles)本",
+                    icon: "drop.fill",
                     color: .orange
                 )
 
-                StatisticCard(
-                    title: "開栓率",
-                    value: String(format: "%.1f%%", viewModel.openedPercentage),
-                    icon: "percent",
-                    color: .purple
-                )
-
-                StatisticCard(
-                    title: "総価値",
-                    value: viewModel.totalValueText,
+                StatCardView(
+                    title: "コレクション価値",
+                    value: "¥\(totalValue)",
                     icon: "yensign.circle.fill",
                     color: .green
                 )
 
-                StatisticCard(
-                    title: "平均評価",
-                    value: viewModel.averageRatingText,
-                    icon: "star.fill",
-                    color: .yellow
-                )
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var chartsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("開栓状況")
-                .font(.title2)
-                .fontWeight(.bold)
-
-            Chart {
-                SectorMark(
-                    angle: .value("数", viewModel.openedCount),
-                    innerRadius: .ratio(0.4),
-                    outerRadius: .inset(20)
-                )
-                .foregroundStyle(.green)
-                .opacity(0.8)
-
-                SectorMark(
-                    angle: .value("数", viewModel.unopenedCount),
-                    innerRadius: .ratio(0.4),
-                    outerRadius: .inset(20)
-                )
-                .foregroundStyle(.orange)
-                .opacity(0.8)
-            }
-            .frame(height: 200)
-        }
-    }
-
-    @ViewBuilder
-    private var distributionSection: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // 地域分布
-            if !viewModel.sortedRegions.isEmpty {
-                distributionChart(
-                    title: "地域別分布",
-                    data: viewModel.sortedRegions.prefix(5).map { ($0.0, $0.1) },
-                    color: .blue
-                )
-            }
-
-            // タイプ分布
-            if !viewModel.sortedTypes.isEmpty {
-                distributionChart(
-                    title: "タイプ別分布",
-                    data: viewModel.sortedTypes.prefix(5).map { ($0.0, $0.1) },
+                StatCardView(
+                    title: "平均価格",
+                    value: "¥\(averageValue)",
+                    icon: "chart.bar.fill",
                     color: .purple
                 )
             }
-
-            // ヴィンテージ分布
-            if !viewModel.sortedVintages.isEmpty {
-                vintageChart
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func distributionChart(title: String, data: [(String, Int)], color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(title)
-                .font(.title2)
-                .fontWeight(.bold)
-
-            Chart(data, id: \.0) { item in
-                BarMark(
-                    x: .value("数", item.1),
-                    y: .value("項目", item.0)
-                )
-                .foregroundStyle(color.gradient)
-            }
-            .frame(height: max(120, CGFloat(data.count * 30)))
-        }
-    }
-
-    @ViewBuilder
-    private var vintageChart: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("ヴィンテージ分布")
-                .font(.title2)
-                .fontWeight(.bold)
-
-            Chart(viewModel.sortedVintages, id: \.0) { vintage in
-                BarMark(
-                    x: .value("年", vintage.0),
-                    y: .value("数", vintage.1)
-                )
-                .foregroundStyle(.red.gradient)
-            }
-            .frame(height: 200)
         }
     }
 }
 
-struct StatisticCard: View {
+struct RegionStatsSection: View {
+    let bottles: [Bottle]
+
+    var regionCounts: [(String, Int)] {
+        let regionDict = Dictionary(grouping: bottles) { $0.wrappedRegion }
+        return regionDict.map { ($0.key, $0.value.count) }
+            .sorted { $0.1 > $1.1 }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("地域別分布")
+                .font(.headline)
+
+            if regionCounts.isEmpty {
+                Text("データがありません")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(regionCounts, id: \.0) { region, count in
+                        HStack {
+                            Text(region == "不明" ? "地域未設定" : region)
+                                .font(.subheadline)
+                            Spacer()
+                            Text("\(count)本")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+
+                            Rectangle()
+                                .fill(regionColor(for: region))
+                                .frame(width: CGFloat(count) / CGFloat(bottles.count) * 100, height: 8)
+                                .cornerRadius(4)
+                        }
+                    }
+                }
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
+            }
+        }
+    }
+
+    private func regionColor(for region: String) -> Color {
+        switch region {
+        case "スコットランド":
+            return .blue
+        case "日本":
+            return .red
+        case "アイルランド":
+            return .green
+        case "アメリカ":
+            return .orange
+        case "カナダ":
+            return .purple
+        default:
+            return .gray
+        }
+    }
+}
+
+struct RemainingVolumeStatsSection: View {
+    let bottles: [Bottle]
+
+    var totalVolume: Int32 {
+        bottles.map { $0.volume }.reduce(0, +)
+    }
+
+    var remainingVolume: Int32 {
+        bottles.map { $0.remainingVolume }.reduce(0, +)
+    }
+
+    var consumedVolume: Int32 {
+        totalVolume - remainingVolume
+    }
+
+    var remainingPercentage: Double {
+        guard totalVolume > 0 else { return 0 }
+        return Double(remainingVolume) / Double(totalVolume) * 100
+    }
+
+    var almostEmptyBottles: Int {
+        bottles.filter { $0.remainingPercentage < 20 }.count
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("残量統計")
+                .font(.headline)
+
+            VStack(spacing: 12) {
+                HStack {
+                    Text("総容量: \(totalVolume)ml")
+                    Spacer()
+                    Text("残量: \(remainingVolume)ml")
+                }
+                .font(.subheadline)
+
+                ProgressView(value: Double(remainingVolume), total: Double(totalVolume))
+                    .progressViewStyle(LinearProgressViewStyle(tint: progressColor(for: remainingPercentage)))
+
+                HStack {
+                    Text("消費量: \(consumedVolume)ml")
+                    Spacer()
+                    Text("\(remainingPercentage, specifier: "%.1f")% 残存")
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+                if almostEmptyBottles > 0 {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.orange)
+                        Text("残り少ないボトル: \(almostEmptyBottles)本")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                        Spacer()
+                    }
+                }
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+        }
+    }
+
+    private func progressColor(for percentage: Double) -> Color {
+        switch percentage {
+        case 50...100:
+            return .green
+        case 20..<50:
+            return .orange
+        default:
+            return .red
+        }
+    }
+}
+
+struct RatingStatsSection: View {
+    let bottles: [Bottle]
+
+    var ratedBottles: [Bottle] {
+        bottles.filter { $0.rating > 0 }
+    }
+
+    var averageRating: Double {
+        guard !ratedBottles.isEmpty else { return 0 }
+        return Double(ratedBottles.map { $0.rating }.reduce(0, +)) / Double(ratedBottles.count)
+    }
+
+    var ratingDistribution: [(Int, Int)] {
+        let ratings = Dictionary(grouping: ratedBottles) { Int($0.rating) }
+        return (1...5).map { rating in
+            (rating, ratings[rating]?.count ?? 0)
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("評価統計")
+                .font(.headline)
+
+            if ratedBottles.isEmpty {
+                Text("評価されたボトルがありません")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("平均評価")
+                        Spacer()
+                        HStack(spacing: 2) {
+                            ForEach(1...5, id: \.self) { star in
+                                Image(systemName: Double(star) <= averageRating ? "star.fill" : "star")
+                                    .foregroundColor(.yellow)
+                                    .font(.caption)
+                            }
+                            Text("(\(averageRating, specifier: "%.1f"))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    VStack(spacing: 4) {
+                        ForEach(ratingDistribution.reversed(), id: \.0) { rating, count in
+                            HStack {
+                                HStack(spacing: 2) {
+                                    ForEach(1...rating, id: \.self) { _ in
+                                        Image(systemName: "star.fill")
+                                            .foregroundColor(.yellow)
+                                            .font(.caption2)
+                                    }
+                                }
+                                .frame(width: 60, alignment: .leading)
+
+                                Spacer()
+
+                                Text("\(count)本")
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+
+                                Rectangle()
+                                    .fill(Color.yellow)
+                                    .frame(width: max(4, CGFloat(count) / CGFloat(ratedBottles.count) * 80), height: 6)
+                                    .cornerRadius(3)
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
+            }
+        }
+    }
+}
+
+struct StatCardView: View {
     let title: String
     let value: String
     let icon: String
     let color: Color
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: icon)
                     .foregroundColor(color)
-                    .font(.title2)
                 Spacer()
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(value)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            Text(value)
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color.gray.opacity(0.1))
         .cornerRadius(12)
     }
 }
 
 #Preview {
     StatisticsView()
+        .environment(\.managedObjectContext, CoreDataManager.preview.container.viewContext)
 }
