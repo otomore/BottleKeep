@@ -28,7 +28,7 @@
 
     <!-- コード署名設定 -->
     <key>signingStyle</key>
-    <string>automatic</string>
+    <string>manual</string>
 
     <!-- TestFlight専用設定 -->
     <key>destination</key>

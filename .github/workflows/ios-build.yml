@@ -147,13 +147,13 @@ jobs:
               -configuration Release \
               DEVELOPMENT_TEAM=KRVLW3Y2SL \
               CODE_SIGN_STYLE=Manual \
-              PROVISIONING_PROFILE_SPECIFIER="${{ secrets.PROVISIONING_PROFILE_UUID }}" || echo "アーカイブビルドに失敗しました"
+              PROVISIONING_PROFILE_SPECIFIER="BottleKeeper Distribution" || echo "アーカイブビルドに失敗しました"
           fi
 
           echo "✅ ビルド処理完了"
 
       - name: IPAをエクスポート
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
         run: |
           echo "=== IPAエクスポート開始 ==="
 
@@ -183,7 +183,7 @@ jobs:
           fi
 
       - name: ビルド成果物をアップロード
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: BottleKeeper-IPA
@@ -202,7 +202,7 @@ jobs:
     name: TestFlightへ配信
     runs-on: macos-15
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: リポジトリをチェックアウト
