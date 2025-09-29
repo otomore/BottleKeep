@@ -328,8 +328,8 @@ jobs:
 
           # API Key ファイルを作成（Base64デコード）
           mkdir -p ~/private_keys
-          # 改行を除去してからBase64デコード
-          echo "$APP_STORE_CONNECT_API_KEY" | tr -d '\n' | base64 --decode > ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
+          # より安全なBase64デコード方法
+          printf "%s" "$APP_STORE_CONNECT_API_KEY" | base64 -d > ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8
 
           # APIキーファイルの確認
           if [ -f ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 ]; then
@@ -351,9 +351,18 @@ jobs:
               head -1 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | xxd
             fi
 
-            # ファイル全体のhex dump（デバッグ用、最初の50文字のみ）
-            echo "ファイルの最初の50文字 (hex):"
-            head -c 50 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | xxd
+            # ファイル全体のhex dump（デバッグ用、最初の100文字）
+            echo "ファイルの最初の100文字 (hex):"
+            head -c 100 ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 | xxd
+
+            # OpenSSLでAPIキーを検証
+            echo "OpenSSLでのAPIキー検証:"
+            if openssl ec -in ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 -noout 2>/dev/null; then
+              echo "✅ OpenSSLで有効なECキー"
+            else
+              echo "❌ OpenSSLで無効なキー - 詳細:"
+              openssl ec -in ~/private_keys/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8 -noout 2>&1 || true
+            fi
           else
             echo "❌ APIキーファイルの作成に失敗しました"
             exit 1
