@@ -2,8 +2,8 @@ name: iOS アプリビルド
 
 # トリガー設定
 on:
-  push:
-    branches: [ main, develop ]
+  # push:
+  #   branches: [ main, develop ]
   pull_request:
     branches: [ main ]
   workflow_dispatch: # 手動実行を許可
