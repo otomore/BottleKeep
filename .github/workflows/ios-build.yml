@@ -104,6 +104,15 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+          # インストールされたプロファイルの名前を動的に取得
+          echo "=== インストールされたプロビジョニングプロファイルを確認 ==="
+          PROFILE_NAME=$(security cms -D -i $PP_PATH | plutil -extract Name raw -)
+          PROFILE_UUID=$(security cms -D -i $PP_PATH | plutil -extract UUID raw -)
+          echo "プロファイル名: $PROFILE_NAME"
+          echo "プロファイルUUID: $PROFILE_UUID"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
+          echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+
       - name: ビルド番号を設定
         run: |
           BUILD_NUMBER=$GITHUB_RUN_NUMBER
@@ -139,6 +148,7 @@ jobs:
           # 本番用アーカイブビルド（証明書が利用可能な場合のみ）
           if [ -n "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" ]; then
             echo "=== リリース用アーカイブビルドを試行 ==="
+            echo "使用するプロビジョニングプロファイル: ${PROFILE_NAME:-BottleKeeper Distribution}"
             xcodebuild archive \
               -project BottleKeeper.xcodeproj \
               -scheme BottleKeeper \
@@ -147,7 +157,7 @@ jobs:
               -configuration Release \
               DEVELOPMENT_TEAM=KRVLW3Y2SL \
               CODE_SIGN_STYLE=Manual \
-              PROVISIONING_PROFILE_SPECIFIER="BottleKeeper Distribution" || echo "アーカイブビルドに失敗しました"
+              PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}" || echo "アーカイブビルドに失敗しました"
           fi
 
           echo "✅ ビルド処理完了"
@@ -157,28 +167,83 @@ jobs:
         run: |
           echo "=== IPAエクスポート開始 ==="
 
-          # ExportOptions.plistの存在確認
-          if [ -f "ExportOptions.plist" ]; then
-            echo "✅ ExportOptions.plistが見つかりました"
+          # 動的にExportOptions.plistを生成
+          echo "=== 動的ExportOptions.plistを生成 ==="
+          DYNAMIC_PROFILE_NAME="${PROFILE_NAME:-BottleKeeper Distribution}"
+          echo "使用するプロファイル名: $DYNAMIC_PROFILE_NAME"
 
-            # アーカイブの存在確認
-            if [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
-              echo "✅ アーカイブファイルが見つかりました"
+          cat > $RUNNER_TEMP/ExportOptions.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Store Connect配信用の設定 -->
+    <key>method</key>
+    <string>app-store</string>
 
-              # IPAエクスポート実行
-              xcodebuild -exportArchive \
-                -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
-                -exportPath $RUNNER_TEMP/ipa \
-                -exportOptionsPlist ExportOptions.plist
+    <!-- TestFlight配信を有効化 -->
+    <key>uploadBitcode</key>
+    <false/>
 
-              echo "✅ IPAエクスポート完了"
-              ls -la $RUNNER_TEMP/ipa/
-            else
-              echo "❌ アーカイブファイルが見つかりません"
-              exit 1
-            fi
+    <!-- シンボル情報をアップロード -->
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- 自動的に証明書とプロビジョニングプロファイルを管理 -->
+    <key>manageAppVersionAndBuildNumber</key>
+    <true/>
+
+    <!-- Team ID -->
+    <key>teamID</key>
+    <string>KRVLW3Y2SL</string>
+
+    <!-- Bundle ID -->
+    <key>bundleIdentifier</key>
+    <string>com.bottlekeep.whiskey</string>
+
+    <!-- コード署名設定 -->
+    <key>signingStyle</key>
+    <string>manual</string>
+
+    <!-- TestFlight専用設定 -->
+    <key>destination</key>
+    <string>upload</string>
+
+    <!-- コンパイル時の設定 -->
+    <key>compileBitcode</key>
+    <false/>
+
+    <!-- 署名証明書の設定 -->
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+
+    <!-- プロビジョニングプロファイル指定 -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.bottlekeep.whiskey</key>
+        <string>$DYNAMIC_PROFILE_NAME</string>
+    </dict>
+</dict>
+</plist>
+EOF
+
+          echo "✅ 動的ExportOptions.plist生成完了"
+          cat $RUNNER_TEMP/ExportOptions.plist
+
+          # アーカイブの存在確認
+          if [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
+            echo "✅ アーカイブファイルが見つかりました"
+
+            # IPAエクスポート実行
+            xcodebuild -exportArchive \
+              -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
+              -exportPath $RUNNER_TEMP/ipa \
+              -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist
+
+            echo "✅ IPAエクスポート完了"
+            ls -la $RUNNER_TEMP/ipa/
           else
-            echo "❌ ExportOptions.plistが見つかりません"
+            echo "❌ アーカイブファイルが見つかりません"
             exit 1
           fi
 
