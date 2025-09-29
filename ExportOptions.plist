@@ -4,7 +4,7 @@
 <dict>
     <!-- App Store Connect配信用の設定 -->
     <key>method</key>
-    <string>app-store</string>
+    <string>app-store-connect</string>
 
     <!-- TestFlight配信を有効化 -->
     <key>uploadBitcode</key>
