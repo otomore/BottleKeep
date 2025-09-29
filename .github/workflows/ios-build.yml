@@ -9,7 +9,7 @@ on:
   workflow_dispatch: # 手動実行を許可
 
 env:
-  XCODE_VERSION: '15.0' # 使用するXcodeのバージョン
+  XCODE_VERSION: '26.0' # 使用するXcodeのバージョン
   SCHEME: 'BottleKeeper'
   PROJECT_PATH: 'BottleKeeper.xcodeproj' # プロジェクトファイルのパス
   BUNDLE_ID: 'com.bottlekeep.whiskey'
@@ -18,7 +18,7 @@ jobs:
   # テスト実行ジョブ
   test:
     name: ユニットテスト実行
-    runs-on: macos-14 # 最新のmacOSランナーを使用
+    runs-on: macos-15 # 最新のmacOSランナーを使用
 
     steps:
       - name: リポジトリをチェックアウト
@@ -62,7 +62,7 @@ jobs:
   # ビルドジョブ
   build:
     name: アプリビルド
-    runs-on: macos-14
+    runs-on: macos-15
     needs: test # テストが成功した後に実行
 
     steps:
@@ -200,7 +200,7 @@ jobs:
   # TestFlight配信ジョブ（オプション）
   deploy-testflight:
     name: TestFlightへ配信
-    runs-on: macos-14
+    runs-on: macos-15
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 

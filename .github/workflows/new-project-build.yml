@@ -8,7 +8,7 @@ on:
   workflow_dispatch: # 手動実行を許可
 
 env:
-  XCODE_VERSION: '15.0'
+  XCODE_VERSION: '26.0'
   SCHEME: 'BottleKeeper'
   PROJECT_PATH: 'BottleKeeper.xcodeproj'
   BUNDLE_ID: 'com.bottlekeep.whiskey'
@@ -17,7 +17,7 @@ jobs:
   # プロジェクト構造確認
   project-check:
     name: プロジェクト構造確認
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: リポジトリをチェックアウト
@@ -65,7 +65,7 @@ jobs:
   # 基本ビルドテスト
   build-test:
     name: 基本ビルドテスト
-    runs-on: macos-14
+    runs-on: macos-15
     needs: project-check
 
     steps:
@@ -108,7 +108,7 @@ jobs:
   # 構文チェック（Swift構文確認）
   syntax-check:
     name: Swift構文チェック
-    runs-on: macos-14
+    runs-on: macos-15
     needs: project-check
 
     steps:
@@ -131,7 +131,7 @@ jobs:
   # アーカイブビルドテスト（署名なし）
   archive-test:
     name: アーカイブビルドテスト
-    runs-on: macos-14
+    runs-on: macos-15
     needs: build-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
