@@ -12,7 +12,8 @@ platform :ios do
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
       key_content: ENV["APP_STORE_CONNECT_API_KEY"],
-      is_key_content_base64: true
+      is_key_content_base64: true,
+      duration: 500 # JWTトークンの有効期限を500秒（約8分）に設定
     )
 
     # IPAファイルのパスを設定
