@@ -1,0 +1,54 @@
+# Fastfile
+# fastlaneの自動化タスク定義
+
+default_platform(:ios)
+
+platform :ios do
+  # TestFlightへアップロードするlane
+  desc "TestFlightにビルドをアップロード"
+  lane :beta do
+    # App Store Connect APIキーの設定
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY"],
+      is_key_content_base64: true
+    )
+
+    # IPAファイルのパスを設定
+    ipa_path = "./ipa/BottleKeeper.ipa"
+
+    # TestFlightにアップロード
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: ipa_path,
+      skip_waiting_for_build_processing: true, # ビルド処理の完了を待たない
+      skip_submission: true, # 自動提出をスキップ
+      distribute_external: false, # 外部テスターには配布しない
+      notify_external_testers: false
+    )
+
+    UI.success("🎉 TestFlightへのアップロードが完了しました！")
+    UI.message("App Store Connectでビルドの処理状況を確認してください")
+  end
+
+  # ビルドとTestFlightアップロードを一度に実行するlane
+  desc "アプリをビルドしてTestFlightにアップロード"
+  lane :build_and_beta do
+    # Xcodeでビルド
+    build_app(
+      scheme: "BottleKeeper",
+      export_method: "app-store",
+      output_directory: "./ipa",
+      output_name: "BottleKeeper.ipa",
+      export_options: {
+        provisioningProfiles: {
+          "com.bottlekeep.whiskey" => "BottleKeep Distribution"
+        }
+      }
+    )
+
+    # TestFlightにアップロード
+    beta
+  end
+end
