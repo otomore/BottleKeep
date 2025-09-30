@@ -28,6 +28,11 @@
 		8D1F4A602C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */; };
 		8D1F4A622C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */; };
 		77ACCD648CB14F19AC14AD23D3DF6EEE /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */; };
+		33D46C7849EC49A6BA9E00050FDC678F /* DrinkingLog+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1059BDF4E3E44FEA667549B441394C5 /* DrinkingLog+CoreDataClass.swift */; };
+		3ABAC80EE96C4C6B918CC803E623CB3E /* DrinkingLog+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A612FE11DBB4DFAB0253B89307CB65A /* DrinkingLog+CoreDataProperties.swift */; };
+		C319342AFC214307842C30CC6F794CCC /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE924202E254E3F855380397BE0ACDD /* PhotoManager.swift */; };
+		54F9416C40AA45AA91E48D13528D1BC4 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06ED3AE94669412C9716E9609F71A09F /* ImagePicker.swift */; };
+		17112F4BB5204B9193BF6DD65154D717 /* DrinkingLogFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E6937648A847AFA2E8101D9B712AA7 /* DrinkingLogFormView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,8 +57,13 @@
 		8D1F4A5D2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BottlePhoto+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataClass.swift"; sourceTree = "<group>"; };
 		8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		D1059BDF4E3E44FEA667549B441394C5 /* DrinkingLog+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrinkingLog+CoreDataClass.swift"; sourceTree = "<group>"; };
+		1A612FE11DBB4DFAB0253B89307CB65A /* DrinkingLog+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrinkingLog+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8D1F4A632C9E5CD000A1B2C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
+		4AE924202E254E3F855380397BE0ACDD /* PhotoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
+		06ED3AE94669412C9716E9609F71A09F /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		D4E6937648A847AFA2E8101D9B712AA7 /* DrinkingLogFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrinkingLogFormView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +138,8 @@
 				8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */,
 				8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */,
 				8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */,
+				D4E6937648A847AFA2E8101D9B712AA7 /* DrinkingLogFormView.swift */,
+				06ED3AE94669412C9716E9609F71A09F /* ImagePicker.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -146,6 +158,8 @@
 				8D1F4A592C9E5C8000A1B2C3 /* Bottle+CoreDataProperties.swift */,
 				8D1F4A5B2C9E5C9000A1B2C3 /* BottlePhoto+CoreDataClass.swift */,
 				8D1F4A5D2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift */,
+				D1059BDF4E3E44FEA667549B441394C5 /* DrinkingLog+CoreDataClass.swift */,
+				1A612FE11DBB4DFAB0253B89307CB65A /* DrinkingLog+CoreDataProperties.swift */,
 				8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */,
 				8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */,
 			);
@@ -157,6 +171,7 @@
 			children = (
 				8D1F4A3A2C9E5B6000A1B2C3 /* CoreDataManager.swift */,
 				CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */,
+				4AE924202E254E3F855380397BE0ACDD /* PhotoManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -254,9 +269,14 @@
 				8D1F4A5A2C9E5C8000A1B2C3 /* Bottle+CoreDataProperties.swift in Sources */,
 				8D1F4A5C2C9E5C9000A1B2C3 /* BottlePhoto+CoreDataClass.swift in Sources */,
 				8D1F4A5E2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift in Sources */,
+				33D46C7849EC49A6BA9E00050FDC678F /* DrinkingLog+CoreDataClass.swift in Sources */,
+				3ABAC80EE96C4C6B918CC803E623CB3E /* DrinkingLog+CoreDataProperties.swift in Sources */,
 				8D1F4A602C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift in Sources */,
 				8D1F4A622C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift in Sources */,
 				77ACCD648CB14F19AC14AD23D3DF6EEE /* MotionManager.swift in Sources */,
+				C319342AFC214307842C30CC6F794CCC /* PhotoManager.swift in Sources */,
+				54F9416C40AA45AA91E48D13528D1BC4 /* ImagePicker.swift in Sources */,
+				17112F4BB5204B9193BF6DD65154D717 /* DrinkingLogFormView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

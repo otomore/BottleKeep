@@ -8,44 +8,81 @@ struct BottleDetailView: View {
     @State private var showingEditForm = false
     @State private var showingRemainingVolumeSheet = false
     @State private var currentRating: Int16 = 0
+    @State private var showingImagePicker = false
+    @State private var showingPhotoSourceAlert = false
+    @State private var selectedImage: UIImage?
+    @State private var imagePickerSourceType: ImagePicker.SourceType = .photoLibrary
+    @State private var photoToDelete: BottlePhoto?
+    @State private var showingDeleteAlert = false
+    @State private var showingDrinkingLogForm = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // 写真セクション
-                if !bottle.photosArray.isEmpty {
-                    TabView {
-                        ForEach(bottle.photosArray, id: \.id) { photo in
-                            AsyncImage(url: nil) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            } placeholder: {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .overlay(
-                                        ProgressView()
-                                    )
-                            }
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("写真")
+                            .font(.headline)
+                        Spacer()
+                        Button {
+                            showingPhotoSourceAlert = true
+                        } label: {
+                            Label("追加", systemImage: "plus.circle.fill")
+                                .font(.caption)
                         }
                     }
-                    .frame(height: 300)
-                    .tabViewStyle(PageTabViewStyle())
-                } else {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 300)
-                        .overlay(
-                            VStack {
-                                Image(systemName: "photo")
-                                    .font(.largeTitle)
-                                    .foregroundColor(.gray)
-                                Text("写真が追加されていません")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
+
+                    if !bottle.photosArray.isEmpty {
+                        TabView {
+                            ForEach(bottle.photosArray, id: \.id) { photo in
+                                ZStack(alignment: .topTrailing) {
+                                    if let fileName = photo.fileName,
+                                       let image = PhotoManager.shared.loadPhoto(fileName: fileName) {
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                    } else {
+                                        Rectangle()
+                                            .fill(Color.gray.opacity(0.3))
+                                            .overlay(
+                                                Image(systemName: "exclamationmark.triangle")
+                                                    .font(.largeTitle)
+                                                    .foregroundColor(.gray)
+                                            )
+                                    }
+
+                                    Button {
+                                        photoToDelete = photo
+                                        showingDeleteAlert = true
+                                    } label: {
+                                        Image(systemName: "trash.circle.fill")
+                                            .font(.title)
+                                            .foregroundColor(.red)
+                                            .background(Circle().fill(Color.white))
+                                    }
+                                    .padding(8)
+                                }
                             }
-                        )
-                        .cornerRadius(12)
+                        }
+                        .frame(height: 300)
+                        .tabViewStyle(PageTabViewStyle())
+                    } else {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 300)
+                            .overlay(
+                                VStack {
+                                    Image(systemName: "photo")
+                                        .font(.largeTitle)
+                                        .foregroundColor(.gray)
+                                    Text("写真が追加されていません")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            )
+                            .cornerRadius(12)
+                    }
                 }
 
                 // 基本情報セクション
@@ -71,6 +108,11 @@ struct BottleDetailView: View {
                         Text("残量情報")
                             .font(.headline)
                         Spacer()
+                        Button("ログを記録") {
+                            showingDrinkingLogForm = true
+                        }
+                        .font(.caption)
+                        .foregroundColor(.blue)
                         Button("更新") {
                             showingRemainingVolumeSheet = true
                         }
@@ -155,6 +197,50 @@ struct BottleDetailView: View {
                     }
                 }
 
+                // 飲酒ログセクション
+                if !bottle.drinkingLogsArray.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("飲酒ログ")
+                            .font(.headline)
+
+                        ForEach(bottle.drinkingLogsArray.prefix(5), id: \.id) { log in
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Image(systemName: "calendar")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text(log.wrappedDate, style: .date)
+                                        .font(.subheadline)
+                                    Text(log.wrappedDate, style: .time)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                    Text("\(log.volume)ml")
+                                        .font(.subheadline)
+                                        .foregroundColor(.blue)
+                                }
+
+                                if !log.wrappedNotes.isEmpty {
+                                    Text(log.wrappedNotes)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(2)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 8)
+                            .background(Color.gray.opacity(0.05))
+                            .cornerRadius(6)
+                        }
+
+                        if bottle.drinkingLogsArray.count > 5 {
+                            Text("他 \(bottle.drinkingLogsArray.count - 5) 件のログ")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+
                 Spacer(minLength: 20)
             }
             .padding()
@@ -173,6 +259,39 @@ struct BottleDetailView: View {
         }
         .sheet(isPresented: $showingRemainingVolumeSheet) {
             RemainingVolumeUpdateView(bottle: bottle)
+        }
+        .sheet(isPresented: $showingDrinkingLogForm) {
+            DrinkingLogFormView(bottle: bottle)
+        }
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(image: $selectedImage, isPresented: $showingImagePicker, sourceType: imagePickerSourceType)
+        }
+        .alert("写真を追加", isPresented: $showingPhotoSourceAlert) {
+            Button("カメラ") {
+                imagePickerSourceType = .camera
+                showingImagePicker = true
+            }
+            Button("フォトライブラリ") {
+                imagePickerSourceType = .photoLibrary
+                showingImagePicker = true
+            }
+            Button("キャンセル", role: .cancel) {}
+        }
+        .alert("写真を削除", isPresented: $showingDeleteAlert) {
+            Button("削除", role: .destructive) {
+                if let photo = photoToDelete {
+                    deletePhoto(photo)
+                }
+            }
+            Button("キャンセル", role: .cancel) {}
+        } message: {
+            Text("この写真を削除してもよろしいですか？")
+        }
+        .onChange(of: selectedImage) { _, newImage in
+            if let image = newImage {
+                savePhoto(image)
+                selectedImage = nil
+            }
         }
         .onAppear {
             currentRating = bottle.rating
@@ -217,6 +336,52 @@ struct BottleDetailView: View {
         formatter.timeStyle = .none
         formatter.locale = Locale(identifier: "ja_JP")
         return formatter
+    }
+
+    private func savePhoto(_ image: UIImage) {
+        let fileName = "\(UUID().uuidString).jpg"
+
+        // 写真をファイルシステムに保存
+        guard PhotoManager.shared.savePhoto(image, fileName: fileName) else {
+            print("写真の保存に失敗")
+            return
+        }
+
+        // Core Dataに写真レコードを作成
+        let photo = BottlePhoto(context: viewContext)
+        photo.id = UUID()
+        photo.fileName = fileName
+        photo.fileSize = PhotoManager.shared.getFileSize(fileName: fileName)
+        photo.createdAt = Date()
+        photo.isMain = bottle.photosArray.isEmpty // 最初の写真をメインに設定
+        photo.bottle = bottle
+
+        do {
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            print("写真レコードの保存に失敗: \(nsError), \(nsError.userInfo)")
+
+            // Core Dataの保存に失敗した場合、ファイルも削除
+            PhotoManager.shared.deletePhoto(fileName: fileName)
+        }
+    }
+
+    private func deletePhoto(_ photo: BottlePhoto) {
+        // ファイルシステムから写真を削除
+        if let fileName = photo.fileName {
+            PhotoManager.shared.deletePhoto(fileName: fileName)
+        }
+
+        // Core Dataから写真レコードを削除
+        viewContext.delete(photo)
+
+        do {
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            print("写真レコードの削除に失敗: \(nsError), \(nsError.userInfo)")
+        }
     }
 }
 

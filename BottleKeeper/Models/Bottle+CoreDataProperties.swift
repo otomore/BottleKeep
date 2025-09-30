@@ -23,7 +23,23 @@ extension Bottle {
     @NSManaged public var updatedAt: Date?
     @NSManaged public var vintage: Int32
     @NSManaged public var volume: Int32
+    @NSManaged public var drinkingLogs: NSSet?
     @NSManaged public var photos: NSSet?
+}
+
+// MARK: - Generated accessors for drinkingLogs
+extension Bottle {
+    @objc(addDrinkingLogsObject:)
+    @NSManaged public func addToDrinkingLogs(_ value: DrinkingLog)
+
+    @objc(removeDrinkingLogsObject:)
+    @NSManaged public func removeFromDrinkingLogs(_ value: DrinkingLog)
+
+    @objc(addDrinkingLogs:)
+    @NSManaged public func addToDrinkingLogs(_ values: NSSet)
+
+    @objc(removeDrinkingLogs:)
+    @NSManaged public func removeFromDrinkingLogs(_ values: NSSet)
 }
 
 // MARK: - Generated accessors for photos
@@ -79,6 +95,13 @@ extension Bottle : Identifiable {
         let set = photos as? Set<BottlePhoto> ?? []
         return set.sorted {
             $0.createdAt ?? Date() < $1.createdAt ?? Date()
+        }
+    }
+
+    public var drinkingLogsArray: [DrinkingLog] {
+        let set = drinkingLogs as? Set<DrinkingLog> ?? []
+        return set.sorted {
+            ($0.date ?? Date()) > ($1.date ?? Date())
         }
     }
 }

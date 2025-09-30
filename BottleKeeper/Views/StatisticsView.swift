@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import Charts
 
 struct StatisticsView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -8,6 +9,11 @@ struct StatisticsView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Bottle.createdAt, ascending: false)],
         animation: .default)
     private var bottles: FetchedResults<Bottle>
+
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \DrinkingLog.date, ascending: false)],
+        animation: .default)
+    private var drinkingLogs: FetchedResults<DrinkingLog>
 
     var totalBottles: Int {
         bottles.count
@@ -45,6 +51,35 @@ struct StatisticsView: View {
         let types = Dictionary(grouping: bottles) { $0.wrappedType }
         return types.map { ($0.key, $0.value.count) }
             .sorted { $0.1 > $1.1 }
+    }
+
+    var monthlyConsumption: [(String, Int)] {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // 過去6ヶ月のデータを取得
+        let months = (0..<6).compactMap { offset -> (String, Int)? in
+            guard let monthDate = calendar.date(byAdding: .month, value: -offset, to: now) else {
+                return nil
+            }
+
+            let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: monthDate))!
+            let monthEnd = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: monthStart)!
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "M月"
+            formatter.locale = Locale(identifier: "ja_JP")
+            let monthLabel = formatter.string(from: monthDate)
+
+            let consumption = drinkingLogs.filter { log in
+                guard let logDate = log.date else { return false }
+                return logDate >= monthStart && logDate <= monthEnd
+            }.reduce(0) { $0 + Int($1.volume) }
+
+            return (monthLabel, consumption)
+        }
+
+        return months.reversed()
     }
 
     var averageRemainingPercentage: Double {
@@ -171,30 +206,119 @@ struct StatisticsView: View {
                         }
                         .padding()
 
-                        // タイプ別分布
+                        // タイプ別分布（円グラフ）
                         if !typeDistribution.isEmpty {
                             VStack(spacing: 16) {
                                 Text("タイプ別分布")
                                     .font(.headline)
                                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                                ForEach(typeDistribution, id: \.0) { type, count in
-                                    HStack {
-                                        Text(type)
-                                            .font(.subheadline)
+                                Chart(typeDistribution, id: \.0) { type, count in
+                                    SectorMark(
+                                        angle: .value("本数", count),
+                                        innerRadius: .ratio(0.5),
+                                        angularInset: 1.5
+                                    )
+                                    .foregroundStyle(by: .value("タイプ", type))
+                                    .annotation(position: .overlay) {
+                                        Text("\(count)")
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                                .frame(height: 250)
+                                .chartLegend(position: .bottom, alignment: .center, spacing: 10)
 
-                                        Spacer()
+                                // 詳細リスト
+                                VStack(spacing: 8) {
+                                    ForEach(typeDistribution, id: \.0) { type, count in
+                                        HStack {
+                                            Text(type)
+                                                .font(.subheadline)
 
-                                        Text("\(count)本")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
+                                            Spacer()
 
-                                        Text("(\(Double(count) / Double(totalBottles) * 100, specifier: "%.0f")%)")
+                                            Text("\(count)本")
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+
+                                            Text("(\(Double(count) / Double(totalBottles) * 100, specifier: "%.0f")%)")
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                                .padding()
+                                .background(Color.gray.opacity(0.05))
+                                .cornerRadius(8)
+                            }
+                            .padding()
+                        }
+
+                        // 月別消費量（棒グラフ）
+                        if !monthlyConsumption.isEmpty && monthlyConsumption.contains(where: { $0.1 > 0 }) {
+                            VStack(spacing: 16) {
+                                Text("月別消費量")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Chart(monthlyConsumption, id: \.0) { month, volume in
+                                    BarMark(
+                                        x: .value("月", month),
+                                        y: .value("消費量", volume)
+                                    )
+                                    .foregroundStyle(Color.blue.gradient)
+                                    .annotation(position: .top) {
+                                        if volume > 0 {
+                                            Text("\(volume)ml")
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                                .frame(height: 200)
+                                .chartYAxis {
+                                    AxisMarks(position: .leading) { value in
+                                        AxisValueLabel {
+                                            if let intValue = value.as(Int.self) {
+                                                Text("\(intValue)ml")
+                                                    .font(.caption2)
+                                            }
+                                        }
+                                        AxisGridLine()
+                                    }
+                                }
+
+                                // 統計情報
+                                let totalConsumption = monthlyConsumption.reduce(0) { $0 + $1.1 }
+                                let avgConsumption = monthlyConsumption.isEmpty ? 0 : totalConsumption / monthlyConsumption.count
+
+                                HStack(spacing: 20) {
+                                    VStack {
+                                        Text("\(totalConsumption)ml")
+                                            .font(.title3)
+                                            .fontWeight(.bold)
+                                        Text("合計消費量")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
+                                    .frame(maxWidth: .infinity)
                                     .padding()
-                                    .background(Color.gray.opacity(0.1))
+                                    .background(Color.blue.opacity(0.1))
+                                    .cornerRadius(8)
+
+                                    VStack {
+                                        Text("\(avgConsumption)ml")
+                                            .font(.title3)
+                                            .fontWeight(.bold)
+                                        Text("月平均")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.green.opacity(0.1))
                                     .cornerRadius(8)
                                 }
                             }

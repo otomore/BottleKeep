@@ -76,6 +76,7 @@ struct BottleListView: View {
                                 }
                             }
                         }
+                        .onDelete(perform: deleteBottles)
                     }
                     .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                 }
@@ -128,6 +129,19 @@ struct BottleListView: View {
     private func deleteBottle(_ bottle: Bottle) {
         withAnimation {
             viewContext.delete(bottle)
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+
+    private func deleteBottles(offsets: IndexSet) {
+        withAnimation {
+            offsets.map { filteredBottles[$0] }.forEach(viewContext.delete)
 
             do {
                 try viewContext.save()
@@ -224,7 +238,7 @@ struct BottleShapeView: View {
                     // 液体の部分
                     LiquidWaveShape(
                         liquidHeight: remainingPercentage,
-                        tiltOffset: motionManager.roll * 15,
+                        tiltOffset: motionManager.roll * 45,
                         wavePhase: wavePhase,
                         waveAmplitude: min(motionManager.accelerationMagnitude * 8, 3.0)
                     )
