@@ -47,11 +47,11 @@ jobs:
           echo "=== 利用可能なシミュレータ ==="
           xcrun simctl list devices available | grep iPhone || echo "iPhone シミュレータを確認中..."
 
-          # iPhone 15シミュレータでビルド（最も安定）
+          # iPhone 16 Proシミュレータでビルド
           xcodebuild build \
             -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -configuration Debug \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -187,7 +187,7 @@ jobs:
           xcodebuild build \
             -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -configuration Debug \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
