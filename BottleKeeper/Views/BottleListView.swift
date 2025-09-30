@@ -148,7 +148,7 @@ struct BottleRowView: View {
             // ボトル形状のビュー
             BottleShapeView(
                 remainingPercentage: bottle.remainingPercentage / 100.0,
-                roll: motionManager.roll
+                motionManager: motionManager
             )
             .frame(width: 50, height: 80)
 
@@ -362,7 +362,7 @@ struct LiquidWaveShape: Shape {
             let x = width * Double(i) / Double(segments)
 
             // 傾きによる基本オフセット
-            let tiltY = liquidLevel + tiltOffset * (1 - 2 * x / width)
+            let tiltY = liquidLevel + tiltOffset * (1.0 - 2.0 * x / width)
 
             // 波動を追加
             let waveY = sin(x * waveFrequency + wavePhase) * waveAmplitude
