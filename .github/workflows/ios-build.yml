@@ -209,6 +209,7 @@ jobs:
             -configuration Release \
             DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
             CODE_SIGN_STYLE=Manual \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}"; then
             echo "✅ 名前でのアーカイブビルド成功"
             ARCHIVE_SUCCESS=true
@@ -226,6 +227,7 @@ jobs:
                 -configuration Release \
                 DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
                 CODE_SIGN_STYLE=Manual \
+                CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
                 PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"; then
                 echo "✅ UUIDでのアーカイブビルド成功"
                 ARCHIVE_SUCCESS=true
