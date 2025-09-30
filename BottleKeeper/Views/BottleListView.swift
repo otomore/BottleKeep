@@ -221,7 +221,7 @@ struct BottleShapeView: View {
                 // 液体の部分
                 LiquidShape(
                     liquidHeight: remainingPercentage,
-                    tiltOffset: roll * 5 // 傾きを増幅して見やすくする
+                    tiltOffset: roll * 15 // 傾きを増幅して見やすくする
                 )
                 .fill(
                     LinearGradient(
@@ -334,9 +334,9 @@ struct LiquidShape: Shape {
         let height = rect.height
         let liquidLevel = height * (1 - liquidHeight)
 
-        // 傾きによる左右のオフセット
-        let leftOffset = -tiltOffset
-        let rightOffset = tiltOffset
+        // 傾きによる左右のオフセット（方向を反転し、増幅率を上げる）
+        let leftOffset = tiltOffset
+        let rightOffset = -tiltOffset
 
         // 液体の表面（傾きを考慮）
         path.move(to: CGPoint(x: 0, y: liquidLevel + leftOffset))

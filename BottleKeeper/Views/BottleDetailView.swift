@@ -7,6 +7,7 @@ struct BottleDetailView: View {
     let bottle: Bottle
     @State private var showingEditForm = false
     @State private var showingRemainingVolumeSheet = false
+    @State private var currentRating: Int16 = 0
 
     var body: some View {
         ScrollView {
@@ -131,13 +132,16 @@ struct BottleDetailView: View {
                     Text("評価・ノート")
                         .font(.headline)
 
-                    if bottle.rating > 0 {
-                        HStack {
-                            Text("評価:")
-                                .foregroundColor(.secondary)
-                            ForEach(1...5, id: \.self) { star in
-                                Image(systemName: star <= bottle.rating ? "star.fill" : "star")
+                    HStack {
+                        Text("評価:")
+                            .foregroundColor(.secondary)
+                        ForEach(1...5, id: \.self) { star in
+                            Button {
+                                updateRating(Int16(star))
+                            } label: {
+                                Image(systemName: star <= currentRating ? "star.fill" : "star")
                                     .foregroundColor(.yellow)
+                                    .font(.title3)
                             }
                         }
                     }
@@ -168,6 +172,30 @@ struct BottleDetailView: View {
         }
         .sheet(isPresented: $showingRemainingVolumeSheet) {
             RemainingVolumeUpdateView(bottle: bottle)
+        }
+        .onAppear {
+            currentRating = bottle.rating
+        }
+    }
+
+    private func updateRating(_ newRating: Int16) {
+        withAnimation {
+            // 同じ星をタップした場合は0に戻す
+            if currentRating == newRating {
+                currentRating = 0
+            } else {
+                currentRating = newRating
+            }
+
+            bottle.rating = currentRating
+            bottle.updatedAt = Date()
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                print("評価の保存に失敗: \(nsError), \(nsError.userInfo)")
+            }
         }
     }
 
