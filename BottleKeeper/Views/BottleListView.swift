@@ -205,36 +205,44 @@ struct BottleRowView: View {
 // ボトル形状のカスタムビュー
 struct BottleShapeView: View {
     let remainingPercentage: Double // 0.0 ~ 1.0
-    let roll: Double // デバイスの横の傾き（ラジアン）
+    @ObservedObject var motionManager: MotionManager
+
+    @State private var wavePhase: Double = 0
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack(alignment: .bottom) {
-                // ボトルの輪郭
-                BottleOutlineShape()
-                    .stroke(Color.brown.opacity(0.5), lineWidth: 2)
+            TimelineView(.animation) { timeline in
+                ZStack(alignment: .bottom) {
+                    // ボトルの輪郭
+                    BottleOutlineShape()
+                        .stroke(Color.brown.opacity(0.5), lineWidth: 2)
 
-                // ボトルの背景
-                BottleOutlineShape()
-                    .fill(Color.brown.opacity(0.1))
+                    // ボトルの背景
+                    BottleOutlineShape()
+                        .fill(Color.brown.opacity(0.1))
 
-                // 液体の部分
-                LiquidShape(
-                    liquidHeight: remainingPercentage,
-                    tiltOffset: roll * 15 // 傾きを増幅して見やすくする
-                )
-                .fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color(red: 0.6, green: 0.4, blue: 0.2), // 濃い茶色
-                            Color(red: 0.8, green: 0.6, blue: 0.3)  // 薄い茶色
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
+                    // 液体の部分
+                    LiquidWaveShape(
+                        liquidHeight: remainingPercentage,
+                        tiltOffset: motionManager.roll * 15,
+                        wavePhase: wavePhase,
+                        waveAmplitude: min(motionManager.accelerationMagnitude * 8, 3.0)
                     )
-                )
-                .clipShape(BottleOutlineShape()) // ボトルの形に切り抜く
-                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: roll)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(red: 0.6, green: 0.4, blue: 0.2), // 濃い茶色
+                                Color(red: 0.8, green: 0.6, blue: 0.3)  // 薄い茶色
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .clipShape(BottleOutlineShape()) // ボトルの形に切り抜く
+                }
+                .onChange(of: timeline.date) { _ in
+                    wavePhase += 0.05
+                }
             }
         }
     }
@@ -314,7 +322,109 @@ struct BottleOutlineShape: Shape {
     }
 }
 
-// 液体を描画するShape
+// 波動を持つ液体を描画するShape
+struct LiquidWaveShape: Shape {
+    var liquidHeight: Double // 0.0 ~ 1.0
+    var tiltOffset: Double // 傾きによるオフセット
+    var wavePhase: Double // 波の位相
+    var waveAmplitude: Double // 波の振幅
+
+    var animatableData: AnimatableDataQuad {
+        get {
+            AnimatableDataQuad(
+                first: liquidHeight,
+                second: tiltOffset,
+                third: wavePhase,
+                fourth: waveAmplitude
+            )
+        }
+        set {
+            liquidHeight = newValue.first
+            tiltOffset = newValue.second
+            wavePhase = newValue.third
+            waveAmplitude = newValue.fourth
+        }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+
+        let width = rect.width
+        let height = rect.height
+        let liquidLevel = height * (1 - liquidHeight)
+
+        // 波のパラメータ
+        let waveFrequency = 2.0 * .pi / width // 波の周波数
+        let segments = 50 // 波の精度
+
+        // 液体の表面（波形を描画）
+        for i in 0...segments {
+            let x = width * Double(i) / Double(segments)
+
+            // 傾きによる基本オフセット
+            let tiltY = liquidLevel + tiltOffset * (1 - 2 * x / width)
+
+            // 波動を追加
+            let waveY = sin(x * waveFrequency + wavePhase) * waveAmplitude
+
+            let y = tiltY + waveY
+
+            if i == 0 {
+                path.move(to: CGPoint(x: x, y: y))
+            } else {
+                path.addLine(to: CGPoint(x: x, y: y))
+            }
+        }
+
+        // 底辺までパスを閉じる
+        path.addLine(to: CGPoint(x: width, y: height))
+        path.addLine(to: CGPoint(x: 0, y: height))
+        path.closeSubpath()
+
+        return path
+    }
+}
+
+// AnimatableDataを4つのDoubleに拡張
+struct AnimatableDataQuad: VectorArithmetic {
+    var first: Double
+    var second: Double
+    var third: Double
+    var fourth: Double
+
+    static var zero = AnimatableDataQuad(first: 0, second: 0, third: 0, fourth: 0)
+
+    static func + (lhs: AnimatableDataQuad, rhs: AnimatableDataQuad) -> AnimatableDataQuad {
+        AnimatableDataQuad(
+            first: lhs.first + rhs.first,
+            second: lhs.second + rhs.second,
+            third: lhs.third + rhs.third,
+            fourth: lhs.fourth + rhs.fourth
+        )
+    }
+
+    static func - (lhs: AnimatableDataQuad, rhs: AnimatableDataQuad) -> AnimatableDataQuad {
+        AnimatableDataQuad(
+            first: lhs.first - rhs.first,
+            second: lhs.second - rhs.second,
+            third: lhs.third - rhs.third,
+            fourth: lhs.fourth - rhs.fourth
+        )
+    }
+
+    mutating func scale(by rhs: Double) {
+        first *= rhs
+        second *= rhs
+        third *= rhs
+        fourth *= rhs
+    }
+
+    var magnitudeSquared: Double {
+        first * first + second * second + third * third + fourth * fourth
+    }
+}
+
+// 液体を描画するShape（旧バージョン - 参考用に残す）
 struct LiquidShape: Shape {
     var liquidHeight: Double // 0.0 ~ 1.0
     var tiltOffset: Double // 傾きによるオフセット
