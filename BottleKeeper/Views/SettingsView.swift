@@ -83,21 +83,21 @@ struct SettingsView: View {
 
                 // アプリについて
                 Section("アプリについて") {
-                    Link(destination: URL(string: "https://github.com")!) {
+                    HStack {
+                        Label("開発者", systemImage: "person.fill")
+                        Spacer()
+                        Text("otomore")
+                            .foregroundColor(.secondary)
+                    }
+
+                    Link(destination: URL(string: "https://x.com/otomore01")!) {
                         HStack {
-                            Label("GitHub", systemImage: "link")
+                            Label("X (Twitter)", systemImage: "link")
                             Spacer()
                             Image(systemName: "arrow.up.right")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                    }
-
-                    HStack {
-                        Label("開発者", systemImage: "person.fill")
-                        Spacer()
-                        Text("Yuto")
-                            .foregroundColor(.secondary)
                     }
                 }
 

@@ -27,6 +27,7 @@
 		8D1F4A5E2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A5D2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift */; };
 		8D1F4A602C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */; };
 		8D1F4A622C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */; };
+		77ACCD648CB14F19AC14AD23D3DF6EEE /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		8D1F4A5F2C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataClass.swift"; sourceTree = "<group>"; };
 		8D1F4A612C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WishlistItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8D1F4A632C9E5CD000A1B2C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1F4A3A2C9E5B6000A1B2C3 /* CoreDataManager.swift */,
+				CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -253,6 +256,7 @@
 				8D1F4A5E2C9E5CA000A1B2C3 /* BottlePhoto+CoreDataProperties.swift in Sources */,
 				8D1F4A602C9E5CB000A1B2C3 /* WishlistItem+CoreDataClass.swift in Sources */,
 				8D1F4A622C9E5CC000A1B2C3 /* WishlistItem+CoreDataProperties.swift in Sources */,
+				77ACCD648CB14F19AC14AD23D3DF6EEE /* MotionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

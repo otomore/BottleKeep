@@ -3,9 +3,10 @@ import CoreData
 
 struct BottleListView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var motionManager = MotionManager()
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Bottle.createdAt, ascending: false)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \Bottle.updatedAt, ascending: false)],
         animation: .default)
     private var bottles: FetchedResults<Bottle>
 
@@ -57,10 +58,24 @@ struct BottleListView: View {
                     List {
                         ForEach(filteredBottles, id: \.id) { bottle in
                             NavigationLink(destination: BottleDetailView(bottle: bottle)) {
-                                BottleRowView(bottle: bottle)
+                                BottleRowView(bottle: bottle, motionManager: motionManager)
+                            }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    consumeOneShot(bottle)
+                                } label: {
+                                    Label("1ショット", systemImage: "drop.fill")
+                                }
+                                .tint(.blue)
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    deleteBottle(bottle)
+                                } label: {
+                                    Label("削除", systemImage: "trash")
+                                }
                             }
                         }
-                        .onDelete(perform: deleteBottles)
                     }
                     .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                 }
@@ -87,9 +102,32 @@ struct BottleListView: View {
         }
     }
 
-    private func deleteBottles(offsets: IndexSet) {
+    private func consumeOneShot(_ bottle: Bottle) {
         withAnimation {
-            offsets.map { filteredBottles[$0] }.forEach(viewContext.delete)
+            // 1ショット = 30ml
+            let shotVolume: Int32 = 30
+
+            // 未開栓の場合は開栓日を設定
+            if bottle.openedDate == nil {
+                bottle.openedDate = Date()
+            }
+
+            // 残量を減らす（0以下にはしない）
+            bottle.remainingVolume = max(0, bottle.remainingVolume - shotVolume)
+            bottle.updatedAt = Date()
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+
+    private func deleteBottle(_ bottle: Bottle) {
+        withAnimation {
+            viewContext.delete(bottle)
 
             do {
                 try viewContext.save()
@@ -103,17 +141,16 @@ struct BottleListView: View {
 
 struct BottleRowView: View {
     let bottle: Bottle
+    @ObservedObject var motionManager: MotionManager
 
     var body: some View {
         HStack(spacing: 12) {
-            // ボトル画像のプレースホルダー
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.gray.opacity(0.2))
-                .frame(width: 60, height: 60)
-                .overlay(
-                    Image(systemName: "wineglass.fill")
-                        .foregroundColor(.gray)
-                )
+            // ボトル形状のビュー
+            BottleShapeView(
+                remainingPercentage: bottle.remainingPercentage / 100.0,
+                roll: motionManager.roll
+            )
+            .frame(width: 50, height: 80)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(bottle.wrappedName)
@@ -162,6 +199,153 @@ struct BottleRowView: View {
         default:
             return .red
         }
+    }
+}
+
+// ボトル形状のカスタムビュー
+struct BottleShapeView: View {
+    let remainingPercentage: Double // 0.0 ~ 1.0
+    let roll: Double // デバイスの横の傾き（ラジアン）
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .bottom) {
+                // ボトルの輪郭
+                BottleOutlineShape()
+                    .stroke(Color.brown.opacity(0.5), lineWidth: 2)
+
+                // ボトルの背景
+                BottleOutlineShape()
+                    .fill(Color.brown.opacity(0.1))
+
+                // 液体の部分
+                LiquidShape(
+                    liquidHeight: remainingPercentage,
+                    tiltOffset: roll * 5 // 傾きを増幅して見やすくする
+                )
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color(red: 0.6, green: 0.4, blue: 0.2), // 濃い茶色
+                            Color(red: 0.8, green: 0.6, blue: 0.3)  // 薄い茶色
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .clipShape(BottleOutlineShape()) // ボトルの形に切り抜く
+                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: roll)
+            }
+        }
+    }
+}
+
+// ボトルの輪郭を描画するShape
+struct BottleOutlineShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+
+        let width = rect.width
+        let height = rect.height
+
+        // ボトルの首部分（上部20%）
+        let neckWidth = width * 0.4
+        let neckHeight = height * 0.2
+
+        // ボトルの胴体部分（中央60%）
+        let bodyWidth = width * 0.8
+        let bodyHeight = height * 0.6
+
+        // ボトルの底部分（下部20%）
+        let bottomWidth = width * 0.7
+        let bottomHeight = height * 0.2
+
+        // 描画開始（左上）
+        path.move(to: CGPoint(x: (width - neckWidth) / 2, y: 0))
+
+        // 首の右側
+        path.addLine(to: CGPoint(x: (width + neckWidth) / 2, y: 0))
+        path.addLine(to: CGPoint(x: (width + neckWidth) / 2, y: neckHeight))
+
+        // 肩の部分（曲線）
+        path.addQuadCurve(
+            to: CGPoint(x: (width + bodyWidth) / 2, y: neckHeight + 10),
+            control: CGPoint(x: (width + bodyWidth) / 2, y: neckHeight)
+        )
+
+        // 胴体の右側
+        path.addLine(to: CGPoint(x: (width + bodyWidth) / 2, y: neckHeight + bodyHeight))
+
+        // 底への移行（曲線）
+        path.addQuadCurve(
+            to: CGPoint(x: (width + bottomWidth) / 2, y: neckHeight + bodyHeight + 10),
+            control: CGPoint(x: (width + bodyWidth) / 2, y: neckHeight + bodyHeight + 5)
+        )
+
+        // 底の右側
+        path.addLine(to: CGPoint(x: (width + bottomWidth) / 2, y: height))
+
+        // 底辺
+        path.addLine(to: CGPoint(x: (width - bottomWidth) / 2, y: height))
+
+        // 底の左側
+        path.addLine(to: CGPoint(x: (width - bottomWidth) / 2, y: neckHeight + bodyHeight + 10))
+
+        // 胴体への移行（曲線）
+        path.addQuadCurve(
+            to: CGPoint(x: (width - bodyWidth) / 2, y: neckHeight + bodyHeight),
+            control: CGPoint(x: (width - bodyWidth) / 2, y: neckHeight + bodyHeight + 5)
+        )
+
+        // 胴体の左側
+        path.addLine(to: CGPoint(x: (width - bodyWidth) / 2, y: neckHeight + 10))
+
+        // 肩の部分（曲線）
+        path.addQuadCurve(
+            to: CGPoint(x: (width - neckWidth) / 2, y: neckHeight),
+            control: CGPoint(x: (width - bodyWidth) / 2, y: neckHeight)
+        )
+
+        // 首の左側
+        path.addLine(to: CGPoint(x: (width - neckWidth) / 2, y: 0))
+
+        path.closeSubpath()
+        return path
+    }
+}
+
+// 液体を描画するShape
+struct LiquidShape: Shape {
+    var liquidHeight: Double // 0.0 ~ 1.0
+    var tiltOffset: Double // 傾きによるオフセット
+
+    var animatableData: AnimatablePair<Double, Double> {
+        get { AnimatablePair(liquidHeight, tiltOffset) }
+        set {
+            liquidHeight = newValue.first
+            tiltOffset = newValue.second
+        }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+
+        let width = rect.width
+        let height = rect.height
+        let liquidLevel = height * (1 - liquidHeight)
+
+        // 傾きによる左右のオフセット
+        let leftOffset = -tiltOffset
+        let rightOffset = tiltOffset
+
+        // 液体の表面（傾きを考慮）
+        path.move(to: CGPoint(x: 0, y: liquidLevel + leftOffset))
+        path.addLine(to: CGPoint(x: width, y: liquidLevel + rightOffset))
+        path.addLine(to: CGPoint(x: width, y: height))
+        path.addLine(to: CGPoint(x: 0, y: height))
+        path.closeSubpath()
+
+        return path
     }
 }
 
