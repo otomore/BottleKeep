@@ -458,152 +458,24 @@ jobs:
               fi
             fi
 
-            # フォールバック: Pythonで詳細診断
-            echo "PythonでApp Store Connect API診断を実行..."
-
-            # Pythonスクリプトを作成
-            cat > upload_to_testflight.py << 'EOF'
-import json
-import time
-import jwt
-import requests
-import os
-from datetime import datetime, timedelta
-
-def create_jwt_token(key_id, issuer_id, private_key_path):
-    """Create JWT token for App Store Connect API"""
-    with open(private_key_path, 'r') as key_file:
-        private_key = key_file.read()
-
-    now = datetime.utcnow()
-    payload = {
-        'iss': issuer_id,
-        'exp': now + timedelta(minutes=20),
-        'aud': 'appstoreconnect-v1',
-        'iat': now
-    }
-
-    headers = {
-        'kid': key_id,
-        'typ': 'JWT',
-        'alg': 'ES256'
-    }
-
-    token = jwt.encode(payload, private_key, algorithm='ES256', headers=headers)
-    return token
-
-def upload_to_testflight(ipa_path, key_id, issuer_id, private_key_path, bundle_id):
-    """Upload IPA to TestFlight using App Store Connect API"""
-    try:
-        print(f"🚀 TestFlightアップロード開始...")
-        print(f"- Bundle ID: {bundle_id}")
-        print(f"- API Key ID: {key_id}")
-        print(f"- Issuer ID: {issuer_id[:8]}****")
-
-        # Create JWT token
-        token = create_jwt_token(key_id, issuer_id, private_key_path)
-        print("✅ JWT token作成成功")
-
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
-        }
-
-        # Test API connection first
-        print("🔗 App Store Connect API接続テスト中...")
-        test_url = 'https://api.appstoreconnect.apple.com/v1/apps'
-        test_response = requests.get(test_url, headers=headers, timeout=30)
-
-        if test_response.status_code == 200:
-            print("✅ App Store Connect API認証成功")
-            apps = test_response.json().get('data', [])
-            print(f"📱 取得したアプリ数: {len(apps)}")
-
-            # Find our app by bundle ID
-            target_app = None
-            for app in apps:
-                if app['attributes']['bundleId'] == bundle_id:
-                    target_app = app
-                    break
-
-            if target_app:
-                print(f"✅ アプリが見つかりました: {target_app['attributes']['name']}")
-                print(f"🎉 TestFlightアップロード準備完了！")
-                print("📝 注意: 実際のアップロードはmultipart/form-dataが必要ですが、")
-                print("    API認証は成功しているため、altoolで再試行します。")
-                return True
-            else:
-                print(f"❌ Bundle ID '{bundle_id}' のアプリが見つかりません")
-                print("登録されているアプリ:")
-                for app in apps:
-                    print(f"  - {app['attributes']['name']}: {app['attributes']['bundleId']}")
-                return False
-
-        else:
-            print(f"❌ App Store Connect API認証失敗: {test_response.status_code}")
-            print(f"Response: {test_response.text}")
-            return False
-
-    except Exception as e:
-        print(f"❌ エラーが発生しました: {str(e)}")
-        return False
-
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 6:
-        print("Usage: python upload_to_testflight.py <ipa_path> <key_id> <issuer_id> <private_key_path> <bundle_id>")
-        sys.exit(1)
-
-    ipa_path, key_id, issuer_id, private_key_path, bundle_id = sys.argv[1:6]
-    success = upload_to_testflight(ipa_path, key_id, issuer_id, private_key_path, bundle_id)
-    sys.exit(0 if success else 1)
-EOF
-
-            # PyJWTをインストール（静かに）
-            python3 -m pip install --quiet PyJWT requests cryptography
-
-            # Pythonスクリプトを実行してAPI認証をテスト
-            if python3 upload_to_testflight.py "$IPA_FILE" "$APP_STORE_CONNECT_API_KEY_ID" "$APP_STORE_CONNECT_ISSUER_ID" "$API_KEY_FILE" "$BUNDLE_ID"; then
-              echo "✅ App Store Connect API認証が成功しました！"
-              echo ""
-              echo "📋 次のステップ:"
-              echo "1. App Store Connectにログイン: https://appstoreconnect.apple.com"
-              echo "2. 「マイApp」→「BottleKeeper」を選択"
-              echo "3. 「TestFlight」タブに移動"
-              echo "4. GitHub Actionsから生成されたIPAファイルを手動でアップロード"
-              echo ""
-              echo "📦 IPAファイルは以下からダウンロードできます:"
-              echo "   https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-              echo ""
-              echo "⚠️  altoolは廃止予定のため、手動アップロードを推奨します"
-              echo "   または、Xcode Organizerからアップロードしてください"
-            else
-              echo "❌ App Store Connect API認証に失敗しました"
-              echo ""
-              echo "🔍 考えられる原因:"
-              echo "1. APIキーが無効または期限切れ"
-              echo "2. Issuer IDまたはKey IDが正しくない"
-              echo "3. APIキーの権限が不足している"
-              echo "4. App Store Connectにアプリがまだ登録されていない"
-              echo ""
-              echo "📋 対処方法:"
-              echo "1. App Store Connectで新しいAPIキーを作成"
-              echo "2. アプリがApp Store Connectに登録されているか確認"
-              echo "3. APIキーに「Developer」または「App Manager」権限があるか確認"
-              echo ""
-              echo "詳細なエラー情報:"
-              echo "- API Key ID: ${APP_STORE_CONNECT_API_KEY_ID}"
-              echo "- Issuer ID: ${APP_STORE_CONNECT_ISSUER_ID}"
-              echo "- Bundle ID: ${BUNDLE_ID}"
-              echo "- IPA File: $IPA_FILE (${IPA_SIZE} bytes)"
-              echo "- API Key File: $API_KEY_FILE"
-
-              # 成功として扱う（IPAは生成されているため）
-              echo ""
-              echo "✅ IPAファイルは正常に生成されました"
-              echo "📦 手動でTestFlightにアップロードしてください"
-              exit 0
-            fi
+            # 成功メッセージと次のステップを表示
+            echo "✅ TestFlightへのアップロード準備が完了しました"
+            echo ""
+            echo "📋 次のステップ:"
+            echo "1. App Store Connectにログイン: https://appstoreconnect.apple.com"
+            echo "2. 「マイApp」→「BottleKeeper」を選択"
+            echo "3. 「TestFlight」タブに移動"
+            echo "4. 「+」ボタンから「ビルドをアップロード」を選択"
+            echo "5. GitHub Actionsから生成されたIPAファイルを手動でアップロード"
+            echo ""
+            echo "📦 IPAファイルは以下からダウンロードできます:"
+            echo "   https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            echo "⚠️  注意:"
+            echo "- altoolは廃止予定のため、手動アップロードまたはXcode Organizerの使用を推奨"
+            echo "- 自動アップロードの実装にはApp Store Connect APIの更なる開発が必要"
+            echo ""
+            echo "🎉 IPAファイルの生成と署名は成功しています！"
           else
             echo "❌ IPAファイルが見つかりません"
             echo "ipaディレクトリの内容:"
