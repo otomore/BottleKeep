@@ -102,14 +102,14 @@ struct StatisticsView: View {
 
                                 StatCardView(
                                     title: "平均ABV",
-                                    value: "\(averageABV, specifier: "%.1f")%",
+                                    value: String(format: "%.1f%%", averageABV),
                                     icon: "percent",
                                     color: .orange
                                 )
 
                                 StatCardView(
                                     title: "開栓率",
-                                    value: "\(openedPercentage, specifier: "%.0f")%",
+                                    value: String(format: "%.0f%%", openedPercentage),
                                     icon: "seal.fill",
                                     color: .purple
                                 )

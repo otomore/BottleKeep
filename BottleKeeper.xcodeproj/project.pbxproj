@@ -17,6 +17,7 @@
 		8D1F4A4C2C9E5C1000A1B2C3 /* BottleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A4B2C9E5C1000A1B2C3 /* BottleDetailView.swift */; };
 		8D1F4A4E2C9E5C2000A1B2C3 /* BottleFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A4D2C9E5C2000A1B2C3 /* BottleFormView.swift */; };
 		8D1F4A502C9E5C3000A1B2C3 /* WishlistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A4F2C9E5C3000A1B2C3 /* WishlistView.swift */; };
+		C1AE8AA2C6724DE7BC90072E /* WishlistFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A85421238E45C5933ED516 /* WishlistFormView.swift */; };
 		8D1F4A522C9E5C4000A1B2C3 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */; };
 		8D1F4A542C9E5C5000A1B2C3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */; };
 		8D1F4A562C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */; };
@@ -40,6 +41,7 @@
 		8D1F4A4B2C9E5C1000A1B2C3 /* BottleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleDetailView.swift; sourceTree = "<group>"; };
 		8D1F4A4D2C9E5C2000A1B2C3 /* BottleFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleFormView.swift; sourceTree = "<group>"; };
 		8D1F4A4F2C9E5C3000A1B2C3 /* WishlistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistView.swift; sourceTree = "<group>"; };
+		E5A85421238E45C5933ED516 /* WishlistFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistFormView.swift; sourceTree = "<group>"; };
 		8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemainingVolumeUpdateView.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				8D1F4A4B2C9E5C1000A1B2C3 /* BottleDetailView.swift */,
 				8D1F4A4D2C9E5C2000A1B2C3 /* BottleFormView.swift */,
 				8D1F4A4F2C9E5C3000A1B2C3 /* WishlistView.swift */,
+				E5A85421238E45C5933ED516 /* WishlistFormView.swift */,
 				8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */,
 				8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */,
 				8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */,
@@ -240,6 +243,7 @@
 				8D1F4A4C2C9E5C1000A1B2C3 /* BottleDetailView.swift in Sources */,
 				8D1F4A4E2C9E5C2000A1B2C3 /* BottleFormView.swift in Sources */,
 				8D1F4A502C9E5C3000A1B2C3 /* WishlistView.swift in Sources */,
+				C1AE8AA2C6724DE7BC90072E /* WishlistFormView.swift in Sources */,
 				8D1F4A522C9E5C4000A1B2C3 /* StatisticsView.swift in Sources */,
 				8D1F4A542C9E5C5000A1B2C3 /* SettingsView.swift in Sources */,
 				8D1F4A562C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift in Sources */,
