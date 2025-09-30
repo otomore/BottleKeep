@@ -98,16 +98,20 @@ struct BottleFormView: View {
                         Spacer()
                         ForEach(1...5, id: \.self) { star in
                             Button {
+                                let starValue = Int16(star)
                                 // 既に選択されている星をタップした場合は評価を0に戻す
-                                if rating == Int16(star) {
+                                if rating == starValue {
                                     rating = 0
                                 } else {
-                                    rating = Int16(star)
+                                    rating = starValue
                                 }
+                                print("評価を変更: \(rating)")
                             } label: {
-                                Image(systemName: star <= rating ? "star.fill" : "star")
+                                Image(systemName: Int16(star) <= rating ? "star.fill" : "star")
                                     .foregroundColor(.yellow)
+                                    .font(.title2)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
 

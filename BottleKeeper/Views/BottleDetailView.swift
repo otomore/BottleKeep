@@ -139,10 +139,11 @@ struct BottleDetailView: View {
                             Button {
                                 updateRating(Int16(star))
                             } label: {
-                                Image(systemName: star <= currentRating ? "star.fill" : "star")
+                                Image(systemName: Int16(star) <= currentRating ? "star.fill" : "star")
                                     .foregroundColor(.yellow)
-                                    .font(.title3)
+                                    .font(.title2)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
 
