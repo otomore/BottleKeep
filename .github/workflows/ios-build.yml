@@ -43,12 +43,18 @@ jobs:
       - name: ユニットテストを実行
         run: |
           echo "=== ユニットテストを実行 ==="
-          # スキーム不要の直接ターゲット指定でビルド
+          # 利用可能なシミュレータを確認
+          echo "=== 利用可能なシミュレータ ==="
+          xcrun simctl list devices available | grep iPhone || echo "iPhone シミュレータを確認中..."
+
+          # Any iOS Simulator Deviceを使用してビルド
           xcodebuild build \
             -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0' \
+            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
             -configuration Debug \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             || echo "テスト実行に失敗しましたが継続します"
           echo "✅ テスト実行完了"
 
@@ -75,7 +81,12 @@ jobs:
           xcodebuild -version
 
       - name: 証明書とプロビジョニングプロファイルをインストール
-        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+        if: |
+          ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch') &&
+          secrets.BUILD_CERTIFICATE_BASE64 != '' &&
+          secrets.P12_PASSWORD != '' &&
+          (secrets.BUILD_PROVISION_PROFILE_BASE64_NEW != '' || secrets.BUILD_PROVISION_PROFILE_BASE64 != '') &&
+          secrets.KEYCHAIN_PASSWORD != ''
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
@@ -174,83 +185,94 @@ jobs:
 
       - name: アーカイブをビルド
         run: |
-          echo "=== アーカイブビルドを開始 ==="
+          echo "=== ビルドを開始 ==="
 
-          # まず、開発用ビルドを試みる（署名不要）
+          # デバッグビルド（署名不要）
+          echo "=== デバッグビルド実行中 ==="
           xcodebuild build \
             -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
             -configuration Debug \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
           echo "✅ デバッグビルド成功"
 
-          # 本番用アーカイブビルド（証明書が利用可能な場合のみ）
-          if [ -n "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" ]; then
-            echo "=== リリース用アーカイブビルドを試行 ==="
-            echo "使用するプロビジョニングプロファイル名: ${PROFILE_NAME:-BottleKeeper Distribution}"
-            echo "使用するプロビジョニングプロファイルUUID: ${PROFILE_UUID:-N/A}"
-            echo "使用するTeam ID: ${PROFILE_TEAM_ID:-KRVLW3Y2SL}"
+      - name: リリースアーカイブをビルド
+        if: |
+          ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch') &&
+          secrets.BUILD_CERTIFICATE_BASE64 != '' &&
+          secrets.P12_PASSWORD != '' &&
+          (secrets.BUILD_PROVISION_PROFILE_BASE64_NEW != '' || secrets.BUILD_PROVISION_PROFILE_BASE64 != '') &&
+          secrets.KEYCHAIN_PASSWORD != ''
+        run: |
+          echo "=== リリース用アーカイブビルドを開始 ==="
+          echo "使用するプロビジョニングプロファイル名: ${PROFILE_NAME:-BottleKeeper Distribution}"
+          echo "使用するプロビジョニングプロファイルUUID: ${PROFILE_UUID:-N/A}"
+          echo "使用するTeam ID: ${PROFILE_TEAM_ID:-KRVLW3Y2SL}"
 
-            # アーカイブビルドを実行（失敗時は明確にエラーを出力）
-            ARCHIVE_SUCCESS=false
+          # アーカイブビルドを実行（失敗時は明確にエラーを出力）
+          ARCHIVE_SUCCESS=false
 
-            # まず名前で試行
-            echo "=== 名前でアーカイブビルドを試行 ==="
-            if xcodebuild archive \
-              -project BottleKeeper.xcodeproj \
-              -scheme BottleKeeper \
-              -destination 'generic/platform=iOS' \
-              -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
-              -configuration Release \
-              DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
-              CODE_SIGN_STYLE=Manual \
-              PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}"; then
-              echo "✅ 名前でのアーカイブビルド成功"
-              ARCHIVE_SUCCESS=true
-            else
-              echo "名前でのビルドに失敗しました。UUIDで再試行します。"
+          # まず名前で試行
+          echo "=== 名前でアーカイブビルドを試行 ==="
+          if xcodebuild archive \
+            -project BottleKeeper.xcodeproj \
+            -scheme BottleKeeper \
+            -destination 'generic/platform=iOS' \
+            -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
+            -configuration Release \
+            DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}"; then
+            echo "✅ 名前でのアーカイブビルド成功"
+            ARCHIVE_SUCCESS=true
+          else
+            echo "名前でのビルドに失敗しました。UUIDで再試行します。"
 
-              # UUIDで再試行
-              if [ -n "$PROFILE_UUID" ]; then
-                echo "=== UUIDでアーカイブビルドを試行 ==="
-                if xcodebuild archive \
-                  -project BottleKeeper.xcodeproj \
-                  -scheme BottleKeeper \
-                  -destination 'generic/platform=iOS' \
-                  -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
-                  -configuration Release \
-                  DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
-                  CODE_SIGN_STYLE=Manual \
-                  PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"; then
-                  echo "✅ UUIDでのアーカイブビルド成功"
-                  ARCHIVE_SUCCESS=true
-                else
-                  echo "❌ UUIDでのアーカイブビルドも失敗しました"
-                fi
+            # UUIDで再試行
+            if [ -n "$PROFILE_UUID" ]; then
+              echo "=== UUIDでアーカイブビルドを試行 ==="
+              if xcodebuild archive \
+                -project BottleKeeper.xcodeproj \
+                -scheme BottleKeeper \
+                -destination 'generic/platform=iOS' \
+                -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
+                -configuration Release \
+                DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
+                CODE_SIGN_STYLE=Manual \
+                PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"; then
+                echo "✅ UUIDでのアーカイブビルド成功"
+                ARCHIVE_SUCCESS=true
               else
-                echo "❌ UUIDが利用できません"
+                echo "❌ UUIDでのアーカイブビルドも失敗しました"
               fi
-            fi
-
-            # アーカイブの存在確認
-            if [ "$ARCHIVE_SUCCESS" = true ] && [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
-              echo "✅ アーカイブファイルが正常に作成されました"
-              ls -la $RUNNER_TEMP/BottleKeeper.xcarchive
             else
-              echo "❌ アーカイブの作成に失敗しました"
-              echo "RUNNER_TEMP内容:"
-              ls -la $RUNNER_TEMP/
-              exit 1
+              echo "❌ UUIDが利用できません"
             fi
           fi
 
-          echo "✅ ビルド処理完了"
+          # アーカイブの存在確認
+          if [ "$ARCHIVE_SUCCESS" = true ] && [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
+            echo "✅ アーカイブファイルが正常に作成されました"
+            ls -la $RUNNER_TEMP/BottleKeeper.xcarchive
+          else
+            echo "❌ アーカイブの作成に失敗しました"
+            echo "RUNNER_TEMP内容:"
+            ls -la $RUNNER_TEMP/
+            exit 1
+          fi
+
+          echo "✅ リリースアーカイブビルド完了"
 
       - name: IPAをエクスポート
-        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+        if: |
+          ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch') &&
+          secrets.BUILD_CERTIFICATE_BASE64 != '' &&
+          secrets.P12_PASSWORD != '' &&
+          (secrets.BUILD_PROVISION_PROFILE_BASE64_NEW != '' || secrets.BUILD_PROVISION_PROFILE_BASE64 != '') &&
+          secrets.KEYCHAIN_PASSWORD != ''
         run: |
           echo "=== IPAエクスポート開始 ==="
 
@@ -287,7 +309,12 @@ jobs:
           fi
 
       - name: ビルド成果物をアップロード
-        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+        if: |
+          ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch') &&
+          secrets.BUILD_CERTIFICATE_BASE64 != '' &&
+          secrets.P12_PASSWORD != '' &&
+          (secrets.BUILD_PROVISION_PROFILE_BASE64_NEW != '' || secrets.BUILD_PROVISION_PROFILE_BASE64 != '') &&
+          secrets.KEYCHAIN_PASSWORD != ''
         uses: actions/upload-artifact@v4
         with:
           name: BottleKeeper-IPA
@@ -306,7 +333,15 @@ jobs:
     name: TestFlightへ配信
     runs-on: macos-15
     needs: build
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    if: |
+      ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch') &&
+      secrets.BUILD_CERTIFICATE_BASE64 != '' &&
+      secrets.P12_PASSWORD != '' &&
+      (secrets.BUILD_PROVISION_PROFILE_BASE64_NEW != '' || secrets.BUILD_PROVISION_PROFILE_BASE64 != '') &&
+      secrets.KEYCHAIN_PASSWORD != '' &&
+      secrets.APP_STORE_CONNECT_API_KEY_ID != '' &&
+      secrets.APP_STORE_CONNECT_ISSUER_ID != '' &&
+      secrets.APP_STORE_CONNECT_API_KEY != ''
 
     steps:
       - name: リポジトリをチェックアウト
