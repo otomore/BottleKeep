@@ -205,14 +205,7 @@ struct BottleRowView: View {
     }
 
     private func remainingColor(for percentage: Double) -> Color {
-        switch percentage {
-        case 50...100:
-            return .green
-        case 20..<50:
-            return .orange
-        default:
-            return .red
-        }
+        AppColors.remainingColor(for: percentage)
     }
 }
 

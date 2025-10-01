@@ -1,12 +1,21 @@
 import Foundation
 import UIKit
 
+/// ボトル写真のファイルシステム管理とキャッシング
+///
+/// このクラスは以下の責務を持ちます：
+/// - 写真のファイルシステムへの保存・読み込み・削除
+/// - ImageCacheを使用したメモリキャッシング
+/// - サムネイル画像の生成と提供
 class PhotoManager {
     static let shared = PhotoManager()
 
     private init() {}
 
-    // 写真を保存するディレクトリを取得
+    /// 写真を保存するディレクトリを取得
+    ///
+    /// Documents/BottlePhotos ディレクトリを使用。
+    /// 存在しない場合は自動的に作成されます。
     private var photosDirectory: URL {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let photosDir = documentsDirectory.appendingPathComponent("BottlePhotos")

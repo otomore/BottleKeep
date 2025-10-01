@@ -1,16 +1,22 @@
 import UIKit
 
 /// 画像のメモリキャッシュを管理するサービス
+///
+/// パフォーマンス最適化のため、以下の2種類のキャッシュを提供：
+/// - **フルサイズキャッシュ**: 詳細画面で使用（最大20枚）
+/// - **サムネイルキャッシュ**: リストビューで使用（最大100枚）
+///
+/// メモリ警告時には自動的にキャッシュをクリアします。
 class ImageCache {
     static let shared = ImageCache()
 
-    // フルサイズ画像用のキャッシュ
+    /// フルサイズ画像用のキャッシュ（最大20枚）
     private let fullImageCache = NSCache<NSString, UIImage>()
 
-    // サムネイル画像用のキャッシュ
+    /// サムネイル画像用のキャッシュ（最大100枚）
     private let thumbnailCache = NSCache<NSString, UIImage>()
 
-    // サムネイルのサイズ（リストビューで使用）
+    /// サムネイルのサイズ（リストビューで使用）
     private let thumbnailSize = CGSize(width: 200, height: 200)
 
     private init() {

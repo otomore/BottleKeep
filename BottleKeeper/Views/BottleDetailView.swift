@@ -187,16 +187,9 @@ struct BottleDetailView: View {
                     HStack {
                         Text("評価:")
                             .foregroundColor(.secondary)
-                        ForEach(1...5, id: \.self) { star in
-                            Button {
-                                updateRating(Int16(star))
-                            } label: {
-                                Image(systemName: Int16(star) <= currentRating ? "star.fill" : "star")
-                                    .foregroundColor(.yellow)
-                                    .font(.title2)
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        StarRatingView(rating: $currentRating, onRatingChange: { newRating in
+                            updateRating(newRating)
+                        })
                     }
 
                     if !bottle.wrappedNotes.isEmpty {
@@ -313,14 +306,7 @@ struct BottleDetailView: View {
 
     private func updateRating(_ newRating: Int16) {
         withAnimation {
-            // 同じ星をタップした場合は0に戻す
-            if currentRating == newRating {
-                currentRating = 0
-            } else {
-                currentRating = newRating
-            }
-
-            bottle.rating = currentRating
+            bottle.rating = newRating
             bottle.updatedAt = Date()
 
             do {
@@ -333,14 +319,7 @@ struct BottleDetailView: View {
     }
 
     private func progressColor(for percentage: Double) -> Color {
-        switch percentage {
-        case 50...100:
-            return .green
-        case 20..<50:
-            return .orange
-        default:
-            return .red
-        }
+        AppColors.progressColor(for: percentage)
     }
 
     private var dateFormatter: DateFormatter {

@@ -36,15 +36,7 @@ struct TastingNoteFormView: View {
 
                     HStack {
                         Text("評価:")
-                        ForEach(1...5, id: \.self) { star in
-                            Button {
-                                rating = Int16(star)
-                            } label: {
-                                Image(systemName: Int16(star) <= rating ? "star.fill" : "star")
-                                    .foregroundColor(.yellow)
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        StarRatingView(rating: $rating)
                     }
                 }
             }

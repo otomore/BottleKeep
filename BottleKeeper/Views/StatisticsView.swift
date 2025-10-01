@@ -59,59 +59,60 @@ struct StatisticsView: View {
     }
 
     var monthlyConsumption: [(String, Int)] {
-        let calendar = Calendar.current
-        let now = Date()
-
-        // 過去6ヶ月のデータを取得
-        let months = (0..<6).compactMap { offset -> (String, Int)? in
-            guard let monthDate = calendar.date(byAdding: .month, value: -offset, to: now) else {
-                return nil
-            }
-
-            let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: monthDate))!
-            let monthEnd = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: monthStart)!
-
-            let formatter = DateFormatter()
-            formatter.dateFormat = "M月"
-            formatter.locale = Locale(identifier: "ja_JP")
-            let monthLabel = formatter.string(from: monthDate)
-
-            let consumption = drinkingLogs.filter { log in
-                guard let logDate = log.date else { return false }
-                return logDate >= monthStart && logDate <= monthEnd
-            }.reduce(0) { $0 + Int($1.volume) }
-
-            return (monthLabel, consumption)
-        }
-
-        return months.reversed()
+        consumptionData(for: .month, count: 6, dateFormat: "M月")
     }
 
     var yearlyConsumption: [(String, Int)] {
+        consumptionData(for: .year, count: 5, dateFormat: "yyyy年")
+    }
+
+    /// 期間別消費データを取得する汎用メソッド
+    private func consumptionData(for component: Calendar.Component, count: Int, dateFormat: String) -> [(String, Int)] {
         let calendar = Calendar.current
         let now = Date()
 
-        // 過去5年のデータを取得
-        let years = (0..<5).compactMap { offset -> (String, Int)? in
-            guard let yearDate = calendar.date(byAdding: .year, value: -offset, to: now) else {
+        let data = (0..<count).compactMap { offset -> (String, Int)? in
+            guard let date = calendar.date(byAdding: component, value: -offset, to: now) else {
                 return nil
             }
 
-            let year = calendar.component(.year, from: yearDate)
-            let yearStart = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
-            let yearEnd = calendar.date(from: DateComponents(year: year, month: 12, day: 31))!
-
-            let yearLabel = "\(year)年"
+            let (start, end, label) = periodBounds(for: date, component: component, dateFormat: dateFormat)
 
             let consumption = drinkingLogs.filter { log in
                 guard let logDate = log.date else { return false }
-                return logDate >= yearStart && logDate <= yearEnd
+                return logDate >= start && logDate <= end
             }.reduce(0) { $0 + Int($1.volume) }
 
-            return (yearLabel, consumption)
+            return (label, consumption)
         }
 
-        return years.reversed()
+        return data.reversed()
+    }
+
+    /// 期間の開始日・終了日・ラベルを取得
+    private func periodBounds(for date: Date, component: Calendar.Component, dateFormat: String) -> (Date, Date, String) {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ja_JP")
+
+        switch component {
+        case .month:
+            formatter.dateFormat = dateFormat
+            let label = formatter.string(from: date)
+            let start = calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
+            let end = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: start)!
+            return (start, end, label)
+
+        case .year:
+            let year = calendar.component(.year, from: date)
+            let label = "\(year)年"
+            let start = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
+            let end = calendar.date(from: DateComponents(year: year, month: 12, day: 31))!
+            return (start, end, label)
+
+        default:
+            fatalError("Unsupported calendar component")
+        }
     }
 
     var averageRemainingPercentage: Double {

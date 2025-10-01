@@ -49,18 +49,27 @@ struct AppColors {
 
     /// 残量ステータスに応じた色
     static func remainingStatusColor(for percentage: Double, colorScheme: ColorScheme) -> Color {
-        let baseColor: Color
-        switch percentage {
-        case 50...100:
-            baseColor = .green
-        case 20..<50:
-            baseColor = .orange
-        default:
-            baseColor = .red
-        }
+        let baseColor = remainingColor(for: percentage)
 
         // ダークモードではやや明るく
         return colorScheme == .dark ? baseColor.opacity(0.9) : baseColor
+    }
+
+    /// 残量パーセンテージに応じた基本色（共通ロジック）
+    static func remainingColor(for percentage: Double) -> Color {
+        switch percentage {
+        case 50...100:
+            return .green
+        case 20..<50:
+            return .orange
+        default:
+            return .red
+        }
+    }
+
+    /// プログレスバーの色（BottleDetailView用）
+    static func progressColor(for percentage: Double) -> Color {
+        remainingColor(for: percentage)
     }
 
     // MARK: - Chart Colors
