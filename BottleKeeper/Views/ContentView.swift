@@ -36,7 +36,11 @@ struct ContentView: View {
                     Button {
                         selectedTab = 3
                     } label: {
-                        Label("設定", systemImage: "gear")
+                        Label {
+                            Text("設定")
+                        } icon: {
+                            Text("🥃")
+                        }
                     }
                     .listRowBackground(selectedTab == 3 ? Color.blue.opacity(0.2) : Color.clear)
                 }
@@ -71,7 +75,11 @@ struct ContentView: View {
 
                 SettingsView()
                     .tabItem {
-                        Label("設定", systemImage: "gear")
+                        Label {
+                            Text("設定")
+                        } icon: {
+                            Text("🥃")
+                        }
                     }
                     .tag(3)
             }

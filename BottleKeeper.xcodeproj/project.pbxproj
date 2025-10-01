@@ -40,6 +40,7 @@
 		4AA0979B03BC46A68B34B8FF /* StarRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC252B6D3014A29855FADC4 /* StarRatingView.swift */; };
 		5DB82EC2C13B40C29E66948C /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC082850CD34DBA9A6347DB /* AppColors.swift */; };
 		1033A19CF2C348F593A2030B /* UserDefaultsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2D5D3CA8418C818D2AFE /* UserDefaultsKeys.swift */; };
+		57EC6182BF8A46E6A2B4B57F /* ViewExtensions+Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5285EC9B6D4419793D736CF /* ViewExtensions+Glass.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +79,9 @@
 		CFC252B6D3014A29855FADC4 /* StarRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRatingView.swift; sourceTree = "<group>"; };
 		DCC082850CD34DBA9A6347DB /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		E48E2D5D3CA8418C818D2AFE /* UserDefaultsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsKeys.swift; sourceTree = "<group>"; };
+		3F5AA5F05B074B40A0A01B70 /* BottleKeeper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BottleKeeper.entitlements; sourceTree = "<group>"; };
+		9FC95E3D18574326A6264450 /* BottleKeeper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BottleKeeper.entitlements; sourceTree = "<group>"; };
+		D5285EC9B6D4419793D736CF /* ViewExtensions+Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewExtensions+Glass.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +114,7 @@
 		8D1F4A2A2C9E5B4300A1B2C3 /* BottleKeeper */ = {
 			isa = PBXGroup;
 			children = (
+				1F1FB2489F7447F1B6EB9883 /* Helpers */,
 				8D1F4A442C9E5B8000A1B2C3 /* App */,
 				8D1F4A452C9E5B8500A1B2C3 /* Views */,
 				8D1F4A462C9E5B8A00A1B2C3 /* ViewModels */,
@@ -220,6 +225,14 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		1F1FB2489F7447F1B6EB9883 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				D5285EC9B6D4419793D736CF /* ViewExtensions+Glass.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -290,6 +303,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57EC6182BF8A46E6A2B4B57F /* ViewExtensions+Glass.swift in Sources */,
 				8D1F4A2E2C9E5B4300A1B2C3 /* ContentView.swift in Sources */,
 				8D1F4A3B2C9E5B6000A1B2C3 /* CoreDataManager.swift in Sources */,
 				8D1F4A3E2C9E5B7000A1B2C3 /* BottleKeeper.xcdatamodeld in Sources */,

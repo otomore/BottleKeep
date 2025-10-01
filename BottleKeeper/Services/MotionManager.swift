@@ -100,11 +100,11 @@ class MotionManager: ObservableObject {
             // Portrait逆さま: rollを反転
             return -roll
         case .landscapeLeft:
-            // Landscape左: pitchをrollとして使用（反転）
-            return -pitch
-        case .landscapeRight:
-            // Landscape右: pitchをrollとして使用
+            // Landscape左(USBポート右、音量ボタン上): pitchをrollとして使用
             return pitch
+        case .landscapeRight:
+            // Landscape右(USBポート左、音量ボタン下): pitchをrollとして使用（反転）
+            return -pitch
         default:
             // デフォルトはportrait扱い
             return roll

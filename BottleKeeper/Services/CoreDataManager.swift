@@ -30,27 +30,42 @@ class CoreDataManager {
         return manager
     }()
 
-    let container: NSPersistentContainer
+    let container: NSPersistentCloudKitContainer
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "BottleKeeper")
+        container = NSPersistentCloudKitContainer(name: "BottleKeeper")
 
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
-        }
+        } else {
+            // CloudKit同期の設定
+            guard let description = container.persistentStoreDescriptions.first else {
+                fatalError("persistentStoreDescription not found")
+            }
 
-        container.persistentStoreDescriptions.forEach { description in
+            // CloudKitコンテナオプション
+            description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
+                containerIdentifier: "iCloud.com.yourname.BottleKeeper"
+            )
+
+            // 履歴トラッキングとリモート変更通知を有効化
             description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
             description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         }
 
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
+                print("Core Data load error: \(error), \(error.userInfo)")
+                // CloudKit同期エラーの場合、詳細をログに出力
+                if let cloudKitError = error.userInfo["NSUnderlyingError"] as? NSError {
+                    print("CloudKit error: \(cloudKitError)")
+                }
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         }
 
         container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     }
 
     func save() {
