@@ -3,6 +3,9 @@ name: iCloud自動設定
 on:
   workflow_dispatch: # 手動実行のみ
 
+permissions:
+  contents: write
+
 env:
   BUNDLE_ID: 'com.bottlekeep.whiskey'
 
