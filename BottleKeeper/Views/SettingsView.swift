@@ -48,6 +48,13 @@ struct SettingsView: View {
                     .padding(.vertical, 8)
                 }
 
+                // 機能設定
+                Section("機能設定") {
+                    NavigationLink(destination: NotificationSettingsView()) {
+                        Label("通知設定", systemImage: "bell")
+                    }
+                }
+
                 // バージョン情報
                 Section("アプリ情報") {
                     HStack {

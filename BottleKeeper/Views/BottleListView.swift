@@ -220,6 +220,7 @@ struct BottleRowView: View {
 struct BottleShapeView: View {
     let remainingPercentage: Double // 0.0 ~ 1.0
     @ObservedObject var motionManager: MotionManager
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var wavePhase: Double = 0
 
@@ -229,11 +230,11 @@ struct BottleShapeView: View {
                 ZStack(alignment: .bottom) {
                     // ボトルの輪郭
                     BottleOutlineShape()
-                        .stroke(Color.brown.opacity(0.5), lineWidth: 2)
+                        .stroke(AppColors.bottleOutline(for: colorScheme), lineWidth: 2)
 
                     // ボトルの背景
                     BottleOutlineShape()
-                        .fill(Color.brown.opacity(0.1))
+                        .fill(AppColors.bottleBackground(for: colorScheme))
 
                     // 液体の部分
                     LiquidWaveShape(
@@ -244,10 +245,7 @@ struct BottleShapeView: View {
                     )
                     .fill(
                         LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.6, green: 0.4, blue: 0.2), // 濃い茶色
-                                Color(red: 0.8, green: 0.6, blue: 0.3)  // 薄い茶色
-                            ]),
+                            gradient: Gradient(colors: AppColors.whiskyLiquid(for: colorScheme)),
                             startPoint: .top,
                             endPoint: .bottom
                         )
