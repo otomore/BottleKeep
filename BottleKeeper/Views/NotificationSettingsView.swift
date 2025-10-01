@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreData
 
 struct NotificationSettingsView: View {
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
@@ -12,79 +13,11 @@ struct NotificationSettingsView: View {
 
     var body: some View {
         List {
-            // 通知の状態
-            Section {
-                HStack {
-                    Image(systemName: authorizationStatusIcon)
-                        .foregroundColor(authorizationStatusColor)
-                    Text("通知の状態")
-                    Spacer()
-                    Text(authorizationStatusText)
-                        .foregroundColor(.secondary)
-                }
-
-                if authorizationStatus == .denied {
-                    Button("設定アプリで許可") {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url)
-                        }
-                    }
-                }
-            } footer: {
-                Text("通知を受け取るには、システム設定で通知を許可してください。")
-            }
-
-            // 通知のオン/オフ
-            Section {
-                Toggle("通知を有効にする", isOn: $notificationsEnabled)
-                    .disabled(authorizationStatus != .authorized)
-            } footer: {
-                Text("通知を無効にすると、すべての通知が送信されなくなります。")
-            }
-
-            // 残量少なし通知
-            Section("残量少なし通知") {
-                HStack {
-                    Text("閾値")
-                    Spacer()
-                    Text("\(Int(lowStockThreshold))%")
-                        .foregroundColor(.secondary)
-                }
-
-                Slider(value: $lowStockThreshold, in: 5...30, step: 5)
-                    .disabled(!notificationsEnabled || authorizationStatus != .authorized)
-            } footer: {
-                Text("ボトルの残量がこのパーセンテージ以下になると通知されます。")
-            }
-
-            // 経過日数通知
-            Section("開栓後経過日数通知") {
-                Toggle("30日後", isOn: $notifyAt30Days)
-                    .disabled(!notificationsEnabled || authorizationStatus != .authorized)
-
-                Toggle("60日後", isOn: $notifyAt60Days)
-                    .disabled(!notificationsEnabled || authorizationStatus != .authorized)
-
-                Toggle("90日後", isOn: $notifyAt90Days)
-                    .disabled(!notificationsEnabled || authorizationStatus != .authorized)
-            } footer: {
-                Text("開栓してから指定の日数が経過すると通知されます。")
-            }
-
-            // デバッグ情報（開発中のみ）
-            #if DEBUG
-            Section("デバッグ") {
-                Button("通知をテスト") {
-                    sendTestNotification()
-                }
-
-                Button("ペンディング通知を表示") {
-                    Task {
-                        await NotificationManager.shared.printPendingNotifications()
-                    }
-                }
-            }
-            #endif
+            authorizationStatusSection
+            notificationToggleSection
+            lowStockSection
+            elapsedDaysSection
+            debugSection
         }
         .navigationTitle("通知設定")
         .navigationBarTitleDisplayMode(.inline)
@@ -94,45 +27,131 @@ struct NotificationSettingsView: View {
             }
         }
         .onChange(of: notificationsEnabled) { _, newValue in
-            if newValue {
-                // 通知を有効にした場合、通知を再スケジュール
-                Task {
-                    await rescheduleNotifications()
-                }
-            } else {
-                // 通知を無効にした場合、すべての通知をキャンセル
-                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-            }
+            handleNotificationsEnabledChange(newValue)
         }
         .onChange(of: lowStockThreshold) { _, _ in
-            Task {
-                await rescheduleNotifications()
-            }
+            handleSettingsChange()
         }
         .onChange(of: notifyAt30Days) { _, _ in
-            Task {
-                await rescheduleNotifications()
-            }
+            handleSettingsChange()
         }
         .onChange(of: notifyAt60Days) { _, _ in
-            Task {
-                await rescheduleNotifications()
-            }
+            handleSettingsChange()
         }
         .onChange(of: notifyAt90Days) { _, _ in
-            Task {
-                await rescheduleNotifications()
-            }
+            handleSettingsChange()
         }
         .alert("通知権限が必要です", isPresented: $showingPermissionAlert) {
             Button("設定を開く") {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
-                }
+                openSettings()
             }
             Button("キャンセル", role: .cancel) {}
         } message: {
             Text("通知を受け取るには、設定アプリで通知を許可してください。")
+        }
+    }
+
+    // MARK: - サブビュー
+
+    private var authorizationStatusSection: some View {
+        Section {
+            HStack {
+                Image(systemName: authorizationStatusIcon)
+                    .foregroundColor(authorizationStatusColor)
+                Text("通知の状態")
+                Spacer()
+                Text(authorizationStatusText)
+                    .foregroundColor(.secondary)
+            }
+
+            if authorizationStatus == .denied {
+                Button("設定アプリで許可") {
+                    openSettings()
+                }
+            }
+        } footer: {
+            Text("通知を受け取るには、システム設定で通知を許可してください。")
+        }
+    }
+
+    private var notificationToggleSection: some View {
+        Section {
+            Toggle("通知を有効にする", isOn: $notificationsEnabled)
+                .disabled(authorizationStatus != .authorized)
+        } footer: {
+            Text("通知を無効にすると、すべての通知が送信されなくなります。")
+        }
+    }
+
+    private var lowStockSection: some View {
+        Section("残量少なし通知") {
+            HStack {
+                Text("閾値")
+                Spacer()
+                Text("\(Int(lowStockThreshold))%")
+                    .foregroundColor(.secondary)
+            }
+
+            Slider(value: $lowStockThreshold, in: 5...30, step: 5)
+                .disabled(!notificationsEnabled || authorizationStatus != .authorized)
+        } footer: {
+            Text("ボトルの残量がこのパーセンテージ以下になると通知されます。")
+        }
+    }
+
+    private var elapsedDaysSection: some View {
+        Section("開栓後経過日数通知") {
+            Toggle("30日後", isOn: $notifyAt30Days)
+                .disabled(!notificationsEnabled || authorizationStatus != .authorized)
+
+            Toggle("60日後", isOn: $notifyAt60Days)
+                .disabled(!notificationsEnabled || authorizationStatus != .authorized)
+
+            Toggle("90日後", isOn: $notifyAt90Days)
+                .disabled(!notificationsEnabled || authorizationStatus != .authorized)
+        } footer: {
+            Text("開栓してから指定の日数が経過すると通知されます。")
+        }
+    }
+
+    @ViewBuilder
+    private var debugSection: some View {
+        #if DEBUG
+        Section("デバッグ") {
+            Button("通知をテスト") {
+                sendTestNotification()
+            }
+
+            Button("ペンディング通知を表示") {
+                Task {
+                    await NotificationManager.shared.printPendingNotifications()
+                }
+            }
+        }
+        #endif
+    }
+
+    // MARK: - ヘルパーメソッド
+
+    private func handleNotificationsEnabledChange(_ newValue: Bool) {
+        if newValue {
+            Task {
+                await rescheduleNotifications()
+            }
+        } else {
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        }
+    }
+
+    private func handleSettingsChange() {
+        Task {
+            await rescheduleNotifications()
+        }
+    }
+
+    private func openSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
         }
     }
 

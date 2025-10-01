@@ -11,19 +11,34 @@ struct ContentView: View {
             // iPad用レイアウト
             NavigationSplitView(columnVisibility: $columnVisibility) {
                 // サイドバー
-                List(selection: $selectedTab) {
-                    NavigationLink(value: 0) {
+                List {
+                    Button {
+                        selectedTab = 0
+                    } label: {
                         Label("コレクション", systemImage: "list.bullet")
                     }
-                    NavigationLink(value: 1) {
+                    .listRowBackground(selectedTab == 0 ? Color.blue.opacity(0.2) : Color.clear)
+
+                    Button {
+                        selectedTab = 1
+                    } label: {
                         Label("ウィッシュリスト", systemImage: "star")
                     }
-                    NavigationLink(value: 2) {
+                    .listRowBackground(selectedTab == 1 ? Color.blue.opacity(0.2) : Color.clear)
+
+                    Button {
+                        selectedTab = 2
+                    } label: {
                         Label("統計", systemImage: "chart.bar")
                     }
-                    NavigationLink(value: 3) {
+                    .listRowBackground(selectedTab == 2 ? Color.blue.opacity(0.2) : Color.clear)
+
+                    Button {
+                        selectedTab = 3
+                    } label: {
                         Label("設定", systemImage: "gear")
                     }
+                    .listRowBackground(selectedTab == 3 ? Color.blue.opacity(0.2) : Color.clear)
                 }
                 .navigationTitle("BottleKeeper")
                 .navigationSplitViewColumnWidth(min: 200, ideal: 250, max: 300)

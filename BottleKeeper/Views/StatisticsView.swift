@@ -413,7 +413,6 @@ struct StatisticsView: View {
                     AxisGridLine()
                 }
             }
-            .chartAngleSelection(value: $selectedConsumption)
 
             if let selected = selectedConsumption {
                 VStack(spacing: 8) {
