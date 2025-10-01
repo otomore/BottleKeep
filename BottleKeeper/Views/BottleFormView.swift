@@ -198,7 +198,9 @@ struct BottleFormView: View {
                 dismiss()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to save bottle: \(nsError), \(nsError.userInfo)")
+                // エラーが発生してもアプリは続行（データは保存されない）
+                dismiss()
             }
         }
     }

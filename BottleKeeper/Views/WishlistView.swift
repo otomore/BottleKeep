@@ -113,7 +113,7 @@ struct WishlistView: View {
                 try viewContext.save()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to delete wishlist items: \(nsError), \(nsError.userInfo)")
             }
         }
     }
@@ -138,7 +138,7 @@ struct WishlistView: View {
                 try viewContext.save()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to move item to collection: \(nsError), \(nsError.userInfo)")
             }
         }
     }

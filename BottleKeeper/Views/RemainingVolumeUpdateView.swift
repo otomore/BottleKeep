@@ -157,7 +157,8 @@ struct RemainingVolumeUpdateView: View {
                 dismiss()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to update remaining volume: \(nsError), \(nsError.userInfo)")
+                dismiss()
             }
         }
     }

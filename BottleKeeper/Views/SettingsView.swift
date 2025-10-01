@@ -216,7 +216,7 @@ struct SettingsView: View {
                 try viewContext.save()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to delete all data: \(nsError), \(nsError.userInfo)")
             }
         }
     }

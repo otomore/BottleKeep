@@ -121,7 +121,7 @@ struct BottleListView: View {
                 try viewContext.save()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to toggle bottle status: \(nsError), \(nsError.userInfo)")
             }
         }
     }
@@ -134,7 +134,7 @@ struct BottleListView: View {
                 try viewContext.save()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to delete bottle: \(nsError), \(nsError.userInfo)")
             }
         }
     }
@@ -147,7 +147,7 @@ struct BottleListView: View {
                 try viewContext.save()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to delete bottles: \(nsError), \(nsError.userInfo)")
             }
         }
     }

@@ -111,7 +111,13 @@ struct StatisticsView: View {
             return (start, end, label)
 
         default:
-            fatalError("Unsupported calendar component")
+            // サポートされていないコンポーネントの場合、月にフォールバック
+            print("⚠️ Unsupported calendar component, falling back to month")
+            formatter.dateFormat = dateFormat
+            let label = formatter.string(from: date)
+            let start = calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
+            let end = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: start)!
+            return (start, end, label)
         }
     }
 

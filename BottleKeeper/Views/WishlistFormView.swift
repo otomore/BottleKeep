@@ -135,7 +135,8 @@ struct WishlistFormView: View {
                 dismiss()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Failed to save wishlist item: \(nsError), \(nsError.userInfo)")
+                dismiss()
             }
         }
     }

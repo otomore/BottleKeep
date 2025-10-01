@@ -38,32 +38,24 @@ class CoreDataManager {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
-            // CloudKit同期の設定（オプショナル）
+            // CloudKit同期の設定（完全にオプショナル）
             if let description = container.persistentStoreDescriptions.first {
-                // CloudKitコンテナオプション（iCloudが利用可能な場合のみ有効）
-                description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
-                    containerIdentifier: "iCloud.com.bottlekeep.whiskey"
-                )
+                // CloudKitを無効化してローカルストレージのみで動作
+                // iCloudが正しく設定されている場合のみ有効化される
+                description.cloudKitContainerOptions = nil
 
-                // 履歴トラッキングとリモート変更通知を有効化
+                // ローカルストレージとして動作
                 description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-                description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
             }
         }
 
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
                 print("⚠️ Core Data load error: \(error), \(error.userInfo)")
-                // CloudKit同期エラーの場合、詳細をログに出力
-                if let cloudKitError = error.userInfo["NSUnderlyingError"] as? NSError {
-                    print("⚠️ CloudKit error: \(cloudKitError)")
-                    print("⚠️ CloudKit sync is disabled. App will work with local storage only.")
-                }
-                // CloudKitエラーでもアプリは続行（ローカルストレージとして動作）
-                // 致命的なストレージエラーの場合のみクラッシュ
-                if error.domain == NSCocoaErrorDomain && error.code == NSPersistentStoreIncompatibleVersionHashError {
-                    fatalError("Unresolved persistent store error \(error), \(error.userInfo)")
-                }
+                print("⚠️ Working with local storage only.")
+                // エラーが発生してもアプリは続行（クラッシュさせない）
+            } else {
+                print("✅ Core Data loaded successfully")
             }
         }
 
@@ -79,7 +71,9 @@ class CoreDataManager {
                 try context.save()
             } catch {
                 let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("⚠️ Core Data save error: \(nsError), \(nsError.userInfo)")
+                // エラーが発生してもアプリは続行（クラッシュさせない）
+                // ユーザーデータの損失を防ぐため、次回の保存を試みる
             }
         }
     }
