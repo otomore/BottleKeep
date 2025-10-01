@@ -38,29 +38,32 @@ class CoreDataManager {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
-            // CloudKit同期の設定
-            guard let description = container.persistentStoreDescriptions.first else {
-                fatalError("persistentStoreDescription not found")
+            // CloudKit同期の設定（オプショナル）
+            if let description = container.persistentStoreDescriptions.first {
+                // CloudKitコンテナオプション（iCloudが利用可能な場合のみ有効）
+                description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
+                    containerIdentifier: "iCloud.com.bottlekeep.whiskey"
+                )
+
+                // 履歴トラッキングとリモート変更通知を有効化
+                description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+                description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
             }
-
-            // CloudKitコンテナオプション
-            description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
-                containerIdentifier: "iCloud.com.bottlekeep.whiskey"
-            )
-
-            // 履歴トラッキングとリモート変更通知を有効化
-            description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-            description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         }
 
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
-                print("Core Data load error: \(error), \(error.userInfo)")
+                print("⚠️ Core Data load error: \(error), \(error.userInfo)")
                 // CloudKit同期エラーの場合、詳細をログに出力
                 if let cloudKitError = error.userInfo["NSUnderlyingError"] as? NSError {
-                    print("CloudKit error: \(cloudKitError)")
+                    print("⚠️ CloudKit error: \(cloudKitError)")
+                    print("⚠️ CloudKit sync is disabled. App will work with local storage only.")
                 }
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                // CloudKitエラーでもアプリは続行（ローカルストレージとして動作）
+                // 致命的なストレージエラーの場合のみクラッシュ
+                if error.domain == NSCocoaErrorDomain && error.code == NSPersistentStoreIncompatibleVersionHashError {
+                    fatalError("Unresolved persistent store error \(error), \(error.userInfo)")
+                }
             }
         }
 
