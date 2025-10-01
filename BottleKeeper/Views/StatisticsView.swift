@@ -15,6 +15,11 @@ struct StatisticsView: View {
         animation: .default)
     private var drinkingLogs: FetchedResults<DrinkingLog>
 
+    // 消費トレンドの表示モード
+    @State private var consumptionPeriod: ConsumptionPeriod = .monthly
+    @State private var selectedConsumption: (String, Int)?
+    @State private var selectedType: String?
+
     var totalBottles: Int {
         bottles.count
     }
@@ -80,6 +85,33 @@ struct StatisticsView: View {
         }
 
         return months.reversed()
+    }
+
+    var yearlyConsumption: [(String, Int)] {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // 過去5年のデータを取得
+        let years = (0..<5).compactMap { offset -> (String, Int)? in
+            guard let yearDate = calendar.date(byAdding: .year, value: -offset, to: now) else {
+                return nil
+            }
+
+            let year = calendar.component(.year, from: yearDate)
+            let yearStart = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
+            let yearEnd = calendar.date(from: DateComponents(year: year, month: 12, day: 31))!
+
+            let yearLabel = "\(year)年"
+
+            let consumption = drinkingLogs.filter { log in
+                guard let logDate = log.date else { return false }
+                return logDate >= yearStart && logDate <= yearEnd
+            }.reduce(0) { $0 + Int($1.volume) }
+
+            return (yearLabel, consumption)
+        }
+
+        return years.reversed()
     }
 
     var averageRemainingPercentage: Double {
@@ -220,6 +252,7 @@ struct StatisticsView: View {
                                         angularInset: 1.5
                                     )
                                     .foregroundStyle(by: .value("タイプ", type))
+                                    .opacity(selectedType == nil || selectedType == type ? 1.0 : 0.5)
                                     .annotation(position: .overlay) {
                                         Text("\(count)")
                                             .font(.caption)
@@ -229,6 +262,32 @@ struct StatisticsView: View {
                                 }
                                 .frame(height: 250)
                                 .chartLegend(position: .bottom, alignment: .center, spacing: 10)
+                                .chartAngleSelection(value: $selectedType)
+
+                                // 選択されたタイプの詳細情報
+                                if let selected = selectedType,
+                                   let selectedData = typeDistribution.first(where: { $0.0 == selected }) {
+                                    VStack(spacing: 8) {
+                                        Text("\(selectedData.0)の詳細")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        HStack {
+                                            Text("本数:")
+                                            Spacer()
+                                            Text("\(selectedData.1)本")
+                                                .fontWeight(.bold)
+                                        }
+                                        HStack {
+                                            Text("割合:")
+                                            Spacer()
+                                            Text("\(Double(selectedData.1) / Double(totalBottles) * 100, specifier: "%.1f")%")
+                                                .fontWeight(.bold)
+                                        }
+                                    }
+                                    .padding()
+                                    .background(Color.orange.opacity(0.1))
+                                    .cornerRadius(8)
+                                }
 
                                 // 詳細リスト
                                 VStack(spacing: 8) {
@@ -256,19 +315,34 @@ struct StatisticsView: View {
                             .padding()
                         }
 
-                        // 月別消費量（棒グラフ）
-                        if !monthlyConsumption.isEmpty && monthlyConsumption.contains(where: { $0.1 > 0 }) {
+                        // 消費トレンド（棒グラフ）
+                        let consumptionData = consumptionPeriod == .monthly ? monthlyConsumption : yearlyConsumption
+                        if !consumptionData.isEmpty && consumptionData.contains(where: { $0.1 > 0 }) {
                             VStack(spacing: 16) {
-                                Text("月別消費量")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                HStack {
+                                    Text("消費トレンド")
+                                        .font(.headline)
 
-                                Chart(monthlyConsumption, id: \.0) { month, volume in
+                                    Spacer()
+
+                                    Picker("期間", selection: $consumptionPeriod) {
+                                        Text("月次").tag(ConsumptionPeriod.monthly)
+                                        Text("年次").tag(ConsumptionPeriod.yearly)
+                                    }
+                                    .pickerStyle(.segmented)
+                                    .frame(width: 150)
+                                }
+
+                                Chart(consumptionData, id: \.0) { period, volume in
                                     BarMark(
-                                        x: .value("月", month),
+                                        x: .value(consumptionPeriod == .monthly ? "月" : "年", period),
                                         y: .value("消費量", volume)
                                     )
-                                    .foregroundStyle(Color.blue.gradient)
+                                    .foregroundStyle(
+                                        selectedConsumption?.0 == period
+                                            ? Color.orange.gradient
+                                            : Color.blue.gradient
+                                    )
                                     .annotation(position: .top) {
                                         if volume > 0 {
                                             Text("\(volume)ml")
@@ -289,10 +363,29 @@ struct StatisticsView: View {
                                         AxisGridLine()
                                     }
                                 }
+                                .chartAngleSelection(value: $selectedConsumption)
+
+                                // 選択された期間の詳細情報
+                                if let selected = selectedConsumption {
+                                    VStack(spacing: 8) {
+                                        Text("\(selected.0)の詳細")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        HStack {
+                                            Text("消費量:")
+                                            Spacer()
+                                            Text("\(selected.1)ml")
+                                                .fontWeight(.bold)
+                                        }
+                                    }
+                                    .padding()
+                                    .background(Color.orange.opacity(0.1))
+                                    .cornerRadius(8)
+                                }
 
                                 // 統計情報
-                                let totalConsumption = monthlyConsumption.reduce(0) { $0 + $1.1 }
-                                let avgConsumption = monthlyConsumption.isEmpty ? 0 : totalConsumption / monthlyConsumption.count
+                                let totalConsumption = consumptionData.reduce(0) { $0 + $1.1 }
+                                let avgConsumption = consumptionData.isEmpty ? 0 : totalConsumption / consumptionData.count
 
                                 HStack(spacing: 20) {
                                     VStack {
@@ -312,7 +405,7 @@ struct StatisticsView: View {
                                         Text("\(avgConsumption)ml")
                                             .font(.title3)
                                             .fontWeight(.bold)
-                                        Text("月平均")
+                                        Text(consumptionPeriod == .monthly ? "月平均" : "年平均")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -359,6 +452,12 @@ struct StatCardView: View {
         .background(color.opacity(0.1))
         .cornerRadius(12)
     }
+}
+
+// 消費トレンドの期間タイプ
+enum ConsumptionPeriod {
+    case monthly
+    case yearly
 }
 
 #Preview {

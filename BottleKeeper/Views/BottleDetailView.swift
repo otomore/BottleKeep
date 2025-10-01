@@ -16,6 +16,7 @@ struct BottleDetailView: View {
     @State private var photoToDelete: BottlePhoto?
     @State private var showingDeleteAlert = false
     @State private var showingDrinkingLogForm = false
+    @State private var showingTastingNoteForm = false
 
     var body: some View {
         ScrollView {
@@ -172,8 +173,16 @@ struct BottleDetailView: View {
 
                 // 評価・ノートセクション
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("評価・ノート")
-                        .font(.headline)
+                    HStack {
+                        Text("評価・ノート")
+                            .font(.headline)
+                        Spacer()
+                        Button("テイスティングノート") {
+                            showingTastingNoteForm = true
+                        }
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                    }
 
                     HStack {
                         Text("評価:")
@@ -263,6 +272,9 @@ struct BottleDetailView: View {
         }
         .sheet(isPresented: $showingDrinkingLogForm) {
             DrinkingLogFormView(bottle: bottle)
+        }
+        .sheet(isPresented: $showingTastingNoteForm) {
+            TastingNoteFormView(bottle: bottle)
         }
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(image: $selectedImage, isPresented: $showingImagePicker, sourceType: imagePickerSourceType)

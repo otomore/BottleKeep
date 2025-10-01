@@ -36,15 +36,44 @@ class PhotoManager {
         }
     }
 
-    // 写真を読み込み
+    // 写真を読み込み（キャッシュを使用）
     func loadPhoto(fileName: String) -> UIImage? {
+        // キャッシュにある場合はキャッシュから返す
+        if let cachedImage = ImageCache.shared.getFullImage(forKey: fileName) {
+            return cachedImage
+        }
+
+        // ディスクから読み込み
         let fileURL = photosDirectory.appendingPathComponent(fileName)
 
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             return nil
         }
 
-        return UIImage(contentsOfFile: fileURL.path)
+        guard let image = UIImage(contentsOfFile: fileURL.path) else {
+            return nil
+        }
+
+        // キャッシュに保存
+        ImageCache.shared.setFullImage(image, forKey: fileName)
+
+        return image
+    }
+
+    // サムネイル画像を読み込み（リストビュー用）
+    func loadThumbnail(fileName: String) -> UIImage? {
+        // サムネイルキャッシュにある場合はキャッシュから返す
+        if let cachedThumbnail = ImageCache.shared.getThumbnail(forKey: fileName) {
+            return cachedThumbnail
+        }
+
+        // フルサイズ画像を読み込み
+        guard let fullImage = loadPhoto(fileName: fileName) else {
+            return nil
+        }
+
+        // サムネイルを生成してキャッシュ
+        return ImageCache.shared.generateAndCacheThumbnail(from: fullImage, forKey: fileName)
     }
 
     // 写真を削除
@@ -57,6 +86,10 @@ class PhotoManager {
 
         do {
             try FileManager.default.removeItem(at: fileURL)
+
+            // キャッシュからも削除
+            ImageCache.shared.removeCache(forKey: fileName)
+
             return true
         } catch {
             print("写真の削除に失敗: \(error)")

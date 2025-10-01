@@ -29,30 +29,23 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
           xcodebuild -version
 
-      - name: プロジェクトとスキームの確認
-        run: |
-          echo "=== プロジェクト構造を確認 ==="
-          ls -la BottleKeeper.xcodeproj/
-
-          echo "=== BottleKeeperディレクトリ確認 ==="
-          ls -la BottleKeeper/
-
-          echo "=== 利用可能なターゲットを確認 ==="
-          xcodebuild -list -project ${{ env.PROJECT_PATH }} || echo "プロジェクト設定を確認中..."
+      - name: DerivedDataキャッシュを復元
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('**/*.swift', '**/*.xcodeproj') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
 
       - name: ユニットテストを実行
         run: |
-          echo "=== ユニットテストを実行 ==="
-          # 利用可能なシミュレータを確認
-          echo "=== 利用可能なシミュレータ ==="
-          xcrun simctl list devices available | grep iPhone || echo "iPhone シミュレータを確認中..."
-
           # iPhoneシミュレータでビルド
           xcodebuild build \
             -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -configuration Debug \
+            -quiet \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             || echo "テスト実行に失敗しましたが継続します"
@@ -79,6 +72,15 @@ jobs:
         run: |
           sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
           xcodebuild -version
+
+      - name: DerivedDataキャッシュを復元
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-build-${{ hashFiles('**/*.swift', '**/*.xcodeproj') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-build-
+            ${{ runner.os }}-deriveddata-
 
       - name: 証明書とプロビジョニングプロファイルをインストール
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
@@ -167,127 +169,69 @@ jobs:
           echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
           echo "ビルド番号: $BUILD_NUMBER"
 
-      - name: プロジェクト構造とスキームを確認
-        run: |
-          echo "=== プロジェクト構造確認 ==="
-          ls -la BottleKeeper/
-
-          echo "=== Xcodeプロジェクト確認 ==="
-          xcodebuild -list -project ${{ env.PROJECT_PATH }} || echo "プロジェクト設定を確認中..."
-
-          echo "=== Info.plist確認 ==="
-          ls -la BottleKeeper/Info.plist
-
-      - name: プロジェクト検証
-        run: |
-          echo "=== プロジェクト検証 ==="
-          # DerivedDataをクリーン
-          xcodebuild clean \
-            -project BottleKeeper.xcodeproj \
-            -scheme BottleKeeper
-
-          echo "✅ プロジェクト検証完了（シミュレータービルドはスキップ）"
-
       - name: リリースアーカイブをビルド
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
         run: |
-          echo "=== リリース用アーカイブビルドを開始 ==="
-          echo "使用するプロビジョニングプロファイル名: ${PROFILE_NAME:-BottleKeeper Distribution}"
-          echo "使用するプロビジョニングプロファイルUUID: ${PROFILE_UUID:-N/A}"
-          echo "使用するTeam ID: ${PROFILE_TEAM_ID:-KRVLW3Y2SL}"
+          echo "🏗️ リリースアーカイブビルド開始"
+          echo "プロファイル: ${PROFILE_NAME:-BottleKeeper Distribution}"
+          echo "Team ID: ${PROFILE_TEAM_ID:-KRVLW3Y2SL}"
 
-          # アーカイブビルドを実行（失敗時は明確にエラーを出力）
           ARCHIVE_SUCCESS=false
 
-          # まず名前で試行
-          echo "=== 名前でアーカイブビルドを試行 ==="
+          # 名前でアーカイブビルド
           if xcodebuild archive \
             -project BottleKeeper.xcodeproj \
             -scheme BottleKeeper \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
             -configuration Release \
+            -quiet \
             DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
             CODE_SIGN_STYLE=Manual \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-BottleKeeper Distribution}"; then
-            echo "✅ 名前でのアーカイブビルド成功"
             ARCHIVE_SUCCESS=true
-          else
-            echo "名前でのビルドに失敗しました。UUIDで再試行します。"
-
+          elif [ -n "$PROFILE_UUID" ]; then
             # UUIDで再試行
-            if [ -n "$PROFILE_UUID" ]; then
-              echo "=== UUIDでアーカイブビルドを試行 ==="
-              if xcodebuild archive \
-                -project BottleKeeper.xcodeproj \
-                -scheme BottleKeeper \
-                -destination 'generic/platform=iOS' \
-                -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
-                -configuration Release \
-                DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
-                CODE_SIGN_STYLE=Manual \
-                CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
-                PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"; then
-                echo "✅ UUIDでのアーカイブビルド成功"
-                ARCHIVE_SUCCESS=true
-              else
-                echo "❌ UUIDでのアーカイブビルドも失敗しました"
-              fi
-            else
-              echo "❌ UUIDが利用できません"
-            fi
+            xcodebuild archive \
+              -project BottleKeeper.xcodeproj \
+              -scheme BottleKeeper \
+              -destination 'generic/platform=iOS' \
+              -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
+              -configuration Release \
+              -quiet \
+              DEVELOPMENT_TEAM="${PROFILE_TEAM_ID:-KRVLW3Y2SL}" \
+              CODE_SIGN_STYLE=Manual \
+              CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+              PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" && ARCHIVE_SUCCESS=true
           fi
 
-          # アーカイブの存在確認
+          # アーカイブの確認
           if [ "$ARCHIVE_SUCCESS" = true ] && [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
-            echo "✅ アーカイブファイルが正常に作成されました"
-            ls -la $RUNNER_TEMP/BottleKeeper.xcarchive
+            echo "✅ アーカイブビルド完了"
           else
-            echo "❌ アーカイブの作成に失敗しました"
-            echo "RUNNER_TEMP内容:"
-            ls -la $RUNNER_TEMP/
+            echo "❌ アーカイブビルド失敗"
             exit 1
           fi
-
-          echo "✅ リリースアーカイブビルド完了"
 
       - name: IPAをエクスポート
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
         run: |
-          echo "=== IPAエクスポート開始 ==="
+          echo "📦 IPAエクスポート開始"
 
-          # 動的にExportOptions.plistを生成
-          echo "=== 動的ExportOptions.plistを生成 ==="
-          DYNAMIC_PROFILE_NAME="${PROFILE_NAME:-BottleKeeper Distribution}"
-          echo "使用するプロファイル名: $DYNAMIC_PROFILE_NAME"
-
-          # 元のExportOptions.plistをコピーして動的に更新
+          # ExportOptions.plistを動的生成
           cp ExportOptions.plist $RUNNER_TEMP/ExportOptions.plist
-
-          # sedでプロビジョニングプロファイル名とTeam IDを動的に置換（macOS対応）
-          sed -i '' "s/BottleKeeper Distribution/$DYNAMIC_PROFILE_NAME/g" $RUNNER_TEMP/ExportOptions.plist
+          sed -i '' "s/BottleKeeper Distribution/${PROFILE_NAME:-BottleKeeper Distribution}/g" $RUNNER_TEMP/ExportOptions.plist
           sed -i '' "s/KRVLW3Y2SL/$PROFILE_TEAM_ID/g" $RUNNER_TEMP/ExportOptions.plist
 
-          echo "✅ 動的ExportOptions.plist生成完了"
-          cat $RUNNER_TEMP/ExportOptions.plist
+          # IPAエクスポート
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
+            -exportPath $RUNNER_TEMP/ipa \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
+            -quiet
 
-          # アーカイブの存在確認
-          if [ -d "$RUNNER_TEMP/BottleKeeper.xcarchive" ]; then
-            echo "✅ アーカイブファイルが見つかりました"
-
-            # IPAエクスポート実行
-            xcodebuild -exportArchive \
-              -archivePath $RUNNER_TEMP/BottleKeeper.xcarchive \
-              -exportPath $RUNNER_TEMP/ipa \
-              -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist
-
-            echo "✅ IPAエクスポート完了"
-            ls -la $RUNNER_TEMP/ipa/
-          else
-            echo "❌ アーカイブファイルが見つかりません"
-            exit 1
-          fi
+          echo "✅ IPAエクスポート完了"
 
       - name: ビルド成果物をアップロード
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
@@ -333,23 +277,12 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         run: |
-          echo "🚀 fastlaneでTestFlightにアップロード中..."
-
-          # IPAファイルの確認
-          if [ -f "./ipa/BottleKeeper.ipa" ]; then
-            echo "✅ IPAファイル確認完了"
-            ls -lh ./ipa/BottleKeeper.ipa
-          else
-            echo "❌ IPAファイルが見つかりません"
-            ls -la ./ipa/
-            exit 1
-          fi
+          echo "🚀 TestFlightへアップロード中..."
 
           # fastlaneでTestFlightにアップロード
           bundle exec fastlane beta
 
-          echo "🎉 TestFlightへのアップロードが完了しました！"
-          echo "📱 App Store Connectで処理状況を確認してください"
+          echo "✅ TestFlightへのアップロード完了"
           echo "🔗 https://appstoreconnect.apple.com"
 
       - name: Slackへ通知（オプション）
