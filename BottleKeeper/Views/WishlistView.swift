@@ -29,7 +29,7 @@ struct WishlistView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 if wishlistItems.isEmpty {
                     VStack(spacing: 20) {

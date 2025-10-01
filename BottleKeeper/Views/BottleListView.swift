@@ -25,7 +25,7 @@ struct BottleListView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 if bottles.isEmpty {
                     VStack(spacing: 20) {

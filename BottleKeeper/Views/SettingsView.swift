@@ -25,7 +25,7 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 // アプリ情報セクション
                 Section {

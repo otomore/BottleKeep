@@ -90,7 +90,7 @@ struct StatisticsView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 if bottles.isEmpty {
                     VStack(spacing: 20) {
