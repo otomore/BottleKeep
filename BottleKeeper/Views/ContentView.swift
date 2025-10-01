@@ -3,12 +3,13 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var selectedTab = 0
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
     var body: some View {
         // iPadではNavigationSplitView、iPhoneではTabViewを使用
         if horizontalSizeClass == .regular {
             // iPad用レイアウト
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: $columnVisibility) {
                 // サイドバー
                 List(selection: $selectedTab) {
                     NavigationLink(value: 0) {
@@ -25,10 +26,13 @@ struct ContentView: View {
                     }
                 }
                 .navigationTitle("BottleKeeper")
+                .navigationSplitViewColumnWidth(min: 200, ideal: 250, max: 300)
             } detail: {
                 // メインコンテンツ
                 selectedView
+                    .navigationBarTitleDisplayMode(.inline)
             }
+            .navigationSplitViewStyle(.balanced)
         } else {
             // iPhone用レイアウト（従来通り）
             TabView(selection: $selectedTab) {

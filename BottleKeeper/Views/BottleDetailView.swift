@@ -3,6 +3,7 @@ import SwiftUI
 struct BottleDetailView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let bottle: Bottle
     @State private var showingEditForm = false
@@ -65,7 +66,7 @@ struct BottleDetailView: View {
                                 }
                             }
                         }
-                        .frame(height: 300)
+                        .frame(height: horizontalSizeClass == .regular ? 450 : 300)
                         .tabViewStyle(PageTabViewStyle())
                     } else {
                         Rectangle()
