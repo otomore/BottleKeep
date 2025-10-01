@@ -45,7 +45,7 @@ class CoreDataManager {
 
             // CloudKitコンテナオプション
             description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
-                containerIdentifier: "iCloud.com.yourname.BottleKeeper"
+                containerIdentifier: "iCloud.com.bottlekeep.whiskey"
             )
 
             // 履歴トラッキングとリモート変更通知を有効化
