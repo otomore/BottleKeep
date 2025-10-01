@@ -84,7 +84,7 @@ struct NotificationSettingsView: View {
     }
 
     private var lowStockSection: some View {
-        Section("残量少なし通知") {
+        Section {
             HStack {
                 Text("閾値")
                 Spacer()
@@ -94,13 +94,15 @@ struct NotificationSettingsView: View {
 
             Slider(value: $lowStockThreshold, in: 5...30, step: 5)
                 .disabled(!notificationsEnabled || authorizationStatus != .authorized)
+        } header: {
+            Text("残量少なし通知")
         } footer: {
             Text("ボトルの残量がこのパーセンテージ以下になると通知されます。")
         }
     }
 
     private var elapsedDaysSection: some View {
-        Section("開栓後経過日数通知") {
+        Section {
             Toggle("30日後", isOn: $notifyAt30Days)
                 .disabled(!notificationsEnabled || authorizationStatus != .authorized)
 
@@ -109,6 +111,8 @@ struct NotificationSettingsView: View {
 
             Toggle("90日後", isOn: $notifyAt90Days)
                 .disabled(!notificationsEnabled || authorizationStatus != .authorized)
+        } header: {
+            Text("開栓後経過日数通知")
         } footer: {
             Text("開栓してから指定の日数が経過すると通知されます。")
         }
@@ -117,7 +121,7 @@ struct NotificationSettingsView: View {
     @ViewBuilder
     private var debugSection: some View {
         #if DEBUG
-        Section("デバッグ") {
+        Section {
             Button("通知をテスト") {
                 sendTestNotification()
             }
@@ -127,6 +131,8 @@ struct NotificationSettingsView: View {
                     await NotificationManager.shared.printPendingNotifications()
                 }
             }
+        } header: {
+            Text("デバッグ")
         }
         #endif
     }
