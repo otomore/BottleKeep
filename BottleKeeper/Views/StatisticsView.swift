@@ -126,303 +126,344 @@ struct StatisticsView: View {
         NavigationStack {
             ScrollView {
                 if bottles.isEmpty {
-                    VStack(spacing: 20) {
-                        Image(systemName: "chart.bar")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
-                            .padding(.top, 60)
-
-                        Text("統計情報がありません")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-
-                        Text("ボトルを追加すると統計が表示されます")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                    }
+                    emptyStateView
                 } else {
-                    VStack(spacing: 20) {
-                        // 基本統計
-                        VStack(spacing: 16) {
-                            Text("コレクション概要")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            LazyVGrid(columns: [
-                                GridItem(.flexible()),
-                                GridItem(.flexible())
-                            ], spacing: 16) {
-                                StatCardView(
-                                    title: "総ボトル数",
-                                    value: "\(totalBottles)",
-                                    icon: "wineglass.fill",
-                                    color: .blue
-                                )
-
-                                StatCardView(
-                                    title: "総投資額",
-                                    value: "¥\(Int(truncating: totalInvestment as NSNumber))",
-                                    icon: "yensign.circle.fill",
-                                    color: .green
-                                )
-
-                                StatCardView(
-                                    title: "平均ABV",
-                                    value: String(format: "%.1f%%", averageABV),
-                                    icon: "percent",
-                                    color: .orange
-                                )
-
-                                StatCardView(
-                                    title: "開栓率",
-                                    value: String(format: "%.0f%%", openedPercentage),
-                                    icon: "seal.fill",
-                                    color: .purple
-                                )
-                            }
-                        }
-                        .padding()
-
-                        // 開栓状況
-                        VStack(spacing: 16) {
-                            Text("開栓状況")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            HStack(spacing: 20) {
-                                VStack {
-                                    Text("\(openedBottles)")
-                                        .font(.title)
-                                        .fontWeight(.bold)
-                                    Text("開栓済み")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.orange.opacity(0.1))
-                                .cornerRadius(12)
-
-                                VStack {
-                                    Text("\(unopenedBottles)")
-                                        .font(.title)
-                                        .fontWeight(.bold)
-                                    Text("未開栓")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green.opacity(0.1))
-                                .cornerRadius(12)
-                            }
-
-                            if openedBottles > 0 {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("平均残量")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-
-                                    ProgressView(value: averageRemainingPercentage, total: 100)
-                                        .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-
-                                    Text("\(averageRemainingPercentage, specifier: "%.1f")%")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .padding()
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(12)
-                            }
-                        }
-                        .padding()
-
-                        // タイプ別分布（円グラフ）
-                        if !typeDistribution.isEmpty {
-                            VStack(spacing: 16) {
-                                Text("タイプ別分布")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                                Chart(typeDistribution, id: \.0) { type, count in
-                                    SectorMark(
-                                        angle: .value("本数", count),
-                                        innerRadius: .ratio(0.5),
-                                        angularInset: 1.5
-                                    )
-                                    .foregroundStyle(by: .value("タイプ", type))
-                                    .opacity(selectedType == nil || selectedType == type ? 1.0 : 0.5)
-                                    .annotation(position: .overlay) {
-                                        Text("\(count)")
-                                            .font(.caption)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.white)
-                                    }
-                                }
-                                .frame(height: 250)
-                                .chartLegend(position: .bottom, alignment: .center, spacing: 10)
-                                .chartAngleSelection(value: $selectedType)
-
-                                // 選択されたタイプの詳細情報
-                                if let selected = selectedType,
-                                   let selectedData = typeDistribution.first(where: { $0.0 == selected }) {
-                                    VStack(spacing: 8) {
-                                        Text("\(selectedData.0)の詳細")
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                        HStack {
-                                            Text("本数:")
-                                            Spacer()
-                                            Text("\(selectedData.1)本")
-                                                .fontWeight(.bold)
-                                        }
-                                        HStack {
-                                            Text("割合:")
-                                            Spacer()
-                                            Text("\(Double(selectedData.1) / Double(totalBottles) * 100, specifier: "%.1f")%")
-                                                .fontWeight(.bold)
-                                        }
-                                    }
-                                    .padding()
-                                    .background(Color.orange.opacity(0.1))
-                                    .cornerRadius(8)
-                                }
-
-                                // 詳細リスト
-                                VStack(spacing: 8) {
-                                    ForEach(typeDistribution, id: \.0) { type, count in
-                                        HStack {
-                                            Text(type)
-                                                .font(.subheadline)
-
-                                            Spacer()
-
-                                            Text("\(count)本")
-                                                .font(.subheadline)
-                                                .foregroundColor(.secondary)
-
-                                            Text("(\(Double(count) / Double(totalBottles) * 100, specifier: "%.0f")%)")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
-                                .padding()
-                                .background(Color.gray.opacity(0.05))
-                                .cornerRadius(8)
-                            }
-                            .padding()
-                        }
-
-                        // 消費トレンド（棒グラフ）
-                        let consumptionData = consumptionPeriod == .monthly ? monthlyConsumption : yearlyConsumption
-                        if !consumptionData.isEmpty && consumptionData.contains(where: { $0.1 > 0 }) {
-                            VStack(spacing: 16) {
-                                HStack {
-                                    Text("消費トレンド")
-                                        .font(.headline)
-
-                                    Spacer()
-
-                                    Picker("期間", selection: $consumptionPeriod) {
-                                        Text("月次").tag(ConsumptionPeriod.monthly)
-                                        Text("年次").tag(ConsumptionPeriod.yearly)
-                                    }
-                                    .pickerStyle(.segmented)
-                                    .frame(width: 150)
-                                }
-
-                                Chart(consumptionData, id: \.0) { period, volume in
-                                    BarMark(
-                                        x: .value(consumptionPeriod == .monthly ? "月" : "年", period),
-                                        y: .value("消費量", volume)
-                                    )
-                                    .foregroundStyle(
-                                        selectedConsumption?.0 == period
-                                            ? Color.orange.gradient
-                                            : Color.blue.gradient
-                                    )
-                                    .annotation(position: .top) {
-                                        if volume > 0 {
-                                            Text("\(volume)ml")
-                                                .font(.caption2)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
-                                .frame(height: 200)
-                                .chartYAxis {
-                                    AxisMarks(position: .leading) { value in
-                                        AxisValueLabel {
-                                            if let intValue = value.as(Int.self) {
-                                                Text("\(intValue)ml")
-                                                    .font(.caption2)
-                                            }
-                                        }
-                                        AxisGridLine()
-                                    }
-                                }
-                                .chartAngleSelection(value: $selectedConsumption)
-
-                                // 選択された期間の詳細情報
-                                if let selected = selectedConsumption {
-                                    VStack(spacing: 8) {
-                                        Text("\(selected.0)の詳細")
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                        HStack {
-                                            Text("消費量:")
-                                            Spacer()
-                                            Text("\(selected.1)ml")
-                                                .fontWeight(.bold)
-                                        }
-                                    }
-                                    .padding()
-                                    .background(Color.orange.opacity(0.1))
-                                    .cornerRadius(8)
-                                }
-
-                                // 統計情報
-                                let totalConsumption = consumptionData.reduce(0) { $0 + $1.1 }
-                                let avgConsumption = consumptionData.isEmpty ? 0 : totalConsumption / consumptionData.count
-
-                                HStack(spacing: 20) {
-                                    VStack {
-                                        Text("\(totalConsumption)ml")
-                                            .font(.title3)
-                                            .fontWeight(.bold)
-                                        Text("合計消費量")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.blue.opacity(0.1))
-                                    .cornerRadius(8)
-
-                                    VStack {
-                                        Text("\(avgConsumption)ml")
-                                            .font(.title3)
-                                            .fontWeight(.bold)
-                                        Text(consumptionPeriod == .monthly ? "月平均" : "年平均")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.green.opacity(0.1))
-                                    .cornerRadius(8)
-                                }
-                            }
-                            .padding()
-                        }
-                    }
-                    .padding(.vertical)
+                    statisticsContentView
                 }
             }
             .navigationTitle("統計")
+        }
+    }
+
+    // MARK: - サブビュー
+
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "chart.bar")
+                .font(.system(size: 60))
+                .foregroundColor(.gray)
+                .padding(.top, 60)
+
+            Text("統計情報がありません")
+                .font(.headline)
+                .foregroundColor(.gray)
+
+            Text("ボトルを追加すると統計が表示されます")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+    }
+
+    private var statisticsContentView: some View {
+        VStack(spacing: 20) {
+            basicStatsSection
+            openedStatusSection
+            typeDistributionSection
+            consumptionTrendSection
+        }
+        .padding(.vertical)
+    }
+
+    private var basicStatsSection: some View {
+        VStack(spacing: 16) {
+            Text("コレクション概要")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 16) {
+                StatCardView(
+                    title: "総ボトル数",
+                    value: "\(totalBottles)",
+                    icon: "wineglass.fill",
+                    color: .blue
+                )
+
+                StatCardView(
+                    title: "総投資額",
+                    value: "¥\(Int(truncating: totalInvestment as NSNumber))",
+                    icon: "yensign.circle.fill",
+                    color: .green
+                )
+
+                StatCardView(
+                    title: "平均ABV",
+                    value: String(format: "%.1f%%", averageABV),
+                    icon: "percent",
+                    color: .orange
+                )
+
+                StatCardView(
+                    title: "開栓率",
+                    value: String(format: "%.0f%%", openedPercentage),
+                    icon: "seal.fill",
+                    color: .purple
+                )
+            }
+        }
+        .padding()
+    }
+
+    private var openedStatusSection: some View {
+        VStack(spacing: 16) {
+            Text("開栓状況")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: 20) {
+                VStack {
+                    Text("\(openedBottles)")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    Text("開栓済み")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(12)
+
+                VStack {
+                    Text("\(unopenedBottles)")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    Text("未開栓")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.green.opacity(0.1))
+                .cornerRadius(12)
+            }
+
+            if openedBottles > 0 {
+                averageRemainingView
+            }
+        }
+        .padding()
+    }
+
+    private var averageRemainingView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("平均残量")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            ProgressView(value: averageRemainingPercentage, total: 100)
+                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+
+            Text("\(averageRemainingPercentage, specifier: "%.1f")%")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+    }
+
+    @ViewBuilder
+    private var typeDistributionSection: some View {
+        if !typeDistribution.isEmpty {
+            VStack(spacing: 16) {
+                Text("タイプ別分布")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                typeDistributionChart
+                typeDistributionDetails
+            }
+            .padding()
+        }
+    }
+
+    private var typeDistributionChart: some View {
+        Chart(typeDistribution, id: \.0) { type, count in
+            SectorMark(
+                angle: .value("本数", count),
+                innerRadius: .ratio(0.5),
+                angularInset: 1.5
+            )
+            .foregroundStyle(by: .value("タイプ", type))
+            .opacity(selectedType == nil || selectedType == type ? 1.0 : 0.5)
+            .annotation(position: .overlay) {
+                Text("\(count)")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+            }
+        }
+        .frame(height: 250)
+        .chartLegend(position: .bottom, alignment: .center, spacing: 10)
+        .chartAngleSelection(value: $selectedType)
+    }
+
+    @ViewBuilder
+    private var typeDistributionDetails: some View {
+        if let selected = selectedType,
+           let selectedData = typeDistribution.first(where: { $0.0 == selected }) {
+            VStack(spacing: 8) {
+                Text("\(selectedData.0)の詳細")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                HStack {
+                    Text("本数:")
+                    Spacer()
+                    Text("\(selectedData.1)本")
+                        .fontWeight(.bold)
+                }
+                HStack {
+                    Text("割合:")
+                    Spacer()
+                    Text("\(Double(selectedData.1) / Double(totalBottles) * 100, specifier: "%.1f")%")
+                        .fontWeight(.bold)
+                }
+            }
+            .padding()
+            .background(Color.orange.opacity(0.1))
+            .cornerRadius(8)
+        }
+
+        VStack(spacing: 8) {
+            ForEach(typeDistribution, id: \.0) { type, count in
+                HStack {
+                    Text(type)
+                        .font(.subheadline)
+
+                    Spacer()
+
+                    Text("\(count)本")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+
+                    Text("(\(Double(count) / Double(totalBottles) * 100, specifier: "%.0f")%)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.05))
+        .cornerRadius(8)
+    }
+
+    @ViewBuilder
+    private var consumptionTrendSection: some View {
+        let consumptionData = consumptionPeriod == .monthly ? monthlyConsumption : yearlyConsumption
+        if !consumptionData.isEmpty && consumptionData.contains(where: { $0.1 > 0 }) {
+            VStack(spacing: 16) {
+                consumptionTrendHeader
+                consumptionTrendChart(data: consumptionData)
+                consumptionTrendStats(data: consumptionData)
+            }
+            .padding()
+        }
+    }
+
+    private var consumptionTrendHeader: some View {
+        HStack {
+            Text("消費トレンド")
+                .font(.headline)
+
+            Spacer()
+
+            Picker("期間", selection: $consumptionPeriod) {
+                Text("月次").tag(ConsumptionPeriod.monthly)
+                Text("年次").tag(ConsumptionPeriod.yearly)
+            }
+            .pickerStyle(.segmented)
+            .frame(width: 150)
+        }
+    }
+
+    private func consumptionTrendChart(data: [(String, Int)]) -> some View {
+        VStack(spacing: 8) {
+            Chart(data, id: \.0) { period, volume in
+                BarMark(
+                    x: .value(consumptionPeriod == .monthly ? "月" : "年", period),
+                    y: .value("消費量", volume)
+                )
+                .foregroundStyle(
+                    selectedConsumption?.0 == period
+                        ? Color.orange.gradient
+                        : Color.blue.gradient
+                )
+                .annotation(position: .top) {
+                    if volume > 0 {
+                        Text("\(volume)ml")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .frame(height: 200)
+            .chartYAxis {
+                AxisMarks(position: .leading) { value in
+                    AxisValueLabel {
+                        if let intValue = value.as(Int.self) {
+                            Text("\(intValue)ml")
+                                .font(.caption2)
+                        }
+                    }
+                    AxisGridLine()
+                }
+            }
+            .chartAngleSelection(value: $selectedConsumption)
+
+            if let selected = selectedConsumption {
+                VStack(spacing: 8) {
+                    Text("\(selected.0)の詳細")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    HStack {
+                        Text("消費量:")
+                        Spacer()
+                        Text("\(selected.1)ml")
+                            .fontWeight(.bold)
+                    }
+                }
+                .padding()
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
+            }
+        }
+    }
+
+    private func consumptionTrendStats(data: [(String, Int)]) -> some View {
+        let totalConsumption = data.reduce(0) { $0 + $1.1 }
+        let avgConsumption = data.isEmpty ? 0 : totalConsumption / data.count
+
+        return HStack(spacing: 20) {
+            VStack {
+                Text("\(totalConsumption)ml")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                Text("合計消費量")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .cornerRadius(8)
+
+            VStack {
+                Text("\(avgConsumption)ml")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                Text(consumptionPeriod == .monthly ? "月平均" : "年平均")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.green.opacity(0.1))
+            .cornerRadius(8)
         }
     }
 }
