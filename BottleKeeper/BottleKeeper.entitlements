@@ -4,17 +4,28 @@
 <dict>
 	<key>aps-environment</key>
 	<string>production</string>
+	<key>com.apple.developer.icloud-container-development-container-identifiers</key>
+	<array>
+		<string>iCloud.com.bottlekeep.whiskey</string>
+	</array>
+	<key>com.apple.developer.icloud-container-environment</key>
+	<array>
+		<string>Production</string>
+		<string>Development</string>
+	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
 		<string>iCloud.com.bottlekeep.whiskey</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
-	<string>CloudKit</string>
+	<string>*</string>
 	<key>com.apple.developer.team-identifier</key>
 	<string>B3QHWZX47Z</string>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
 		<string>iCloud.com.bottlekeep.whiskey</string>
 	</array>
+	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+	<string>B3QHWZX47Z.*</string>
 </dict>
 </plist>
