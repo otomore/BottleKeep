@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreData
 
 struct RemainingVolumeUpdateView: View {
     @Environment(\.managedObjectContext) private var viewContext
