@@ -32,50 +32,40 @@ struct WishlistView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if wishlistItems.isEmpty {
-                    VStack(spacing: 20) {
-                        Image(systemName: "star.circle")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
+            GeometryReader { geometry in
+                Group {
+                    if wishlistItems.isEmpty {
+                        VStack(spacing: 20) {
+                            Image(systemName: "star.circle")
+                                .font(.system(size: 60))
+                                .foregroundColor(.gray)
 
-                        Text("ウィッシュリストが空です")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-
-                        Text("欲しいウイスキーを追加して管理しましょう")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-
-                        Button {
-                            showingAddItem = true
-                        } label: {
-                            Label("追加する", systemImage: "plus.circle.fill")
+                            Text("ウィッシュリストが空です")
                                 .font(.headline)
-                                .padding()
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(12)
+                                .foregroundColor(.gray)
+
+                            Text("欲しいウイスキーを追加して管理しましょう")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+
+                            Button {
+                                showingAddItem = true
+                            } label: {
+                                Label("追加する", systemImage: "plus.circle.fill")
+                                    .font(.headline)
+                                    .padding()
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(12)
+                            }
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        wishlistContent(geometry: geometry)
+                            .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                     }
-                } else {
-                    List {
-                        ForEach(filteredItems, id: \.id) { item in
-                            WishlistRowView(item: item, onMoveToCollection: {
-                                itemToMoveToCollection = item
-                                showingMoveConfirmation = true
-                            })
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                        }
-                        .onDelete(perform: deleteItems)
-                    }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                 }
             }
             .navigationTitle("ウィッシュリスト")
@@ -136,6 +126,73 @@ struct WishlistView: View {
                 let nsError = error as NSError
                 print("⚠️ Failed to delete wishlist items: \(nsError), \(nsError.userInfo)")
             }
+        }
+    }
+
+    @ViewBuilder
+    private func wishlistContent(geometry: GeometryProxy) -> some View {
+        let width = geometry.size.width
+        let columns = gridColumns(for: width)
+
+        if columns > 1 {
+            // iPad: グリッドレイアウト
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: columns), spacing: 16) {
+                    ForEach(filteredItems, id: \.id) { item in
+                        WishlistRowView(item: item, onMoveToCollection: {
+                            itemToMoveToCollection = item
+                            showingMoveConfirmation = true
+                        })
+                        .contextMenu {
+                            Button {
+                                itemToMoveToCollection = item
+                                showingMoveConfirmation = true
+                            } label: {
+                                Label("コレクションに追加", systemImage: "plus.circle")
+                            }
+
+                            Button(role: .destructive) {
+                                viewContext.delete(item)
+                                do {
+                                    try viewContext.save()
+                                } catch {
+                                    print("⚠️ Failed to delete item: \(error)")
+                                }
+                            } label: {
+                                Label("削除", systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)
+            }
+        } else {
+            // iPhone: リストレイアウト
+            List {
+                ForEach(filteredItems, id: \.id) { item in
+                    WishlistRowView(item: item, onMoveToCollection: {
+                        itemToMoveToCollection = item
+                        showingMoveConfirmation = true
+                    })
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
+                .onDelete(perform: deleteItems)
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+        }
+    }
+
+    private func gridColumns(for width: CGFloat) -> Int {
+        if width >= 1000 {
+            return 3  // iPad横向き
+        } else if width >= 700 {
+            return 2  // iPad縦向き
+        } else {
+            return 1  // iPhone
         }
     }
 

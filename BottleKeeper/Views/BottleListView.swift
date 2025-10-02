@@ -34,72 +34,41 @@ struct BottleListView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottomTrailing) {
-                Group {
-                    if bottles.isEmpty {
-                    VStack(spacing: 20) {
-                        Image(systemName: "wineglass")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
+                GeometryReader { geometry in
+                    Group {
+                        if bottles.isEmpty {
+                            VStack(spacing: 20) {
+                                Image(systemName: "wineglass")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(.gray)
 
-                        Text("ボトルが登録されていません")
-                            .font(.headline)
-                            .foregroundColor(.gray)
+                                Text("ボトルが登録されていません")
+                                    .font(.headline)
+                                    .foregroundColor(.gray)
 
-                        Text("右上の+ボタンから新しいボトルを登録しましょう")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
+                                Text("右上の+ボタンから新しいボトルを登録しましょう")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal)
 
-                        Button {
-                            showingAddBottle = true
-                        } label: {
-                            Label("ボトルを追加", systemImage: "plus.circle.fill")
-                                .font(.headline)
-                                .padding()
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(12)
-                        }
-                    }
-                } else {
-                    List {
-                        ForEach(filteredBottles, id: \.id) { bottle in
-                            Button {
-                                selectedBottle = bottle
-                                showingBottleDetail = true
-                            } label: {
-                                BottleRowView(bottle: bottle, motionManager: motionManager)
-                            }
-                            .buttonStyle(.plain)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .onLongPressGesture {
-                                selectedBottle = bottle
-                                showingQuickUpdate = true
-                            }
-                            .swipeActions(edge: .leading) {
                                 Button {
-                                    consumeOneShot(bottle)
+                                    showingAddBottle = true
                                 } label: {
-                                    Label("1ショット", systemImage: "drop.fill")
-                                }
-                                .tint(.blue)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    deleteBottle(bottle)
-                                } label: {
-                                    Label("削除", systemImage: "trash")
+                                    Label("ボトルを追加", systemImage: "plus.circle.fill")
+                                        .font(.headline)
+                                        .padding()
+                                        .background(Color.blue)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(12)
                                 }
                             }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
+                            bottleListContent(geometry: geometry)
+                                .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                         }
-                        .onDelete(perform: deleteBottles)
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                 }
             }
 
@@ -242,6 +211,99 @@ struct BottleListView: View {
         guard !bottles.isEmpty else { return }
         randomBottle = bottles.randomElement()
         showingRandomPicker = true
+    }
+
+    @ViewBuilder
+    private func bottleListContent(geometry: GeometryProxy) -> some View {
+        let width = geometry.size.width
+        let columns = gridColumns(for: width)
+
+        if columns > 1 {
+            // iPad: グリッドレイアウト
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: columns), spacing: 16) {
+                    ForEach(filteredBottles, id: \.id) { bottle in
+                        Button {
+                            selectedBottle = bottle
+                            showingBottleDetail = true
+                        } label: {
+                            BottleRowView(bottle: bottle, motionManager: motionManager)
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button {
+                                selectedBottle = bottle
+                                showingQuickUpdate = true
+                            } label: {
+                                Label("残量更新", systemImage: "drop.fill")
+                            }
+
+                            Button {
+                                consumeOneShot(bottle)
+                            } label: {
+                                Label("1ショット消費", systemImage: "minus.circle")
+                            }
+
+                            Button(role: .destructive) {
+                                deleteBottle(bottle)
+                            } label: {
+                                Label("削除", systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 100)
+            }
+        } else {
+            // iPhone: リストレイアウト
+            List {
+                ForEach(filteredBottles, id: \.id) { bottle in
+                    Button {
+                        selectedBottle = bottle
+                        showingBottleDetail = true
+                    } label: {
+                        BottleRowView(bottle: bottle, motionManager: motionManager)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .onLongPressGesture {
+                        selectedBottle = bottle
+                        showingQuickUpdate = true
+                    }
+                    .swipeActions(edge: .leading) {
+                        Button {
+                            consumeOneShot(bottle)
+                        } label: {
+                            Label("1ショット", systemImage: "drop.fill")
+                        }
+                        .tint(.blue)
+                    }
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            deleteBottle(bottle)
+                        } label: {
+                            Label("削除", systemImage: "trash")
+                        }
+                    }
+                }
+                .onDelete(perform: deleteBottles)
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+        }
+    }
+
+    private func gridColumns(for width: CGFloat) -> Int {
+        if width >= 1000 {
+            return 3  // iPad横向き
+        } else if width >= 700 {
+            return 2  // iPad縦向き
+        } else {
+            return 1  // iPhone
+        }
     }
 }
 
