@@ -20,6 +20,11 @@ struct BottleFormView: View {
     @State private var notes = ""
     @State private var openedDate: Date?
     @State private var isOpened = false
+    @FocusState private var focusedField: Field?
+
+    enum Field {
+        case name
+    }
 
     private var isEditing: Bool {
         bottle != nil
@@ -30,7 +35,8 @@ struct BottleFormView: View {
             Form {
                 Section("基本情報") {
                     TextField("銘柄名", text: $name)
-                    TextField("蒸留所", text: $distillery)
+                        .focused($focusedField, equals: .name)
+                    TextField("蒸留所（任意）", text: $distillery)
                     TextField("地域", text: $region)
                     TextField("タイプ", text: $type)
 
@@ -132,13 +138,16 @@ struct BottleFormView: View {
                     Button("保存") {
                         saveBottle()
                     }
-                    .disabled(name.isEmpty || distillery.isEmpty)
+                    .disabled(name.isEmpty)
                 }
             }
         }
         .onAppear {
             if let bottle = bottle {
                 loadBottleData(bottle)
+            } else {
+                // 新規作成時は銘柄名にフォーカス
+                focusedField = .name
             }
         }
     }
@@ -175,7 +184,7 @@ struct BottleFormView: View {
             }
 
             targetBottle.name = name
-            targetBottle.distillery = distillery
+            targetBottle.distillery = distillery.isEmpty ? nil : distillery
             targetBottle.region = region.isEmpty ? nil : region
             targetBottle.type = type.isEmpty ? nil : type
             targetBottle.abv = abv

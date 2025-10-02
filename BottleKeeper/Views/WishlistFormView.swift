@@ -12,6 +12,11 @@ struct WishlistFormView: View {
     @State private var budget = ""
     @State private var priority: Int16 = 3
     @State private var notes = ""
+    @FocusState private var focusedField: Field?
+
+    enum Field {
+        case name
+    }
 
     private var isEditing: Bool {
         wishlistItem != nil
@@ -22,7 +27,8 @@ struct WishlistFormView: View {
             Form {
                 Section("基本情報") {
                     TextField("銘柄名", text: $name)
-                    TextField("蒸留所", text: $distillery)
+                        .focused($focusedField, equals: .name)
+                    TextField("蒸留所（任意）", text: $distillery)
                 }
 
                 Section("価格情報") {
@@ -76,13 +82,16 @@ struct WishlistFormView: View {
                     Button("保存") {
                         saveWishlistItem()
                     }
-                    .disabled(name.isEmpty || distillery.isEmpty)
+                    .disabled(name.isEmpty)
                 }
             }
         }
         .onAppear {
             if let item = wishlistItem {
                 loadWishlistItemData(item)
+            } else {
+                // 新規作成時は銘柄名にフォーカス
+                focusedField = .name
             }
         }
     }
@@ -112,7 +121,7 @@ struct WishlistFormView: View {
             }
 
             targetItem.name = name
-            targetItem.distillery = distillery
+            targetItem.distillery = distillery.isEmpty ? nil : distillery
 
             if !targetPrice.isEmpty, let price = Decimal(string: targetPrice) {
                 targetItem.targetPrice = NSDecimalNumber(decimal: price)

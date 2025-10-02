@@ -128,6 +128,10 @@ struct StatisticsView: View {
         return total / Double(openedBottlesArray.count)
     }
 
+    var totalRemainingVolume: Int32 {
+        bottles.reduce(0) { $0 + $1.remainingVolume }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -251,6 +255,8 @@ struct StatisticsView: View {
             if openedBottles > 0 {
                 averageRemainingView
             }
+
+            totalRemainingView
         }
         .padding()
     }
@@ -270,6 +276,31 @@ struct StatisticsView: View {
         }
         .padding()
         .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+    }
+
+    private var totalRemainingView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("総残量")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text("\(totalRemainingVolume)")
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(.primary)
+
+                Text("ml")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+            }
+
+            Text("全ボトルの合計残量")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.orange.opacity(0.1))
         .cornerRadius(12)
     }
 

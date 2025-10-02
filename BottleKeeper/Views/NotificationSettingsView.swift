@@ -3,7 +3,7 @@ import CoreData
 
 struct NotificationSettingsView: View {
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
-    @AppStorage("lowStockThreshold") private var lowStockThreshold = 10.0
+    @AppStorage("lowStockThreshold") private var lowStockThreshold = 15.0
     @AppStorage("notifyAt30Days") private var notifyAt30Days = true
     @AppStorage("notifyAt60Days") private var notifyAt60Days = true
     @AppStorage("notifyAt90Days") private var notifyAt90Days = true
