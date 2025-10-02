@@ -167,12 +167,30 @@ struct BottleListView: View {
                 bottle.openedDate = Date()
             }
 
+            // 飲酒ログを作成
+            let log = DrinkingLog(context: viewContext)
+            log.id = UUID()
+            log.date = Date()
+            log.volume = shotVolume
+            log.notes = "1ショット消費"
+            log.createdAt = Date()
+            log.bottle = bottle
+
             // 残量を減らす（0以下にはしない）
             bottle.remainingVolume = max(0, bottle.remainingVolume - shotVolume)
             bottle.updatedAt = Date()
 
             do {
                 try viewContext.save()
+
+                // 通知を再スケジュール
+                Task {
+                    let request = NSFetchRequest<Bottle>(entityName: "Bottle")
+                    let bottles = try? viewContext.fetch(request)
+                    if let bottles = bottles {
+                        await NotificationManager.shared.scheduleAllNotifications(for: bottles)
+                    }
+                }
             } catch {
                 let nsError = error as NSError
                 print("⚠️ Failed to toggle bottle status: \(nsError), \(nsError.userInfo)")
@@ -736,7 +754,22 @@ struct QuickUpdateView: View {
 
     private func saveRemainingVolume() {
         withAnimation {
-            bottle.remainingVolume = Int32(remainingVolume)
+            let oldRemaining = bottle.remainingVolume
+            let newRemaining = Int32(remainingVolume)
+            let consumed = oldRemaining - newRemaining
+
+            // 消費量が発生した場合のみ飲酒ログを作成
+            if consumed > 0 {
+                let log = DrinkingLog(context: viewContext)
+                log.id = UUID()
+                log.date = Date()
+                log.volume = consumed
+                log.notes = "残量更新"
+                log.createdAt = Date()
+                log.bottle = bottle
+            }
+
+            bottle.remainingVolume = newRemaining
 
             // 未開栓で残量が減った場合は開栓日を設定
             if bottle.openedDate == nil && remainingVolume < Double(bottle.volume) {
@@ -747,6 +780,16 @@ struct QuickUpdateView: View {
 
             do {
                 try viewContext.save()
+
+                // 通知を再スケジュール
+                Task {
+                    let request = NSFetchRequest<Bottle>(entityName: "Bottle")
+                    let bottles = try? viewContext.fetch(request)
+                    if let bottles = bottles {
+                        await NotificationManager.shared.scheduleAllNotifications(for: bottles)
+                    }
+                }
+
                 dismiss()
             } catch {
                 let nsError = error as NSError
