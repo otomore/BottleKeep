@@ -15,6 +15,9 @@ struct BottleListView: View {
     @State private var showingQuickUpdate = false
     @State private var selectedBottle: Bottle?
     @State private var filteredBottles: [Bottle] = []
+    @State private var randomBottle: Bottle?
+    @State private var showingRandomPicker = false
+    @State private var navigateToRandomBottle = false
 
     private func updateFilteredBottles() {
         if searchText.isEmpty {
@@ -60,9 +63,12 @@ struct BottleListView: View {
                 } else {
                     List {
                         ForEach(filteredBottles, id: \.id) { bottle in
-                            NavigationLink(destination: BottleDetailView(bottle: bottle)) {
+                            NavigationLink {
+                                BottleDetailView(bottle: bottle)
+                            } label: {
                                 BottleRowView(bottle: bottle, motionManager: motionManager)
                             }
+                            .buttonStyle(.plain)
                             .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                             .listRowBackground(Color.clear)
                             .listRowSeparator(.hidden)
@@ -107,6 +113,16 @@ struct BottleListView: View {
                     ToolbarItem(placement: .navigationBarLeading) {
                         EditButton()
                     }
+
+                    ToolbarItem(placement: .bottomBar) {
+                        Button {
+                            pickRandomBottle()
+                        } label: {
+                            Label("ランダムで選ぶ", systemImage: "shuffle")
+                                .font(.headline)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
                 }
             }
             .sheet(isPresented: $showingAddBottle) {
@@ -116,6 +132,25 @@ struct BottleListView: View {
                 if let bottle = selectedBottle {
                     QuickUpdateView(bottle: bottle)
                 }
+            }
+            .alert("今日のおすすめボトル", isPresented: $showingRandomPicker) {
+                Button("詳細を見る") {
+                    navigateToRandomBottle = true
+                }
+                Button("キャンセル", role: .cancel) {}
+            } message: {
+                if let bottle = randomBottle {
+                    Text("今日は「\(bottle.wrappedName)」を楽しんでみませんか？\n蒸留所: \(bottle.wrappedDistillery)")
+                }
+            }
+            .background {
+                NavigationLink(
+                    destination: randomBottle.map { BottleDetailView(bottle: $0) },
+                    isActive: $navigateToRandomBottle
+                ) {
+                    EmptyView()
+                }
+                .hidden()
             }
             .onAppear {
                 updateFilteredBottles()
@@ -176,6 +211,12 @@ struct BottleListView: View {
                 print("⚠️ Failed to delete bottles: \(nsError), \(nsError.userInfo)")
             }
         }
+    }
+
+    private func pickRandomBottle() {
+        guard !bottles.isEmpty else { return }
+        randomBottle = bottles.randomElement()
+        showingRandomPicker = true
     }
 }
 

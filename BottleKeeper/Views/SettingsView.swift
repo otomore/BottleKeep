@@ -110,12 +110,13 @@ struct SettingsView: View {
                 // 機能設定
                 Section("機能設定") {
                     NavigationLink(destination: NotificationSettingsView()) {
-                        HStack {
-                            Label("通知設定", systemImage: "bell")
-                            Spacer()
-                        }
-                        .padding()
-                        .secondaryGlassEffect()
+                        Label("通知設定", systemImage: "bell")
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.ultraThinMaterial)
                     }
                 }
 
@@ -287,10 +288,19 @@ struct PremiumFeatureRow: View {
                     .cornerRadius(8)
                 }
             }
-            .padding()
-            .subtleGlassEffect(tint: Color(red: 0.8, green: 0.5, blue: 0.2))
         }
         .buttonStyle(.plain)
+        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+        .listRowBackground(Color.clear)
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(red: 0.8, green: 0.5, blue: 0.2).opacity(0.3), lineWidth: 1)
+                }
+        }
+        .padding(.vertical, 4)
         .disabled(isPurchased)
     }
 }
