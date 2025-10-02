@@ -201,7 +201,8 @@ struct WishlistRowView: View {
                     .imageScale(.large)
             }
         }
-        .padding(.vertical, 4)
+        .padding()
+        .primaryGlassEffect()
         .sheet(isPresented: $showingEditForm) {
             WishlistFormView(wishlistItem: item)
         }

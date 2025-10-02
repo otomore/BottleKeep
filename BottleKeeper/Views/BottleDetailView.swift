@@ -389,6 +389,8 @@ struct DetailRowView: View {
             Text(value)
             Spacer()
         }
+        .padding()
+        .secondaryGlassEffect()
     }
 }
 

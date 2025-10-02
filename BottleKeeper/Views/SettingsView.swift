@@ -280,7 +280,8 @@ struct PremiumFeatureRow: View {
                     .cornerRadius(8)
                 }
             }
-            .padding(.vertical, 4)
+            .padding()
+            .accentGlassEffect()
         }
         .buttonStyle(.plain)
         .disabled(isPurchased)

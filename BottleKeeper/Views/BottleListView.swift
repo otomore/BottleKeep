@@ -201,7 +201,8 @@ struct BottleRowView: View {
 
             Spacer()
         }
-        .padding(.vertical, 4)
+        .padding()
+        .primaryGlassEffect()
     }
 
     private func remainingColor(for percentage: Double) -> Color {
