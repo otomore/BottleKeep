@@ -132,6 +132,17 @@ struct StatisticsView: View {
         bottles.reduce(0) { $0 + $1.remainingVolume }
     }
 
+    // コストパフォーマンス分析（ml単価順）
+    var costPerformanceData: [(bottle: Bottle, pricePerMl: Decimal)] {
+        bottles.compactMap { bottle in
+            guard let price = bottle.purchasePrice,
+                  bottle.volume > 0 else { return nil }
+            let pricePerMl = price.decimalValue / Decimal(bottle.volume)
+            return (bottle, pricePerMl)
+        }
+        .sorted { $0.pricePerMl < $1.pricePerMl }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -172,6 +183,7 @@ struct StatisticsView: View {
             openedStatusSection
             typeDistributionSection
             consumptionTrendSection
+            costPerformanceSection
         }
         .padding(.vertical)
     }
@@ -500,6 +512,81 @@ struct StatisticsView: View {
             .padding()
             .background(Color.green.opacity(0.1))
             .cornerRadius(8)
+        }
+    }
+
+    @ViewBuilder
+    private var costPerformanceSection: some View {
+        if !costPerformanceData.isEmpty {
+            VStack(spacing: 16) {
+                Text("コストパフォーマンス分析")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(spacing: 8) {
+                    ForEach(Array(costPerformanceData.prefix(10).enumerated()), id: \.element.bottle.id) { index, data in
+                        HStack {
+                            // ランキング番号
+                            Text("\(index + 1)")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .frame(width: 28, height: 28)
+                                .background(rankingColor(for: index))
+                                .clipShape(Circle())
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(data.bottle.wrappedName)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+
+                                Text(data.bottle.wrappedDistillery)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            VStack(alignment: .trailing, spacing: 4) {
+                                Text("¥\(data.pricePerMl, specifier: "%.1f")/ml")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.blue)
+
+                                if let price = data.bottle.purchasePrice {
+                                    Text("総額: ¥\(Int(truncating: price))")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.05))
+                        .cornerRadius(8)
+                    }
+                }
+
+                if costPerformanceData.count > 10 {
+                    Text("上位10件を表示中（全\(costPerformanceData.count)件）")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+            }
+            .padding()
+        }
+    }
+
+    private func rankingColor(for index: Int) -> Color {
+        switch index {
+        case 0:
+            return .yellow
+        case 1:
+            return .gray
+        case 2:
+            return .orange
+        default:
+            return .blue
         }
     }
 }
