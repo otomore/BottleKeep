@@ -90,9 +90,8 @@ struct SettingsView: View {
                 // アプリ情報セクション
                 Section {
                     HStack {
-                        Image(systemName: "wineglass.fill")
+                        Text("🥃")
                             .font(.largeTitle)
-                            .foregroundColor(.blue)
                             .frame(width: 60, height: 60)
                             .background(Color.blue.opacity(0.1))
                             .cornerRadius(12)
@@ -111,7 +110,12 @@ struct SettingsView: View {
                 // 機能設定
                 Section("機能設定") {
                     NavigationLink(destination: NotificationSettingsView()) {
-                        Label("通知設定", systemImage: "bell")
+                        HStack {
+                            Label("通知設定", systemImage: "bell")
+                            Spacer()
+                        }
+                        .padding()
+                        .secondaryGlassEffect()
                     }
                 }
 
@@ -131,7 +135,11 @@ struct SettingsView: View {
                 // データ管理
                 Section("データ管理") {
                     HStack {
-                        Label("総ボトル数", systemImage: "wineglass.fill")
+                        HStack {
+                            Text("🥃")
+                                .font(.body)
+                            Text("総ボトル数")
+                        }
                         Spacer()
                         Text("\(bottles.count)本")
                             .foregroundColor(.secondary)
@@ -174,9 +182,8 @@ struct SettingsView: View {
                 // フッター情報
                 Section {
                     VStack(spacing: 8) {
-                        Image(systemName: "wineglass")
-                            .font(.title)
-                            .foregroundColor(.gray)
+                        Text("🥃")
+                            .font(.largeTitle)
 
                         Text("ウイスキーコレクションを\n楽しく管理しましょう")
                             .font(.caption)
