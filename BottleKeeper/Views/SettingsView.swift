@@ -111,9 +111,9 @@ struct SettingsView: View {
                 Section("機能設定") {
                     NavigationLink(destination: NotificationSettingsView()) {
                         Label("通知設定", systemImage: "bell")
-                            .padding(.vertical, 4)
                     }
-                    .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                    .padding()
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     .listRowBackground(Color.clear)
                     .background {
                         RoundedRectangle(cornerRadius: 12)
@@ -289,9 +289,10 @@ struct PremiumFeatureRow: View {
                     .cornerRadius(8)
                 }
             }
+            .padding()
         }
         .buttonStyle(.plain)
-        .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
         .listRowBackground(Color.clear)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -301,7 +302,6 @@ struct PremiumFeatureRow: View {
                         .stroke(Color(red: 0.8, green: 0.5, blue: 0.2).opacity(0.3), lineWidth: 1)
                 }
         }
-        .padding(.vertical, 6)
         .disabled(isPurchased)
     }
 }
