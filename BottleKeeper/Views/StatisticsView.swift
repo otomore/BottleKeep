@@ -525,44 +525,7 @@ struct StatisticsView: View {
 
                 VStack(spacing: 8) {
                     ForEach(Array(costPerformanceData.prefix(10).enumerated()), id: \.element.bottle.id) { index, data in
-                        HStack {
-                            // ランキング番号
-                            Text("\(index + 1)")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .frame(width: 28, height: 28)
-                                .background(rankingColor(for: index))
-                                .clipShape(Circle())
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(data.bottle.wrappedName)
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-
-                                Text(data.bottle.wrappedDistillery)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-
-                            Spacer()
-
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text("¥\(data.pricePerMl, specifier: "%.1f")/ml")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.blue)
-
-                                if let price = data.bottle.purchasePrice {
-                                    Text("総額: ¥\(Int(truncating: price))")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.05))
-                        .cornerRadius(8)
+                        CostPerformanceRow(index: index, bottle: data.bottle, pricePerMl: data.pricePerMl)
                     }
                 }
 
@@ -574,19 +537,6 @@ struct StatisticsView: View {
                 }
             }
             .padding()
-        }
-    }
-
-    private func rankingColor(for index: Int) -> Color {
-        switch index {
-        case 0:
-            return .yellow
-        case 1:
-            return .gray
-        case 2:
-            return .orange
-        default:
-            return .blue
         }
     }
 }
@@ -616,6 +566,62 @@ struct StatCardView: View {
         .padding()
         .background(color.opacity(0.1))
         .cornerRadius(12)
+    }
+}
+
+struct CostPerformanceRow: View {
+    let index: Int
+    let bottle: Bottle
+    let pricePerMl: Decimal
+
+    var body: some View {
+        HStack {
+            // ランキング番号
+            Text("\(index + 1)")
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .frame(width: 28, height: 28)
+                .background(rankingColor)
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(bottle.wrappedName)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+
+                Text(bottle.wrappedDistillery)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("¥\(pricePerMl, specifier: "%.1f")/ml")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.blue)
+
+                if let price = bottle.purchasePrice {
+                    Text("総額: ¥\(Int(truncating: price))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.05))
+        .cornerRadius(8)
+    }
+
+    private var rankingColor: Color {
+        switch index {
+        case 0: return .yellow
+        case 1: return .gray
+        case 2: return .orange
+        default: return .blue
+        }
     }
 }
 
