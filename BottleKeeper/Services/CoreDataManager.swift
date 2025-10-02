@@ -38,14 +38,16 @@ class CoreDataManager {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
-            // CloudKit同期の設定（完全にオプショナル）
+            // CloudKit同期の設定
             if let description = container.persistentStoreDescriptions.first {
-                // CloudKitを無効化してローカルストレージのみで動作
-                // iCloudが正しく設定されている場合のみ有効化される
-                description.cloudKitContainerOptions = nil
+                // iCloud同期を有効化
+                // CloudKitコンテナIDは自動的に "iCloud.$(CFBundleIdentifier)" が使用されます
 
-                // ローカルストレージとして動作
+                // 履歴トラッキングを有効化（CloudKit同期に必要）
                 description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+
+                // リモート変更通知を有効化
+                description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
             }
         }
 

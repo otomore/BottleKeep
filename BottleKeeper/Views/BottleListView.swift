@@ -63,19 +63,25 @@ struct BottleListView: View {
                 } else {
                     List {
                         ForEach(filteredBottles, id: \.id) { bottle in
-                            NavigationLink {
-                                BottleDetailView(bottle: bottle)
-                            } label: {
+                            ZStack {
+                                NavigationLink(destination: BottleDetailView(bottle: bottle)) {
+                                    EmptyView()
+                                }
+                                .opacity(0)
+
                                 BottleRowView(bottle: bottle, motionManager: motionManager)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        // NavigationLinkはZStackの中にあるので、自動的にトリガーされます
+                                    }
+                                    .onLongPressGesture {
+                                        selectedBottle = bottle
+                                        showingQuickUpdate = true
+                                    }
                             }
-                            .buttonStyle(.plain)
                             .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                             .listRowBackground(Color.clear)
                             .listRowSeparator(.hidden)
-                            .onLongPressGesture {
-                                selectedBottle = bottle
-                                showingQuickUpdate = true
-                            }
                             .swipeActions(edge: .leading) {
                                 Button {
                                     consumeOneShot(bottle)
@@ -102,26 +108,28 @@ struct BottleListView: View {
             .navigationTitle("コレクション")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAddBottle = true
+                    Menu {
+                        Button {
+                            showingAddBottle = true
+                        } label: {
+                            Label("ボトルを追加", systemImage: "plus")
+                        }
+
+                        if !bottles.isEmpty {
+                            Button {
+                                pickRandomBottle()
+                            } label: {
+                                Label("ランダムで選ぶ", systemImage: "shuffle")
+                            }
+                        }
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "ellipsis.circle")
                     }
                 }
 
                 if !bottles.isEmpty {
                     ToolbarItem(placement: .navigationBarLeading) {
                         EditButton()
-                    }
-
-                    ToolbarItem(placement: .bottomBar) {
-                        Button {
-                            pickRandomBottle()
-                        } label: {
-                            Label("ランダムで選ぶ", systemImage: "shuffle")
-                                .font(.headline)
-                        }
-                        .buttonStyle(.borderedProminent)
                     }
                 }
             }
