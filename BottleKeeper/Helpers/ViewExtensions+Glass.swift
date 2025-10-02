@@ -77,4 +77,41 @@ extension View {
     func accentGlassEffect() -> some View {
         adaptiveGlassEffect(tint: Color(red: 0.8, green: 0.5, blue: 0.2))
     }
+
+    /// 枠線なしのシンプルなガラスエフェクト（洗練されたデザイン用）
+    func subtleGlassEffect(
+        tint: Color? = nil,
+        cornerRadius: CGFloat = 16
+    ) -> some View {
+        self
+            .background {
+                ZStack {
+                    // 1. 背景ブラー
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(.ultraThinMaterial)
+
+                    // 2. ティント色（半透明）
+                    if let tint = tint {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(tint.opacity(0.08))
+                    }
+
+                    // 3. 微妙な光沢グラデーション
+                    LinearGradient(
+                        stops: [
+                            .init(color: Color.white.opacity(0.15), location: 0.0),
+                            .init(color: Color.white.opacity(0.03), location: 0.5),
+                            .init(color: Color.clear, location: 1.0)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                }
+            }
+            // 枠線なし - よりクリーンなデザイン
+            // シャドウのみで深さを表現
+            .shadow(color: Color.black.opacity(0.06), radius: 16, x: 0, y: 8)
+            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 3)
+    }
 }

@@ -62,6 +62,9 @@ struct BottleListView: View {
                             NavigationLink(destination: BottleDetailView(bottle: bottle)) {
                                 BottleRowView(bottle: bottle, motionManager: motionManager)
                             }
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                             .onLongPressGesture {
                                 selectedBottle = bottle
                                 showingQuickUpdate = true
@@ -84,6 +87,8 @@ struct BottleListView: View {
                         }
                         .onDelete(perform: deleteBottles)
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                     .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                 }
             }
@@ -213,7 +218,7 @@ struct BottleRowView: View {
             Spacer()
         }
         .padding()
-        .primaryGlassEffect()
+        .subtleGlassEffect(tint: .blue)
     }
 
     private func remainingColor(for percentage: Double) -> Color {

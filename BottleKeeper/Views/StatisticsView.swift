@@ -247,8 +247,7 @@ struct StatisticsView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.orange.opacity(0.1))
-                .cornerRadius(12)
+                .subtleGlassEffect(tint: .orange)
 
                 VStack {
                     Text("\(unopenedBottles)")
@@ -260,8 +259,7 @@ struct StatisticsView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(12)
+                .subtleGlassEffect(tint: .green)
             }
 
             if openedBottles > 0 {
@@ -287,8 +285,7 @@ struct StatisticsView: View {
                 .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(12)
+        .subtleGlassEffect(tint: .gray)
     }
 
     private var totalRemainingView: some View {
@@ -312,8 +309,7 @@ struct StatisticsView: View {
                 .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color.orange.opacity(0.1))
-        .cornerRadius(12)
+        .subtleGlassEffect(tint: .orange)
     }
 
     @ViewBuilder
@@ -374,8 +370,7 @@ struct StatisticsView: View {
                 }
             }
             .padding()
-            .background(Color.orange.opacity(0.1))
-            .cornerRadius(8)
+            .subtleGlassEffect(tint: .orange)
         }
 
         VStack(spacing: 8) {
@@ -397,8 +392,7 @@ struct StatisticsView: View {
             }
         }
         .padding()
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(8)
+        .subtleGlassEffect(tint: .gray)
     }
 
     @ViewBuilder
@@ -476,8 +470,7 @@ struct StatisticsView: View {
                     }
                 }
                 .padding()
-                .background(Color.orange.opacity(0.1))
-                .cornerRadius(8)
+                .subtleGlassEffect(tint: .orange)
             }
         }
     }
@@ -497,8 +490,7 @@ struct StatisticsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.blue.opacity(0.1))
-            .cornerRadius(8)
+            .subtleGlassEffect(tint: .blue)
 
             VStack {
                 Text("\(avgConsumption)ml")
@@ -510,8 +502,7 @@ struct StatisticsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.green.opacity(0.1))
-            .cornerRadius(8)
+            .subtleGlassEffect(tint: .green)
         }
     }
 
@@ -564,8 +555,7 @@ struct StatCardView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(color.opacity(0.1))
-        .cornerRadius(12)
+        .subtleGlassEffect(tint: color)
     }
 }
 
@@ -611,8 +601,7 @@ struct CostPerformanceRow: View {
             }
         }
         .padding()
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(8)
+        .subtleGlassEffect(tint: .gray)
     }
 
     private var rankingColor: Color {

@@ -288,7 +288,7 @@ struct PremiumFeatureRow: View {
                 }
             }
             .padding()
-            .accentGlassEffect()
+            .subtleGlassEffect(tint: Color(red: 0.8, green: 0.5, blue: 0.2))
         }
         .buttonStyle(.plain)
         .disabled(isPurchased)

@@ -67,9 +67,14 @@ struct WishlistView: View {
                                 itemToMoveToCollection = item
                                 showingMoveConfirmation = true
                             })
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                         }
                         .onDelete(perform: deleteItems)
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                     .searchable(text: $searchText, prompt: "銘柄名や蒸留所で検索")
                 }
             }
@@ -198,7 +203,7 @@ struct WishlistRowView: View {
             }
         }
         .padding()
-        .primaryGlassEffect()
+        .subtleGlassEffect(tint: .blue)
         .sheet(isPresented: $showingEditForm) {
             WishlistFormView(wishlistItem: item)
         }
