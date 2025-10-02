@@ -598,7 +598,7 @@ struct CostPerformanceRow: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 4) {
-                Text("¥\(pricePerMl, specifier: "%.1f")/ml")
+                Text("¥\(NSDecimalNumber(decimal: pricePerMl).doubleValue, specifier: "%.1f")/ml")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.blue)
