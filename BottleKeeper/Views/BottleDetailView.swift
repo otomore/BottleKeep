@@ -135,7 +135,7 @@ struct BottleDetailView: View {
 
                         if bottle.isOpened {
                             if let openedDate = bottle.openedDate {
-                                Text("開栓日: \(openedDate, formatter: dateFormatter)")
+                                Text("開栓日: \(openedDate, formatter: DateFormatter.bottleDate)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -158,7 +158,7 @@ struct BottleDetailView: View {
                             .font(.headline)
 
                         if let purchaseDate = bottle.purchaseDate {
-                            DetailRowView(title: "購入日", value: dateFormatter.string(from: purchaseDate))
+                            DetailRowView(title: "購入日", value: DateFormatter.bottleDate.string(from: purchaseDate))
                         }
 
                         if let purchasePrice = bottle.purchasePrice {
@@ -320,14 +320,6 @@ struct BottleDetailView: View {
 
     private func progressColor(for percentage: Double) -> Color {
         AppColors.progressColor(for: percentage)
-    }
-
-    private var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "ja_JP")
-        return formatter
     }
 
     private func savePhoto(_ image: UIImage) {

@@ -84,8 +84,8 @@ class MotionManager: ObservableObject {
                 userAccel.z * userAccel.z
             )
 
-            DispatchQueue.main.async {
-                self.accelerationMagnitude = magnitude
+            DispatchQueue.main.async { [weak self] in
+                self?.accelerationMagnitude = magnitude
             }
         }
     }

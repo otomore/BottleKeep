@@ -102,23 +102,7 @@ struct BottleFormView: View {
                     HStack {
                         Text("評価")
                         Spacer()
-                        ForEach(1...5, id: \.self) { star in
-                            Button {
-                                let starValue = Int16(star)
-                                // 既に選択されている星をタップした場合は評価を0に戻す
-                                if rating == starValue {
-                                    rating = 0
-                                } else {
-                                    rating = starValue
-                                }
-                                print("評価を変更: \(rating)")
-                            } label: {
-                                Image(systemName: Int16(star) <= rating ? "star.fill" : "star")
-                                    .foregroundColor(.yellow)
-                                    .font(.title2)
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        StarRatingView(rating: $rating)
                     }
 
                     TextField("テイスティングノート（任意）", text: $notes, axis: .vertical)

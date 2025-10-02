@@ -331,21 +331,7 @@ struct WishlistToBottleFormView: View {
                     HStack {
                         Text("評価")
                         Spacer()
-                        ForEach(1...5, id: \.self) { star in
-                            Button {
-                                let starValue = Int16(star)
-                                if rating == starValue {
-                                    rating = 0
-                                } else {
-                                    rating = starValue
-                                }
-                            } label: {
-                                Image(systemName: Int16(star) <= rating ? "star.fill" : "star")
-                                    .foregroundColor(.yellow)
-                                    .font(.title2)
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        StarRatingView(rating: $rating)
                     }
 
                     TextField("テイスティングノート（任意）", text: $notes, axis: .vertical)

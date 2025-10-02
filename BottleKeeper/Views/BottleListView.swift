@@ -14,12 +14,13 @@ struct BottleListView: View {
     @State private var searchText = ""
     @State private var showingQuickUpdate = false
     @State private var selectedBottle: Bottle?
+    @State private var filteredBottles: [Bottle] = []
 
-    var filteredBottles: [Bottle] {
+    private func updateFilteredBottles() {
         if searchText.isEmpty {
-            return Array(bottles)
+            filteredBottles = Array(bottles)
         } else {
-            return bottles.filter { bottle in
+            filteredBottles = bottles.filter { bottle in
                 bottle.wrappedName.localizedCaseInsensitiveContains(searchText) ||
                 bottle.wrappedDistillery.localizedCaseInsensitiveContains(searchText)
             }
@@ -115,6 +116,15 @@ struct BottleListView: View {
                 if let bottle = selectedBottle {
                     QuickUpdateView(bottle: bottle)
                 }
+            }
+            .onAppear {
+                updateFilteredBottles()
+            }
+            .onChange(of: searchText) { _, _ in
+                updateFilteredBottles()
+            }
+            .onChange(of: bottles.count) { _, _ in
+                updateFilteredBottles()
             }
         }
     }
