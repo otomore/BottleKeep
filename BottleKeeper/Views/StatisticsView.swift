@@ -477,7 +477,28 @@ struct StatisticsView: View {
 
     private func consumptionTrendStats(data: [(String, Int)]) -> some View {
         let totalConsumption = data.reduce(0) { $0 + $1.1 }
-        let avgConsumption = data.isEmpty ? 0 : totalConsumption / data.count
+
+        // 実際の消費期間を計算（初回消費日から現在まで）
+        let avgConsumption: Int
+        if let firstLog = drinkingLogs.last, let firstDate = firstLog.date {
+            let calendar = Calendar.current
+            let now = Date()
+
+            let actualPeriods: Int
+            if consumptionPeriod == .monthly {
+                // 月数の差を計算
+                let components = calendar.dateComponents([.month], from: firstDate, to: now)
+                actualPeriods = max(1, (components.month ?? 0) + 1) // 最低1ヶ月
+            } else {
+                // 年数の差を計算
+                let components = calendar.dateComponents([.year], from: firstDate, to: now)
+                actualPeriods = max(1, (components.year ?? 0) + 1) // 最低1年
+            }
+
+            avgConsumption = totalConsumption / actualPeriods
+        } else {
+            avgConsumption = totalConsumption
+        }
 
         return HStack(spacing: 20) {
             VStack {
