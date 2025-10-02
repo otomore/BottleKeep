@@ -70,32 +70,31 @@ struct BottleListView: View {
                         }
                     }
                 }
-            }
 
-            // フローティングボタン（ランダム選択）
-            if !bottles.isEmpty {
-                Button {
-                    pickRandomBottle()
-                } label: {
-                    Image(systemName: "shuffle")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(width: 60, height: 60)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.blue, Color.blue.opacity(0.8)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                // フローティングボタン（ランダム選択）
+                if !bottles.isEmpty {
+                    Button {
+                        pickRandomBottle()
+                    } label: {
+                        Image(systemName: "shuffle")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(width: 60, height: 60)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.blue, Color.blue.opacity(0.8)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                             )
-                        )
-                        .clipShape(Circle())
-                        .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+                            .clipShape(Circle())
+                            .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 20)
                 }
-                .padding(.trailing, 20)
-                .padding(.bottom, 20)
             }
-        }
             .navigationTitle("コレクション")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
