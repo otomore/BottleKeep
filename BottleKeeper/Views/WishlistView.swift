@@ -16,6 +16,8 @@ struct WishlistView: View {
     @State private var searchText = ""
     @State private var itemToMoveToCollection: WishlistItem?
     @State private var showingMoveConfirmation = false
+    @State private var showingBottleForm = false
+    @State private var wishlistItemForBottle: WishlistItem?
 
     var filteredItems: [WishlistItem] {
         if searchText.isEmpty {
@@ -90,6 +92,20 @@ struct WishlistView: View {
             .sheet(isPresented: $showingAddItem) {
                 WishlistFormView(wishlistItem: nil)
             }
+            .sheet(isPresented: $showingBottleForm) {
+                if let wishlistItem = wishlistItemForBottle {
+                    WishlistToBottleFormView(wishlistItem: wishlistItem, onComplete: {
+                        // ウィッシュリストアイテムを削除
+                        viewContext.delete(wishlistItem)
+                        do {
+                            try viewContext.save()
+                        } catch {
+                            print("⚠️ Failed to delete wishlist item: \(error)")
+                        }
+                        showingBottleForm = false
+                    })
+                }
+            }
             .alert("コレクションに追加", isPresented: $showingMoveConfirmation) {
                 Button("キャンセル", role: .cancel) {}
                 Button("追加") {
@@ -119,28 +135,8 @@ struct WishlistView: View {
     }
 
     private func moveToCollection(_ item: WishlistItem) {
-        withAnimation {
-            // 新しいボトルを作成
-            let bottle = Bottle(context: viewContext)
-            bottle.id = UUID()
-            bottle.name = item.name
-            bottle.distillery = item.distillery
-            bottle.createdAt = Date()
-            bottle.updatedAt = Date()
-            bottle.volume = 700 // デフォルト値
-            bottle.remainingVolume = 700 // 新品として登録
-            bottle.abv = 40.0 // デフォルト値
-
-            // ウィッシュリストから削除
-            viewContext.delete(item)
-
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                print("⚠️ Failed to move item to collection: \(nsError), \(nsError.userInfo)")
-            }
-        }
+        wishlistItemForBottle = item
+        showingBottleForm = true
     }
 }
 
@@ -222,6 +218,193 @@ struct WishlistRowView: View {
             return .blue
         default:
             return .gray
+        }
+    }
+}
+
+// ウィッシュリストからボトルへの変換フォーム
+struct WishlistToBottleFormView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.dismiss) private var dismiss
+
+    let wishlistItem: WishlistItem
+    let onComplete: () -> Void
+
+    @State private var name: String
+    @State private var distillery: String
+    @State private var region = ""
+    @State private var type = ""
+    @State private var abv = 40.0
+    @State private var volume: Int32 = 700
+    @State private var vintage: Int32 = 0
+    @State private var purchaseDate = Date()
+    @State private var purchasePrice: String
+    @State private var shop = ""
+    @State private var rating: Int16 = 0
+    @State private var notes: String
+    @FocusState private var focusedField: Field?
+
+    enum Field {
+        case purchasePrice
+    }
+
+    init(wishlistItem: WishlistItem, onComplete: @escaping () -> Void) {
+        self.wishlistItem = wishlistItem
+        self.onComplete = onComplete
+        _name = State(initialValue: wishlistItem.wrappedName)
+        _distillery = State(initialValue: wishlistItem.wrappedDistillery)
+        _notes = State(initialValue: wishlistItem.wrappedNotes)
+
+        // 予算または目標価格を購入価格の初期値に設定
+        if let budget = wishlistItem.budget {
+            _purchasePrice = State(initialValue: budget.stringValue)
+        } else if let targetPrice = wishlistItem.targetPrice {
+            _purchasePrice = State(initialValue: targetPrice.stringValue)
+        } else {
+            _purchasePrice = State(initialValue: "")
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("基本情報") {
+                    TextField("銘柄名", text: $name)
+                    TextField("蒸留所（任意）", text: $distillery)
+                    TextField("地域", text: $region)
+                    TextField("タイプ", text: $type)
+
+                    HStack {
+                        Text("アルコール度数")
+                        Spacer()
+                        TextField("40.0", value: $abv, format: .number)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 80)
+                        Text("%")
+                    }
+
+                    HStack {
+                        Text("容量")
+                        Spacer()
+                        TextField("700", value: $volume, format: .number)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 80)
+                        Text("ml")
+                    }
+
+                    HStack {
+                        Text("年代")
+                        Spacer()
+                        TextField("任意", value: $vintage, format: .number)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 80)
+                        Text("年")
+                    }
+                }
+
+                Section("購入情報") {
+                    DatePicker("購入日", selection: $purchaseDate, displayedComponents: .date)
+
+                    HStack {
+                        Text("購入価格")
+                        Spacer()
+                        TextField("任意", text: $purchasePrice)
+                            .focused($focusedField, equals: .purchasePrice)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 100)
+                        Text("円")
+                    }
+
+                    TextField("購入店舗（任意）", text: $shop)
+                }
+
+                Section("評価・ノート") {
+                    HStack {
+                        Text("評価")
+                        Spacer()
+                        ForEach(1...5, id: \.self) { star in
+                            Button {
+                                let starValue = Int16(star)
+                                if rating == starValue {
+                                    rating = 0
+                                } else {
+                                    rating = starValue
+                                }
+                            } label: {
+                                Image(systemName: Int16(star) <= rating ? "star.fill" : "star")
+                                    .foregroundColor(.yellow)
+                                    .font(.title2)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    TextField("テイスティングノート（任意）", text: $notes, axis: .vertical)
+                        .lineLimit(3...6)
+                }
+            }
+            .navigationTitle("コレクションに追加")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("キャンセル") {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("追加") {
+                        saveBottle()
+                    }
+                    .disabled(name.isEmpty)
+                }
+            }
+        }
+        .onAppear {
+            // 購入価格フィールドにフォーカス
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                focusedField = .purchasePrice
+            }
+        }
+    }
+
+    private func saveBottle() {
+        withAnimation {
+            let bottle = Bottle(context: viewContext)
+            bottle.id = UUID()
+            bottle.name = name
+            bottle.distillery = distillery.isEmpty ? nil : distillery
+            bottle.region = region.isEmpty ? nil : region
+            bottle.type = type.isEmpty ? nil : type
+            bottle.abv = abv
+            bottle.volume = volume
+            bottle.vintage = vintage
+            bottle.purchaseDate = purchaseDate
+
+            if !purchasePrice.isEmpty, let price = Decimal(string: purchasePrice) {
+                bottle.purchasePrice = NSDecimalNumber(decimal: price)
+            }
+
+            bottle.shop = shop.isEmpty ? nil : shop
+            bottle.rating = rating
+            bottle.notes = notes.isEmpty ? nil : notes
+            bottle.createdAt = Date()
+            bottle.updatedAt = Date()
+            bottle.remainingVolume = volume // 新品として登録
+
+            do {
+                try viewContext.save()
+                onComplete()
+                dismiss()
+            } catch {
+                let nsError = error as NSError
+                print("⚠️ Failed to save bottle: \(nsError), \(nsError.userInfo)")
+                dismiss()
+            }
         }
     }
 }

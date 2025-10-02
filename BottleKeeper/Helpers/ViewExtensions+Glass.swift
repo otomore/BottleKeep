@@ -1,57 +1,80 @@
 import SwiftUI
 
-/// Liquid Glassスタイルのエフェクトを提供する拡張
-/// 現在はフォールバック実装（.ultraThinMaterial）を使用
+/// Glassmorphism（Liquid Glass）スタイルのエフェクトを提供する拡張
+///
+/// Glassmorphismの主要な特性:
+/// 1. 半透明性（Translucency）- 背景が透けて見える
+/// 2. 背景ブラー（Background Blur）- フロストガラス効果
+/// 3. 境界線（Stroke）- 深さと厚みを強調する微妙なボーダー
+/// 4. グラデーション（Gradient）- 光の反射を模倣
 extension View {
-    /// アダプティブガラスエフェクトを適用
+    /// 真のGlassmorphismエフェクトを適用
     /// - Parameters:
     ///   - tint: ティント色（オプション）
-    ///   - interactive: インタラクティブモード（将来の拡張用）
+    ///   - cornerRadius: 角丸の半径
     func adaptiveGlassEffect(
         tint: Color? = nil,
-        interactive: Bool = false
+        cornerRadius: CGFloat = 12
     ) -> some View {
         self
             .background {
                 ZStack {
-                    // 背景ブラー
-                    RoundedRectangle(cornerRadius: 12)
+                    // 1. 背景ブラー（frosted glass effect）
+                    RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(.ultraThinMaterial)
 
-                    // ティント色
+                    // 2. ティント色（半透明）
                     if let tint = tint {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(tint.opacity(0.15))
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(tint.opacity(0.1))
                     }
 
-                    // 光沢効果
+                    // 3. 光沢グラデーション（上部が明るく、下部が暗い）
                     LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.3),
-                            Color.clear,
-                            Color.white.opacity(0.1)
+                        stops: [
+                            .init(color: Color.white.opacity(0.25), location: 0.0),
+                            .init(color: Color.white.opacity(0.05), location: 0.5),
+                            .init(color: Color.clear, location: 1.0)
                         ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                        startPoint: .top,
+                        endPoint: .bottom
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 }
             }
-            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+            // 4. 境界線（重要！Glassmorphismの特徴）
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.6),
+                                Color.white.opacity(0.2),
+                                Color.white.opacity(0.0)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            }
+            // 5. 柔らかい影（浮遊効果）
+            .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 
-    /// プライマリガラスエフェクト（青色）
+    /// プライマリガラスエフェクト（青色ティント）
     func primaryGlassEffect() -> some View {
-        adaptiveGlassEffect(tint: .blue.opacity(0.3))
+        adaptiveGlassEffect(tint: .blue)
     }
 
-    /// セカンダリガラスエフェクト（グレー）
+    /// セカンダリガラスエフェクト（ニュートラル）
     func secondaryGlassEffect() -> some View {
-        adaptiveGlassEffect(tint: .gray.opacity(0.2))
+        adaptiveGlassEffect(tint: nil)
     }
 
-    /// アクセントガラスエフェクト（ブラウン）
+    /// アクセントガラスエフェクト（琥珀色ティント - ウイスキーテーマ）
     func accentGlassEffect() -> some View {
-        adaptiveGlassEffect(tint: .brown.opacity(0.25), interactive: true)
+        adaptiveGlassEffect(tint: Color(red: 0.8, green: 0.5, blue: 0.2))
     }
 }

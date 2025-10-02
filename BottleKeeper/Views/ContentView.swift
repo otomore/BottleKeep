@@ -36,7 +36,11 @@ struct ContentView: View {
                     Button {
                         selectedTab = 3
                     } label: {
-                        Label("設定", systemImage: "wineglass.fill")
+                        HStack {
+                            Text("🥃")
+                                .font(.title3)
+                            Text("設定")
+                        }
                     }
                     .listRowBackground(selectedTab == 3 ? Color.blue.opacity(0.2) : Color.clear)
                 }
@@ -71,7 +75,12 @@ struct ContentView: View {
 
                 SettingsView()
                     .tabItem {
-                        Label("設定", systemImage: "wineglass.fill")
+                        VStack {
+                            Text("🥃")
+                                .font(.title3)
+                            Text("設定")
+                                .font(.caption)
+                        }
                     }
                     .tag(3)
             }
