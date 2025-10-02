@@ -21,229 +21,12 @@ struct BottleDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // 写真セクション
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("写真")
-                            .font(.headline)
-                        Spacer()
-                        Button {
-                            showingPhotoSourceAlert = true
-                        } label: {
-                            Label("追加", systemImage: "plus.circle.fill")
-                                .font(.caption)
-                        }
-                    }
-
-                    if !bottle.photosArray.isEmpty {
-                        TabView {
-                            ForEach(bottle.photosArray, id: \.id) { photo in
-                                ZStack(alignment: .topTrailing) {
-                                    if let fileName = photo.fileName,
-                                       let image = PhotoManager.shared.loadPhoto(fileName: fileName) {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                    } else {
-                                        Rectangle()
-                                            .fill(Color.gray.opacity(0.3))
-                                            .overlay(
-                                                Image(systemName: "exclamationmark.triangle")
-                                                    .font(.largeTitle)
-                                                    .foregroundColor(.gray)
-                                            )
-                                    }
-
-                                    Button {
-                                        photoToDelete = photo
-                                        showingDeleteAlert = true
-                                    } label: {
-                                        Image(systemName: "trash.circle.fill")
-                                            .font(.title)
-                                            .foregroundColor(.red)
-                                            .background(Circle().fill(Color.white))
-                                    }
-                                    .padding(8)
-                                }
-                            }
-                        }
-                        .frame(height: horizontalSizeClass == .regular ? 450 : 300)
-                        .tabViewStyle(PageTabViewStyle())
-                    } else {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 300)
-                            .overlay(
-                                VStack {
-                                    Image(systemName: "photo")
-                                        .font(.largeTitle)
-                                        .foregroundColor(.gray)
-                                    Text("写真が追加されていません")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                }
-                            )
-                            .cornerRadius(12)
-                    }
-                }
-
-                // 基本情報セクション
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("基本情報")
-                        .font(.headline)
-
-                    DetailRowView(title: "銘柄", value: bottle.wrappedName)
-                    DetailRowView(title: "蒸留所", value: bottle.wrappedDistillery)
-                    DetailRowView(title: "地域", value: bottle.wrappedRegion)
-                    DetailRowView(title: "タイプ", value: bottle.wrappedType)
-                    DetailRowView(title: "アルコール度数", value: "\(String(format: "%.1f", bottle.abv))%")
-                    DetailRowView(title: "容量", value: "\(bottle.volume)ml")
-
-                    if bottle.vintage > 0 {
-                        DetailRowView(title: "年代", value: "\(bottle.vintage)年")
-                    }
-                }
-
-                // 残量情報セクション
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("残量情報")
-                            .font(.headline)
-                        Spacer()
-                        Button("ログを記録") {
-                            showingDrinkingLogForm = true
-                        }
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                        Button("更新") {
-                            showingRemainingVolumeSheet = true
-                        }
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                    }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("残り: \(bottle.remainingVolume)ml / \(bottle.volume)ml")
-                            .font(.subheadline)
-
-                        ProgressView(value: bottle.remainingPercentage, total: 100)
-                            .progressViewStyle(LinearProgressViewStyle(tint: progressColor(for: bottle.remainingPercentage)))
-
-                        Text("\(bottle.remainingPercentage, specifier: "%.1f")%")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-
-                        if bottle.isOpened {
-                            if let openedDate = bottle.openedDate {
-                                Text("開栓日: \(openedDate, formatter: DateFormatter.bottleDate)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        } else {
-                            Text("未開栓")
-                                .font(.caption)
-                                .foregroundColor(.green)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 2)
-                                .background(Color.green.opacity(0.2))
-                                .cornerRadius(4)
-                        }
-                    }
-                }
-
-                // 購入情報セクション
-                if bottle.purchaseDate != nil || bottle.purchasePrice != nil || !bottle.wrappedShop.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("購入情報")
-                            .font(.headline)
-
-                        if let purchaseDate = bottle.purchaseDate {
-                            DetailRowView(title: "購入日", value: DateFormatter.bottleDate.string(from: purchaseDate))
-                        }
-
-                        if let purchasePrice = bottle.purchasePrice {
-                            DetailRowView(title: "購入価格", value: "¥\(purchasePrice)")
-                        }
-
-                        if !bottle.wrappedShop.isEmpty && bottle.wrappedShop != "不明" {
-                            DetailRowView(title: "購入店舗", value: bottle.wrappedShop)
-                        }
-                    }
-                }
-
-                // 評価・ノートセクション
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("評価・ノート")
-                            .font(.headline)
-                        Spacer()
-                        Button("テイスティングノート") {
-                            showingTastingNoteForm = true
-                        }
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                    }
-
-                    HStack {
-                        Text("評価:")
-                            .foregroundColor(.secondary)
-                        StarRatingView(rating: $currentRating, onRatingChange: { newRating in
-                            updateRating(newRating)
-                        })
-                    }
-
-                    if !bottle.wrappedNotes.isEmpty {
-                        Text(bottle.wrappedNotes)
-                            .padding()
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
-                    }
-                }
-
-                // 飲酒ログセクション
-                if !bottle.drinkingLogsArray.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("飲酒ログ")
-                            .font(.headline)
-
-                        ForEach(bottle.drinkingLogsArray.prefix(5), id: \.id) { log in
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Image(systemName: "calendar")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    Text(log.wrappedDate, style: .date)
-                                        .font(.subheadline)
-                                    Text(log.wrappedDate, style: .time)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    Spacer()
-                                    Text("\(log.volume)ml")
-                                        .font(.subheadline)
-                                        .foregroundColor(.blue)
-                                }
-
-                                if !log.wrappedNotes.isEmpty {
-                                    Text(log.wrappedNotes)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .lineLimit(2)
-                                }
-                            }
-                            .padding(.vertical, 4)
-                            .padding(.horizontal, 8)
-                            .background(Color.gray.opacity(0.05))
-                            .cornerRadius(6)
-                        }
-
-                        if bottle.drinkingLogsArray.count > 5 {
-                            Text("他 \(bottle.drinkingLogsArray.count - 5) 件のログ")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-
+                photoSection
+                basicInfoSection
+                remainingVolumeSection
+                purchaseInfoSection
+                ratingSection
+                drinkingLogsSection
                 Spacer(minLength: 20)
             }
             .padding()
@@ -304,6 +87,239 @@ struct BottleDetailView: View {
         }
     }
 
+    // MARK: - Sections
+
+    private var photoSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("写真")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    showingPhotoSourceAlert = true
+                } label: {
+                    Label("追加", systemImage: "plus.circle.fill")
+                        .font(.caption)
+                }
+            }
+
+            if !bottle.photosArray.isEmpty {
+                TabView {
+                    ForEach(bottle.photosArray, id: \.id) { photo in
+                        ZStack(alignment: .topTrailing) {
+                            if let fileName = photo.fileName,
+                               let image = PhotoManager.shared.loadPhoto(fileName: fileName) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } else {
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .overlay(
+                                        Image(systemName: "exclamationmark.triangle")
+                                            .font(.largeTitle)
+                                            .foregroundColor(.gray)
+                                    )
+                            }
+
+                            Button {
+                                photoToDelete = photo
+                                showingDeleteAlert = true
+                            } label: {
+                                Image(systemName: "trash.circle.fill")
+                                    .font(.title)
+                                    .foregroundColor(.red)
+                                    .background(Circle().fill(Color.white))
+                            }
+                            .padding(8)
+                        }
+                    }
+                }
+                .frame(height: horizontalSizeClass == .regular ? 450 : 300)
+                .tabViewStyle(PageTabViewStyle())
+            } else {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 300)
+                    .overlay(
+                        VStack {
+                            Image(systemName: "photo")
+                                .font(.largeTitle)
+                                .foregroundColor(.gray)
+                            Text("写真が追加されていません")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    )
+                    .cornerRadius(12)
+            }
+        }
+    }
+
+    private var basicInfoSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("基本情報")
+                .font(.headline)
+
+            DetailRowView(title: "銘柄", value: bottle.wrappedName)
+            DetailRowView(title: "蒸留所", value: bottle.wrappedDistillery)
+            DetailRowView(title: "地域", value: bottle.wrappedRegion)
+            DetailRowView(title: "タイプ", value: bottle.wrappedType)
+            DetailRowView(title: "アルコール度数", value: "\(String(format: "%.1f", bottle.abv))%")
+            DetailRowView(title: "容量", value: "\(bottle.volume)ml")
+
+            if bottle.vintage > 0 {
+                DetailRowView(title: "年代", value: "\(bottle.vintage)年")
+            }
+        }
+    }
+
+    private var remainingVolumeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("残量情報")
+                    .font(.headline)
+                Spacer()
+                Button("ログを記録") {
+                    showingDrinkingLogForm = true
+                }
+                .font(.caption)
+                .foregroundColor(.blue)
+                Button("更新") {
+                    showingRemainingVolumeSheet = true
+                }
+                .font(.caption)
+                .foregroundColor(.blue)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("残り: \(bottle.remainingVolume)ml / \(bottle.volume)ml")
+                    .font(.subheadline)
+
+                ProgressView(value: bottle.remainingPercentage, total: 100)
+                    .progressViewStyle(LinearProgressViewStyle(tint: progressColor(for: bottle.remainingPercentage)))
+
+                Text("\(bottle.remainingPercentage, specifier: "%.1f")%")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if bottle.isOpened {
+                    if let openedDate = bottle.openedDate {
+                        Text("開栓日: \(openedDate, formatter: DateFormatter.bottleDate)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                } else {
+                    Text("未開栓")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(4)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var purchaseInfoSection: some View {
+        if bottle.purchaseDate != nil || bottle.purchasePrice != nil || !bottle.wrappedShop.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("購入情報")
+                    .font(.headline)
+
+                if let purchaseDate = bottle.purchaseDate {
+                    DetailRowView(title: "購入日", value: DateFormatter.bottleDate.string(from: purchaseDate))
+                }
+
+                if let purchasePrice = bottle.purchasePrice {
+                    DetailRowView(title: "購入価格", value: "¥\(purchasePrice)")
+                }
+
+                if !bottle.wrappedShop.isEmpty && bottle.wrappedShop != "不明" {
+                    DetailRowView(title: "購入店舗", value: bottle.wrappedShop)
+                }
+            }
+        }
+    }
+
+    private var ratingSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("評価・ノート")
+                    .font(.headline)
+                Spacer()
+                Button("テイスティングノート") {
+                    showingTastingNoteForm = true
+                }
+                .font(.caption)
+                .foregroundColor(.blue)
+            }
+
+            HStack {
+                Text("評価:")
+                    .foregroundColor(.secondary)
+                StarRatingView(rating: $currentRating, onRatingChange: { newRating in
+                    updateRating(newRating)
+                })
+            }
+
+            if !bottle.wrappedNotes.isEmpty {
+                Text(bottle.wrappedNotes)
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var drinkingLogsSection: some View {
+        if !bottle.drinkingLogsArray.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("飲酒ログ")
+                    .font(.headline)
+
+                ForEach(bottle.drinkingLogsArray.prefix(5), id: \.id) { log in
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Image(systemName: "calendar")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(log.wrappedDate, style: .date)
+                                .font(.subheadline)
+                            Text(log.wrappedDate, style: .time)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("\(log.volume)ml")
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                        }
+
+                        if !log.wrappedNotes.isEmpty {
+                            Text(log.wrappedNotes)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(2)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 8)
+                    .background(Color.gray.opacity(0.05))
+                    .cornerRadius(6)
+                }
+
+                if bottle.drinkingLogsArray.count > 5 {
+                    Text("他 \(bottle.drinkingLogsArray.count - 5) 件のログ")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+    }
+
     private func updateRating(_ newRating: Int16) {
         withAnimation {
             bottle.rating = newRating
@@ -347,14 +363,14 @@ struct BottleDetailView: View {
             print("写真レコードの保存に失敗: \(nsError), \(nsError.userInfo)")
 
             // Core Dataの保存に失敗した場合、ファイルも削除
-            PhotoManager.shared.deletePhoto(fileName: fileName)
+            _ = PhotoManager.shared.deletePhoto(fileName: fileName)
         }
     }
 
     private func deletePhoto(_ photo: BottlePhoto) {
         // ファイルシステムから写真を削除
         if let fileName = photo.fileName {
-            PhotoManager.shared.deletePhoto(fileName: fileName)
+            _ = PhotoManager.shared.deletePhoto(fileName: fileName)
         }
 
         // Core Dataから写真レコードを削除
