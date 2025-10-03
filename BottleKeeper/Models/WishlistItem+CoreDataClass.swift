@@ -50,26 +50,32 @@ public class WishlistItem: NSManagedObject {
 
     /// データの整合性を確保（保存前に呼び出す）
     public override func willSave() {
+        // 削除中のオブジェクトには何もしない
+        guard !isDeleted else {
+            super.willSave()
+            return
+        }
+
         super.willSave()
 
-        // IDが未設定の場合は自動生成
+        // IDが未設定の場合は自動生成（新規作成時のみ）
         if id == nil {
-            id = UUID()
+            setPrimitiveValue(UUID(), forKey: "id")
         }
 
-        // 作成日時が未設定の場合は自動設定
+        // 作成日時が未設定の場合は自動設定（新規作成時のみ）
         if createdAt == nil {
-            createdAt = Date()
+            setPrimitiveValue(Date(), forKey: "createdAt")
         }
 
-        // 更新日時を自動設定
-        updatedAt = Date()
+        // 更新日時は明示的に設定されている場合のみ更新
+        // willSave()内での自動更新は無限ループを引き起こす可能性があるため削除
 
         // 優先度が範囲外の場合は補正
         if priority < 1 {
-            priority = 1
+            setPrimitiveValue(1, forKey: "priority")
         } else if priority > 5 {
-            priority = 5
+            setPrimitiveValue(5, forKey: "priority")
         }
     }
 }

@@ -57,29 +57,35 @@ public class Bottle: NSManagedObject {
 
     /// データの整合性を確保（保存前に呼び出す）
     public override func willSave() {
+        // 削除中のオブジェクトには何もしない
+        guard !isDeleted else {
+            super.willSave()
+            return
+        }
+
         super.willSave()
 
-        // IDが未設定の場合は自動生成
+        // IDが未設定の場合は自動生成（新規作成時のみ）
         if id == nil {
-            id = UUID()
+            setPrimitiveValue(UUID(), forKey: "id")
         }
 
-        // 作成日時が未設定の場合は自動設定
+        // 作成日時が未設定の場合は自動設定（新規作成時のみ）
         if createdAt == nil {
-            createdAt = Date()
+            setPrimitiveValue(Date(), forKey: "createdAt")
         }
 
-        // 更新日時を自動設定
-        updatedAt = Date()
+        // 更新日時は明示的に設定されている場合のみ更新
+        // willSave()内での自動更新は無限ループを引き起こす可能性があるため削除
 
         // 残量が容量を超えないように補正
         if remainingVolume > volume {
-            remainingVolume = volume
+            setPrimitiveValue(volume, forKey: "remainingVolume")
         }
 
         // 残量が負の値にならないように補正
         if remainingVolume < 0 {
-            remainingVolume = 0
+            setPrimitiveValue(0, forKey: "remainingVolume")
         }
     }
 }
