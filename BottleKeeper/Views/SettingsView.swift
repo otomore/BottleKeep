@@ -15,6 +15,9 @@ struct SettingsView: View {
     private var wishlistItems: FetchedResults<WishlistItem>
 
     @State private var showingDeleteAlert = false
+    @State private var iCloudSyncAvailable = false
+
+    private var coreDataManager = CoreDataManager.shared
 
     var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "不明"
@@ -124,6 +127,35 @@ struct SettingsView: View {
                 // プレミアム機能
                 premiumFeaturesSection
 
+                // iCloud同期状態
+                Section("iCloud同期") {
+                    HStack {
+                        Label("同期状態", systemImage: "icloud")
+                        Spacer()
+                        if iCloudSyncAvailable {
+                            HStack(spacing: 4) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("利用可能")
+                                    .foregroundColor(.green)
+                            }
+                        } else {
+                            HStack(spacing: 4) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.red)
+                                Text("利用不可")
+                                    .foregroundColor(.red)
+                            }
+                        }
+                    }
+                } footer: {
+                    if iCloudSyncAvailable {
+                        Text("iCloudを使用してデバイス間でデータを自動同期します。")
+                    } else {
+                        Text("iCloud同期を使用するには、デバイスでiCloudにサインインしてください。")
+                    }
+                }
+
                 // バージョン情報
                 Section("アプリ情報") {
                     HStack {
@@ -198,6 +230,10 @@ struct SettingsView: View {
                 .listRowBackground(Color.clear)
             }
             .navigationTitle("設定")
+            .onAppear {
+                // iCloud同期状態を確認
+                iCloudSyncAvailable = coreDataManager.isCloudSyncAvailable
+            }
             .alert("データ削除の確認", isPresented: $showingDeleteAlert) {
                 Button("キャンセル", role: .cancel) {}
                 Button("削除", role: .destructive) {
