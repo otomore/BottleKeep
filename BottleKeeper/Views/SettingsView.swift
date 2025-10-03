@@ -84,6 +84,18 @@ class SettingsViewModel: ObservableObject {
     func refreshCloudSyncStatus() {
         iCloudSyncAvailable = coreDataManager.isCloudSyncAvailable
     }
+
+    /// CloudKit診断情報を表示
+    func showDiagnosticInfo() {
+        let diagnosticInfo = coreDataManager.diagnosticCloudKitStatus()
+        print(diagnosticInfo)
+    }
+
+    /// iCloud状態を再確認
+    func recheckiCloudStatus() {
+        coreDataManager.recheckiCloudStatus()
+        refreshCloudSyncStatus()
+    }
 }
 
 // MARK: - Settings View
@@ -269,6 +281,20 @@ struct SettingsView: View {
                         }
                     }
                     .disabled(viewModel.isInitializingSchema || !viewModel.iCloudSyncAvailable)
+
+                    // 診断情報ボタン
+                    Button {
+                        viewModel.showDiagnosticInfo()
+                    } label: {
+                        Label("CloudKit診断情報を表示", systemImage: "info.circle")
+                    }
+
+                    // iCloud状態再確認ボタン
+                    Button {
+                        viewModel.recheckiCloudStatus()
+                    } label: {
+                        Label("iCloud状態を再確認", systemImage: "arrow.clockwise")
+                    }
 
                     // デバッグログへのリンク
                     NavigationLink(destination: CloudKitDebugLogView()) {

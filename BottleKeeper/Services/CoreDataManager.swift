@@ -229,6 +229,10 @@ class CoreDataManager: ObservableObject {
         }
 
         log("📡 CloudKit Event: \(eventTypeDescription(event.type))")
+        log("Event start date: \(event.startDate)")
+        if let endDate = event.endDate {
+            log("Event end date: \(endDate)")
+        }
 
         if let error = event.error {
             let nsError = error as NSError
@@ -236,14 +240,46 @@ class CoreDataManager: ObservableObject {
             log("Error domain: \(nsError.domain)")
             log("Error code: \(nsError.code)")
 
+            // CKErrorの詳細情報
+            if nsError.domain == CKError.errorDomain {
+                logCKErrorDetails(nsError)
+            }
+
             // 重大なエラーの場合は追加情報をログ
             if nsError.code == CKError.quotaExceeded.rawValue {
                 log("⚠️ iCloud storage quota exceeded")
             } else if nsError.code == CKError.networkFailure.rawValue {
                 log("⚠️ Network connection issue")
+            } else if nsError.code == CKError.notAuthenticated.rawValue {
+                log("⚠️ User is not authenticated with iCloud")
+            } else if nsError.code == CKError.networkUnavailable.rawValue {
+                log("⚠️ Network is unavailable")
             }
         } else {
             log("✅ \(eventTypeDescription(event.type)) completed successfully")
+        }
+    }
+
+    /// CKErrorの詳細情報をログに出力
+    private func logCKErrorDetails(_ error: NSError) {
+        // Partial Errorsをチェック
+        if let partialErrors = error.userInfo[CKPartialErrorsByItemIDKey] as? [AnyHashable: Error] {
+            log("Partial errors count: \(partialErrors.count)")
+            for (key, partialError) in partialErrors {
+                log("  Item [\(key)]: \((partialError as NSError).localizedDescription)")
+            }
+        }
+
+        // Underlying Errorをチェック
+        if let underlyingError = error.userInfo[NSUnderlyingErrorKey] as? NSError {
+            log("Underlying error: \(underlyingError.localizedDescription)")
+            log("Underlying error domain: \(underlyingError.domain)")
+            log("Underlying error code: \(underlyingError.code)")
+        }
+
+        // Retry After情報をチェック
+        if let retryAfter = error.userInfo[CKErrorRetryAfterKey] as? NSNumber {
+            log("Retry after: \(retryAfter) seconds")
         }
     }
 
@@ -365,6 +401,43 @@ extension CoreDataManager {
         logger.clearLogs()
         logs = []
         log("🗑️ Logs cleared")
+    }
+
+    /// CloudKit同期の診断情報を取得
+    func diagnosticCloudKitStatus() -> String {
+        var status = "=== CloudKit診断情報 ===\n"
+        status += "iCloud利用可能: \(iCloudAvailable ? "はい" : "いいえ")\n"
+        status += "スキーマ初期化済み: \(isCloudKitSchemaInitialized ? "はい" : "いいえ")\n"
+
+        if let date = cloudKitSchemaInitializedDate {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .medium
+            status += "スキーマ初期化日時: \(formatter.string(from: date))\n"
+        }
+
+        // Store Descriptionの情報
+        if let description = container.persistentStoreDescriptions.first {
+            status += "\nストア情報:\n"
+            status += "URL: \(description.url?.lastPathComponent ?? "不明")\n"
+            status += "CloudKit有効: \(description.cloudKitContainerOptions != nil ? "はい" : "いいえ")\n"
+            if let options = description.cloudKitContainerOptions {
+                status += "コンテナID: \(options.containerIdentifier)\n"
+            }
+        }
+
+        status += "\n最新のログ（5件）:\n"
+        for log in logs.prefix(5) {
+            status += "\(log)\n"
+        }
+
+        log(status)
+        return status
+    }
+
+    /// iCloudアカウント状態を再確認
+    func recheckiCloudStatus() {
+        checkiCloudAccountStatus()
     }
 }
 
