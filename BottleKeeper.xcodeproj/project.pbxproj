@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15679A8EF03B44DDB7B233CD /* CloudKitDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3CD2E0E8684B469882EBE7 /* CloudKitDebugView.swift */; };
-		B1FFA1FFF61545AAAD930EFA /* CloudKitLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B35325841914C478C19F424 /* CloudKitLogger.swift */; };
-		2D81DD4615104417A8916416 /* CloudKitLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83DCCE7631C4429B8547A0C /* CloudKitLogger.swift */; };
 		8D1F4A2C2C9E5B4300A1B2C3 /* BottleKeeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A2B2C9E5B4300A1B2C3 /* BottleKeeperApp.swift */; };
 		8D1F4A2E2C9E5B4300A1B2C3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1F4A2D2C9E5B4300A1B2C3 /* ContentView.swift */; };
 		8D1F4A302C9E5B4400A1B2C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D1F4A2F2C9E5B4400A1B2C3 /* Assets.xcassets */; };
@@ -47,9 +44,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7A3CD2E0E8684B469882EBE7 /* CloudKitDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitDebugView.swift; sourceTree = "<group>"; };
-		3B35325841914C478C19F424 /* CloudKitLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitLogger.swift; sourceTree = "<group>"; };
-		F83DCCE7631C4429B8547A0C /* CloudKitLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitLogger.swift; sourceTree = "<group>"; };
 		8D1F4A282C9E5B4300A1B2C3 /* BottleKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BottleKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1F4A2B2C9E5B4300A1B2C3 /* BottleKeeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleKeeperApp.swift; sourceTree = "<group>"; };
 		8D1F4A2D2C9E5B4300A1B2C3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -165,8 +159,7 @@
 				8D1F4A512C9E5C4000A1B2C3 /* StatisticsView.swift */,
 				8D1F4A532C9E5C5000A1B2C3 /* SettingsView.swift */,
 				8D1F4A552C9E5C6000A1B2C3 /* RemainingVolumeUpdateView.swift */,
-								7A3CD2E0E8684B469882EBE7 /* CloudKitDebugView.swift */,
-D4E6937648A847AFA2E8101D9B712AA7 /* DrinkingLogFormView.swift */,
+				D4E6937648A847AFA2E8101D9B712AA7 /* DrinkingLogFormView.swift */,
 				06ED3AE94669412C9716E9609F71A09F /* ImagePicker.swift */,
 				EAD8DD6C9BAF4460B4F66478 /* TastingNoteFormView.swift */,
 				ACE32BE46B6449E6AAA3101E /* NotificationSettingsView.swift */,
@@ -200,9 +193,7 @@ D4E6937648A847AFA2E8101D9B712AA7 /* DrinkingLogFormView.swift */,
 			isa = PBXGroup;
 			children = (
 				8D1F4A3A2C9E5B6000A1B2C3 /* CoreDataManager.swift */,
-								F83DCCE7631C4429B8547A0C /* CloudKitLogger.swift */,
-				3B35325841914C478C19F424 /* CloudKitLogger.swift */,
-CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */,
+				CAF1156F3D16406EAE6E3F48FFB47AE9 /* MotionManager.swift */,
 				4AE924202E254E3F855380397BE0ACDD /* PhotoManager.swift */,
 				5F4720B123464CF38839432E /* ImageCache.swift */,
 				7999F94528DB4234BD633DF4 /* NotificationManager.swift */,

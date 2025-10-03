@@ -189,7 +189,7 @@ struct SettingsView: View {
                     .disabled(isInitializingSchema || !iCloudSyncAvailable)
 
                     // デバッグログへのリンク
-                    NavigationLink(destination: CloudKitDebugView()) {
+                    NavigationLink(destination: CloudKitDebugLogView()) {
                         Label("デバッグログを表示", systemImage: "list.bullet.rectangle")
                     }
                 } header: {
@@ -417,6 +417,56 @@ struct PremiumFeatureRow: View {
                 }
         }
         .disabled(isPurchased)
+    }
+}
+
+// MARK: - CloudKit Debug Log View
+
+struct CloudKitDebugLogView: View {
+    @ObservedObject private var coreDataManager = CoreDataManager.shared
+    @State private var showingCopyConfirmation = false
+
+    var body: some View {
+        List {
+            Section {
+                if coreDataManager.logs.isEmpty {
+                    Text("ログがありません")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                        .padding()
+                } else {
+                    ForEach(coreDataManager.logs, id: \.self) { log in
+                        Text(log)
+                            .font(.caption)
+                            .textSelection(.enabled)
+                    }
+                }
+            } header: {
+                HStack {
+                    Text("CloudKit同期ログ")
+                    Spacer()
+                    Text("\(coreDataManager.logs.count)件")
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Section {
+                Button {
+                    UIPasteboard.general.string = coreDataManager.logs.joined(separator: "\n")
+                    showingCopyConfirmation = true
+                } label: {
+                    Label("ログをコピー", systemImage: "doc.on.clipboard")
+                }
+                .disabled(coreDataManager.logs.isEmpty)
+            }
+        }
+        .navigationTitle("CloudKit デバッグ")
+        .navigationBarTitleDisplayMode(.inline)
+        .alert("コピー完了", isPresented: $showingCopyConfirmation) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("ログをクリップボードにコピーしました")
+        }
     }
 }
 
