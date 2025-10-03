@@ -2,6 +2,53 @@ import CoreData
 import Foundation
 import CloudKit
 
+// MARK: - Constants
+
+private enum CoreDataConstants {
+    static let containerName = "BottleKeeper"
+    static let cloudKitContainerIdentifier = "iCloud.com.bottlekeep.whiskey"
+    static let maxLogCount = 100
+    static let previewSampleCount = 5
+
+    enum UserDefaultsKeys {
+        static let cloudKitSchemaInitialized = "cloudKitSchemaInitialized"
+        static let cloudKitSchemaInitializedDate = "cloudKitSchemaInitializedDate"
+    }
+
+    enum EntityNames {
+        static let bottle = "Bottle"
+        static let wishlistItem = "WishlistItem"
+    }
+}
+
+// MARK: - CloudKit Logger
+
+/// CloudKit同期のログを管理する構造体
+struct CloudKitLogger {
+    private(set) var logs: [String] = []
+    private let maxLogs: Int
+
+    init(maxLogs: Int = CoreDataConstants.maxLogCount) {
+        self.maxLogs = maxLogs
+    }
+
+    mutating func log(_ message: String) {
+        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
+        let logMessage = "[\(timestamp)] \(message)"
+        logs.insert(logMessage, at: 0)
+        if logs.count > maxLogs {
+            logs.removeLast()
+        }
+        print(logMessage)
+    }
+
+    mutating func clearLogs() {
+        logs.removeAll()
+    }
+}
+
+// MARK: - Core Data Manager
+
 class CoreDataManager: ObservableObject {
     static let shared = CoreDataManager()
     static let preview: CoreDataManager = {
@@ -9,8 +56,15 @@ class CoreDataManager: ObservableObject {
         let viewContext = manager.container.viewContext
 
         // プレビュー用のサンプルデータを作成
-        for i in 0..<5 {
-            let newBottle = NSEntityDescription.insertNewObject(forEntityName: "Bottle", into: viewContext) as! NSManagedObject
+        for i in 0..<CoreDataConstants.previewSampleCount {
+            guard let newBottle = NSEntityDescription.insertNewObject(
+                forEntityName: CoreDataConstants.EntityNames.bottle,
+                into: viewContext
+            ) as? NSManagedObject else {
+                print("⚠️ Failed to create preview bottle object")
+                continue
+            }
+
             newBottle.setValue(UUID(), forKey: "id")
             newBottle.setValue("サンプルウイスキー \(i + 1)", forKey: "name")
             newBottle.setValue("サンプル蒸留所", forKey: "distillery")
@@ -26,72 +80,46 @@ class CoreDataManager: ObservableObject {
             try viewContext.save()
         } catch {
             let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            print("⚠️ Preview data save error: \(nsError), \(nsError.userInfo)")
         }
         return manager
     }()
 
     let container: NSPersistentCloudKitContainer
     private var iCloudAvailable = false
+    private var logger = CloudKitLogger()
 
-    // シンプルなロギング機能
+    // ログをPublishedプロパティとして公開
     @Published private(set) var logs: [String] = []
-    private let maxLogs = 100
 
     private func log(_ message: String) {
-        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
-        let logMessage = "[\(timestamp)] \(message)"
-        DispatchQueue.main.async {
-            self.logs.insert(logMessage, at: 0)
-            if self.logs.count > self.maxLogs {
-                self.logs.removeLast()
-            }
-            print(logMessage)
+        logger.log(message)
+        DispatchQueue.main.async { [weak self] in
+            self?.logs = self?.logger.logs ?? []
         }
     }
 
     init(inMemory: Bool = false) {
-        container = NSPersistentCloudKitContainer(name: "BottleKeeper")
+        container = NSPersistentCloudKitContainer(name: CoreDataConstants.containerName)
 
         if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+            // インメモリストアの設定（プレビューとテスト用）
+            if let description = container.persistentStoreDescriptions.first {
+                description.url = URL(fileURLWithPath: "/dev/null")
+            }
         } else {
             // iCloudアカウント状態を確認
             checkiCloudAccountStatus()
 
             // CloudKit同期の設定
-            if let description = container.persistentStoreDescriptions.first {
-                // CloudKitコンテナIDを明示的に設定
-                let containerIdentifier = "iCloud.com.bottlekeep.whiskey"
-                let options = NSPersistentCloudKitContainerOptions(containerIdentifier: containerIdentifier)
-                description.cloudKitContainerOptions = options
-
-                log("CloudKit Container ID: \(containerIdentifier)")
-
-                // 履歴トラッキングを有効化（CloudKit同期に必要）
-                description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-
-                // リモート変更通知を有効化
-                description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-            }
+            configureCloudKitSync()
         }
 
-        container.loadPersistentStores { [weak self] (storeDescription, error) in
-            if let error = error as NSError? {
-                self?.log("Core Data load error: \(error.localizedDescription)")
-                self?.log("Error domain: \(error.domain)")
-                self?.log("Error code: \(error.code)")
-                self?.log("Working with local storage only")
-                // エラーが発生してもアプリは続行（クラッシュさせない）
-            } else {
-                self?.log("Core Data loaded successfully")
-                self?.log("Store URL: \(storeDescription.url?.absoluteString ?? "unknown")")
-                self?.log("CloudKit options: \(storeDescription.cloudKitContainerOptions != nil ? "Enabled" : "Disabled")")
-            }
-        }
+        // Persistent Storeをロード
+        loadPersistentStores()
 
-        container.viewContext.automaticallyMergesChangesFromParent = true
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        // ViewContextの設定
+        configureViewContext()
 
         // CloudKit同期イベントを監視
         if !inMemory {
@@ -99,43 +127,92 @@ class CoreDataManager: ObservableObject {
         }
     }
 
-    // iCloudアカウント状態を確認
-    private func checkiCloudAccountStatus() {
-        CKContainer(identifier: "iCloud.com.bottlekeep.whiskey").accountStatus { [weak self] status, error in
-            guard let self = self else { return }
+    /// CloudKit同期の設定を行う
+    private func configureCloudKitSync() {
+        guard let description = container.persistentStoreDescriptions.first else {
+            log("⚠️ No persistent store description found")
+            return
+        }
 
-            if let error = error {
-                self.log("iCloud account check error: \(error.localizedDescription)")
-                self.iCloudAvailable = false
-                return
-            }
+        // CloudKitコンテナIDを明示的に設定
+        let options = NSPersistentCloudKitContainerOptions(
+            containerIdentifier: CoreDataConstants.cloudKitContainerIdentifier
+        )
+        description.cloudKitContainerOptions = options
+        log("CloudKit Container ID: \(CoreDataConstants.cloudKitContainerIdentifier)")
 
-            switch status {
-            case .available:
-                self.log("iCloud account is available")
-                self.iCloudAvailable = true
-            case .noAccount:
-                self.log("No iCloud account configured")
-                self.iCloudAvailable = false
-            case .restricted:
-                self.log("iCloud account is restricted")
-                self.iCloudAvailable = false
-            case .couldNotDetermine:
-                self.log("Could not determine iCloud account status")
-                self.iCloudAvailable = false
-            case .temporarilyUnavailable:
-                self.log("iCloud account is temporarily unavailable")
-                self.iCloudAvailable = false
-            @unknown default:
-                self.log("Unknown iCloud account status")
-                self.iCloudAvailable = false
+        // 履歴トラッキングを有効化（CloudKit同期に必要）
+        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+
+        // リモート変更通知を有効化
+        description.setOption(
+            true as NSNumber,
+            forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey
+        )
+    }
+
+    /// Persistent Storeをロード
+    private func loadPersistentStores() {
+        container.loadPersistentStores { [weak self] (storeDescription, error) in
+            if let error = error as NSError? {
+                self?.log("❌ Core Data load error: \(error.localizedDescription)")
+                self?.log("Error domain: \(error.domain)")
+                self?.log("Error code: \(error.code)")
+                self?.log("Working with local storage only")
+                // エラーが発生してもアプリは続行（クラッシュさせない）
+            } else {
+                self?.log("✅ Core Data loaded successfully")
+                self?.log("Store URL: \(storeDescription.url?.absoluteString ?? "unknown")")
+                let cloudKitStatus = storeDescription.cloudKitContainerOptions != nil ? "Enabled" : "Disabled"
+                self?.log("CloudKit options: \(cloudKitStatus)")
             }
         }
     }
 
-    // CloudKit同期イベントの監視を設定
+    /// ViewContextの設定
+    private func configureViewContext() {
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+    }
+
+    /// iCloudアカウント状態を確認
+    private func checkiCloudAccountStatus() {
+        let container = CKContainer(identifier: CoreDataConstants.cloudKitContainerIdentifier)
+        container.accountStatus { [weak self] status, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                self.log("❌ iCloud account check error: \(error.localizedDescription)")
+                self.iCloudAvailable = false
+                return
+            }
+
+            let statusMessage = self.accountStatusMessage(for: status)
+            self.log(statusMessage)
+            self.iCloudAvailable = (status == .available)
+        }
+    }
+
+    /// アカウントステータスに応じたメッセージを返す
+    private func accountStatusMessage(for status: CKAccountStatus) -> String {
+        switch status {
+        case .available:
+            return "✅ iCloud account is available"
+        case .noAccount:
+            return "⚠️ No iCloud account configured"
+        case .restricted:
+            return "⚠️ iCloud account is restricted"
+        case .couldNotDetermine:
+            return "⚠️ Could not determine iCloud account status"
+        case .temporarilyUnavailable:
+            return "⚠️ iCloud account is temporarily unavailable"
+        @unknown default:
+            return "⚠️ Unknown iCloud account status"
+        }
+    }
+
+    /// CloudKit同期イベントの監視を設定
     private func setupCloudKitNotifications() {
-        // CloudKit同期イベントを監視
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleCloudKitEvent(_:)),
@@ -147,79 +224,145 @@ class CoreDataManager: ObservableObject {
     @objc private func handleCloudKitEvent(_ notification: Notification) {
         guard let event = notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey]
                 as? NSPersistentCloudKitContainer.Event else {
+            log("⚠️ Could not extract CloudKit event from notification")
             return
         }
 
-        log("CloudKit Event: \(event.type)")
+        log("📡 CloudKit Event: \(eventTypeDescription(event.type))")
 
         if let error = event.error {
-            log("CloudKit sync error: \(error.localizedDescription)")
-            log("Error domain: \((error as NSError).domain)")
-            log("Error code: \((error as NSError).code)")
-        } else {
-            switch event.type {
-            case .setup:
-                log("CloudKit setup completed")
-            case .import:
-                log("CloudKit import completed")
-            case .export:
-                log("CloudKit export completed")
-            @unknown default:
-                log("Unknown CloudKit event type")
+            let nsError = error as NSError
+            log("❌ CloudKit sync error: \(error.localizedDescription)")
+            log("Error domain: \(nsError.domain)")
+            log("Error code: \(nsError.code)")
+
+            // 重大なエラーの場合は追加情報をログ
+            if nsError.code == CKError.quotaExceeded.rawValue {
+                log("⚠️ iCloud storage quota exceeded")
+            } else if nsError.code == CKError.networkFailure.rawValue {
+                log("⚠️ Network connection issue")
             }
+        } else {
+            log("✅ \(eventTypeDescription(event.type)) completed successfully")
         }
     }
 
-    // iCloud同期が利用可能かどうか
+    /// イベントタイプの説明を返す
+    private func eventTypeDescription(_ type: NSPersistentCloudKitContainer.EventType) -> String {
+        switch type {
+        case .setup:
+            return "CloudKit setup"
+        case .import:
+            return "CloudKit import"
+        case .export:
+            return "CloudKit export"
+        @unknown default:
+            return "Unknown CloudKit event"
+        }
+    }
+}
+
+// MARK: - Public Interface
+
+extension CoreDataManager {
+    /// iCloud同期が利用可能かどうか
     var isCloudSyncAvailable: Bool {
         return iCloudAvailable
     }
 
-    // CloudKitスキーマを初期化（初回セットアップ時のみ実行）
+    /// CloudKitスキーマが初期化済みかどうか
+    var isCloudKitSchemaInitialized: Bool {
+        return UserDefaults.standard.bool(forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitialized)
+    }
+
+    /// CloudKitスキーマの初期化日時
+    var cloudKitSchemaInitializedDate: Date? {
+        return UserDefaults.standard.object(
+            forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitializedDate
+        ) as? Date
+    }
+
+    /// CloudKitスキーマを初期化（初回セットアップ時のみ実行）
     func initializeCloudKitSchema() throws {
-        log("Initializing CloudKit schema...")
+        log("🔄 Initializing CloudKit schema...")
+
+        guard isCloudSyncAvailable else {
+            let error = NSError(
+                domain: "CoreDataManager",
+                code: 1001,
+                userInfo: [NSLocalizedDescriptionKey: "iCloud is not available"]
+            )
+            log("❌ Cannot initialize schema: iCloud not available")
+            throw error
+        }
+
         do {
             try container.initializeCloudKitSchema(options: [])
-            log("CloudKit schema initialized successfully")
-            UserDefaults.standard.set(true, forKey: "cloudKitSchemaInitialized")
-            UserDefaults.standard.set(Date(), forKey: "cloudKitSchemaInitializedDate")
+            log("✅ CloudKit schema initialized successfully")
+
+            UserDefaults.standard.set(
+                true,
+                forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitialized
+            )
+            UserDefaults.standard.set(
+                Date(),
+                forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitializedDate
+            )
         } catch {
-            log("Failed to initialize CloudKit schema: \(error.localizedDescription)")
+            log("❌ Failed to initialize CloudKit schema: \(error.localizedDescription)")
             throw error
         }
     }
 
-    // CloudKitスキーマが初期化済みかどうか
-    var isCloudKitSchemaInitialized: Bool {
-        return UserDefaults.standard.bool(forKey: "cloudKitSchemaInitialized")
+    /// ログをクリア
+    func clearLogs() {
+        logger.clearLogs()
+        logs = []
+        log("🗑️ Logs cleared")
     }
+}
 
-    // CloudKitスキーマの初期化日時
-    var cloudKitSchemaInitializedDate: Date? {
-        return UserDefaults.standard.object(forKey: "cloudKitSchemaInitializedDate") as? Date
-    }
+// MARK: - Core Data Operations
 
+extension CoreDataManager {
+    /// コンテキストの変更を保存
     func save() {
         let context = container.viewContext
 
-        if context.hasChanges {
-            do {
-                try context.save()
-                log("Core Data saved successfully")
-                if iCloudAvailable {
-                    log("iCloud sync will begin automatically")
-                }
-            } catch {
-                let nsError = error as NSError
-                log("Core Data save error: \(nsError.localizedDescription)")
-                // エラーが発生してもアプリは続行（クラッシュさせない）
-                // ユーザーデータの損失を防ぐため、次回の保存を試みる
+        guard context.hasChanges else {
+            return
+        }
+
+        do {
+            try context.save()
+            log("💾 Core Data saved successfully")
+            if iCloudAvailable {
+                log("☁️ iCloud sync will begin automatically")
             }
+        } catch {
+            let nsError = error as NSError
+            log("❌ Core Data save error: \(nsError.localizedDescription)")
+            log("Error code: \(nsError.code), Domain: \(nsError.domain)")
+            // エラーが発生してもアプリは続行（クラッシュさせない）
+            // ユーザーデータの損失を防ぐため、次回の保存を試みる
         }
     }
 
+    /// オブジェクトを削除して保存
     func delete(_ object: NSManagedObject) {
         container.viewContext.delete(object)
+        log("🗑️ Deleted object: \(object.entity.name ?? "Unknown")")
+        save()
+    }
+
+    /// 複数のオブジェクトをバッチ削除
+    func batchDelete(_ objects: [NSManagedObject]) {
+        guard !objects.isEmpty else { return }
+
+        let context = container.viewContext
+        objects.forEach { context.delete($0) }
+
+        log("🗑️ Batch deleted \(objects.count) objects")
         save()
     }
 }

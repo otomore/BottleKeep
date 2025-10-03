@@ -1,6 +1,93 @@
 import SwiftUI
 import CoreData
 
+// MARK: - Settings View Model
+
+@MainActor
+class SettingsViewModel: ObservableObject {
+    @Published var showingDeleteAlert = false
+    @Published var iCloudSyncAvailable = false
+    @Published var showingSchemaInitAlert = false
+    @Published var schemaInitError: String?
+    @Published var isInitializingSchema = false
+
+    private let coreDataManager: CoreDataManager
+
+    init(coreDataManager: CoreDataManager = .shared) {
+        self.coreDataManager = coreDataManager
+        self.iCloudSyncAvailable = coreDataManager.isCloudSyncAvailable
+    }
+
+    var isCloudKitSchemaInitialized: Bool {
+        coreDataManager.isCloudKitSchemaInitialized
+    }
+
+    var cloudKitLogs: [String] {
+        coreDataManager.logs
+    }
+
+    /// すべてのデータを削除
+    func deleteAllData(bottles: FetchedResults<Bottle>, wishlistItems: FetchedResults<WishlistItem>, context: NSManagedObjectContext) {
+        guard !bottles.isEmpty || !wishlistItems.isEmpty else {
+            print("ℹ️ No data to delete")
+            return
+        }
+
+        let bottleCount = bottles.count
+        let wishlistCount = wishlistItems.count
+
+        // すべてのボトルを削除
+        bottles.forEach { bottle in
+            context.delete(bottle)
+        }
+
+        // すべてのウィッシュリストアイテムを削除
+        wishlistItems.forEach { item in
+            context.delete(item)
+        }
+
+        do {
+            try context.save()
+            print("✅ Deleted \(bottleCount) bottles and \(wishlistCount) wishlist items")
+        } catch {
+            let nsError = error as NSError
+            print("❌ Failed to delete all data: \(nsError), \(nsError.userInfo)")
+
+            // コンテキストをロールバックして変更を元に戻す
+            context.rollback()
+        }
+    }
+
+    /// CloudKitスキーマを初期化
+    func initializeCloudKitSchema() {
+        isInitializingSchema = true
+        schemaInitError = nil
+
+        Task {
+            do {
+                try coreDataManager.initializeCloudKitSchema()
+                await MainActor.run {
+                    isInitializingSchema = false
+                    showingSchemaInitAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    isInitializingSchema = false
+                    schemaInitError = error.localizedDescription
+                    showingSchemaInitAlert = true
+                }
+            }
+        }
+    }
+
+    /// iCloud同期状態を更新
+    func refreshCloudSyncStatus() {
+        iCloudSyncAvailable = coreDataManager.isCloudSyncAvailable
+    }
+}
+
+// MARK: - Settings View
+
 struct SettingsView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
@@ -14,12 +101,7 @@ struct SettingsView: View {
         animation: .default)
     private var wishlistItems: FetchedResults<WishlistItem>
 
-    @State private var showingDeleteAlert = false
-    @State private var iCloudSyncAvailable = false
-    @State private var showingSchemaInitAlert = false
-    @State private var schemaInitError: String?
-    @State private var isInitializingSchema = false
-
+    @StateObject private var viewModel = SettingsViewModel()
     private var coreDataManager = CoreDataManager.shared
 
     var appVersion: String {
@@ -136,7 +218,7 @@ struct SettingsView: View {
                     HStack {
                         Label("同期状態", systemImage: "icloud")
                         Spacer()
-                        if iCloudSyncAvailable {
+                        if viewModel.iCloudSyncAvailable {
                             HStack(spacing: 4) {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
@@ -157,7 +239,7 @@ struct SettingsView: View {
                     HStack {
                         Label("スキーマ初期化", systemImage: "cloud.fill")
                         Spacer()
-                        if coreDataManager.isCloudKitSchemaInitialized {
+                        if viewModel.isCloudKitSchemaInitialized {
                             HStack(spacing: 4) {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
@@ -176,17 +258,17 @@ struct SettingsView: View {
 
                     // スキーマ初期化ボタン
                     Button {
-                        initializeCloudKitSchema()
+                        viewModel.initializeCloudKitSchema()
                     } label: {
                         HStack {
                             Label("CloudKitスキーマを初期化", systemImage: "arrow.clockwise.icloud")
                             Spacer()
-                            if isInitializingSchema {
+                            if viewModel.isInitializingSchema {
                                 ProgressView()
                             }
                         }
                     }
-                    .disabled(isInitializingSchema || !iCloudSyncAvailable)
+                    .disabled(viewModel.isInitializingSchema || !viewModel.iCloudSyncAvailable)
 
                     // デバッグログへのリンク
                     NavigationLink(destination: CloudKitDebugLogView()) {
@@ -195,9 +277,9 @@ struct SettingsView: View {
                 } header: {
                     Text("iCloud同期")
                 } footer: {
-                    if !iCloudSyncAvailable {
+                    if !viewModel.iCloudSyncAvailable {
                         Text("iCloud同期を使用するには、デバイスでiCloudにサインインしてください。")
-                    } else if !coreDataManager.isCloudKitSchemaInitialized {
+                    } else if !viewModel.isCloudKitSchemaInitialized {
                         Text("初めてiCloud同期を使用する場合、またはデータが同期されない場合は、CloudKitスキーマの初期化を実行してください。")
                     } else {
                         Text("iCloudを使用してデバイス間でデータを自動同期します。問題が発生した場合は、デバッグログを確認してください。")
@@ -235,7 +317,7 @@ struct SettingsView: View {
                     }
 
                     Button(role: .destructive) {
-                        showingDeleteAlert = true
+                        viewModel.showingDeleteAlert = true
                     } label: {
                         Label("すべてのデータを削除", systemImage: "trash.fill")
                     }
@@ -279,66 +361,25 @@ struct SettingsView: View {
             }
             .navigationTitle("設定")
             .onAppear {
-                // iCloud同期状態を確認
-                iCloudSyncAvailable = coreDataManager.isCloudSyncAvailable
+                viewModel.refreshCloudSyncStatus()
             }
-            .alert("データ削除の確認", isPresented: $showingDeleteAlert) {
+            .alert("データ削除の確認", isPresented: $viewModel.showingDeleteAlert) {
                 Button("キャンセル", role: .cancel) {}
                 Button("削除", role: .destructive) {
-                    deleteAllData()
+                    withAnimation {
+                        viewModel.deleteAllData(bottles: bottles, wishlistItems: wishlistItems, context: viewContext)
+                    }
                 }
             } message: {
                 Text("すべてのボトルとウィッシュリストのデータが削除されます。この操作は取り消せません。")
             }
-            .alert(schemaInitError == nil ? "初期化完了" : "初期化エラー", isPresented: $showingSchemaInitAlert) {
+            .alert(viewModel.schemaInitError == nil ? "初期化完了" : "初期化エラー", isPresented: $viewModel.showingSchemaInitAlert) {
                 Button("OK", role: .cancel) {}
             } message: {
-                if let error = schemaInitError {
+                if let error = viewModel.schemaInitError {
                     Text("CloudKitスキーマの初期化に失敗しました：\(error)")
                 } else {
                     Text("CloudKitスキーマの初期化が完了しました。データの同期が開始されます。")
-                }
-            }
-        }
-    }
-
-    private func deleteAllData() {
-        withAnimation {
-            // すべてのボトルを削除
-            bottles.forEach { bottle in
-                viewContext.delete(bottle)
-            }
-
-            // すべてのウィッシュリストアイテムを削除
-            wishlistItems.forEach { item in
-                viewContext.delete(item)
-            }
-
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                print("⚠️ Failed to delete all data: \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func initializeCloudKitSchema() {
-        isInitializingSchema = true
-        schemaInitError = nil
-
-        Task {
-            do {
-                try coreDataManager.initializeCloudKitSchema()
-                await MainActor.run {
-                    isInitializingSchema = false
-                    showingSchemaInitAlert = true
-                }
-            } catch {
-                await MainActor.run {
-                    isInitializingSchema = false
-                    schemaInitError = error.localizedDescription
-                    showingSchemaInitAlert = true
                 }
             }
         }
@@ -425,20 +466,28 @@ struct PremiumFeatureRow: View {
 struct CloudKitDebugLogView: View {
     @ObservedObject private var coreDataManager = CoreDataManager.shared
     @State private var showingCopyConfirmation = false
+    @State private var showingClearConfirmation = false
 
     var body: some View {
         List {
             Section {
                 if coreDataManager.logs.isEmpty {
-                    Text("ログがありません")
-                        .foregroundColor(.secondary)
-                        .font(.caption)
-                        .padding()
+                    VStack(spacing: 8) {
+                        Image(systemName: "text.alignleft")
+                            .font(.largeTitle)
+                            .foregroundColor(.secondary)
+                        Text("ログがありません")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
                 } else {
                     ForEach(coreDataManager.logs, id: \.self) { log in
                         Text(log)
                             .font(.caption)
                             .textSelection(.enabled)
+                            .padding(.vertical, 4)
                     }
                 }
             } header: {
@@ -447,7 +496,11 @@ struct CloudKitDebugLogView: View {
                     Spacer()
                     Text("\(coreDataManager.logs.count)件")
                         .foregroundColor(.secondary)
+                        .font(.caption)
                 }
+            } footer: {
+                Text("ログは最新100件まで保存されます。CloudKit同期に関するイベントとエラーが記録されます。")
+                    .font(.caption2)
             }
 
             Section {
@@ -458,6 +511,13 @@ struct CloudKitDebugLogView: View {
                     Label("ログをコピー", systemImage: "doc.on.clipboard")
                 }
                 .disabled(coreDataManager.logs.isEmpty)
+
+                Button(role: .destructive) {
+                    showingClearConfirmation = true
+                } label: {
+                    Label("ログをクリア", systemImage: "trash")
+                }
+                .disabled(coreDataManager.logs.isEmpty)
             }
         }
         .navigationTitle("CloudKit デバッグ")
@@ -466,6 +526,14 @@ struct CloudKitDebugLogView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text("ログをクリップボードにコピーしました")
+        }
+        .alert("ログをクリア", isPresented: $showingClearConfirmation) {
+            Button("キャンセル", role: .cancel) {}
+            Button("クリア", role: .destructive) {
+                coreDataManager.clearLogs()
+            }
+        } message: {
+            Text("すべてのログを削除します。この操作は取り消せません。")
         }
     }
 }
