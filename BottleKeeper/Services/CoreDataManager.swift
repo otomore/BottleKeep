@@ -296,6 +296,30 @@ extension CoreDataManager {
             throw error
         }
 
+        // Production環境では initializeCloudKitSchema() は使用できない
+        // Development環境でのみ動作する
+        #if DEBUG
+        log("ℹ️ Running in DEBUG mode - attempting schema initialization")
+        #else
+        log("⚠️ Running in RELEASE mode - schema should be deployed via CloudKit Dashboard")
+        log("ℹ️ For Production environment, schema initialization is not supported")
+        log("ℹ️ Schema will be created automatically when data is first synced")
+
+        // Production環境では自動的にスキーマが作成されるため、初期化済みとマーク
+        UserDefaults.standard.set(
+            true,
+            forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitialized
+        )
+        UserDefaults.standard.set(
+            Date(),
+            forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitializedDate
+        )
+
+        log("✅ Schema initialization skipped for Production environment")
+        log("💡 Data will sync automatically when you add or modify records")
+        return
+        #endif
+
         do {
             try container.initializeCloudKitSchema(options: [])
             log("✅ CloudKit schema initialized successfully")
@@ -308,8 +332,30 @@ extension CoreDataManager {
                 Date(),
                 forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitializedDate
             )
-        } catch {
-            log("❌ Failed to initialize CloudKit schema: \(error.localizedDescription)")
+        } catch let error as NSError {
+            log("❌ Failed to initialize CloudKit schema")
+            log("Error domain: \(error.domain)")
+            log("Error code: \(error.code)")
+            log("Error description: \(error.localizedDescription)")
+
+            // CKErrorの詳細情報を取得
+            if error.domain == "CKErrorDomain" {
+                log("CloudKit error code: \(error.code)")
+
+                if let underlyingError = error.userInfo[NSUnderlyingErrorKey] as? NSError {
+                    log("Underlying error: \(underlyingError.localizedDescription)")
+                    log("Underlying error domain: \(underlyingError.domain)")
+                    log("Underlying error code: \(underlyingError.code)")
+                }
+
+                if let partialErrors = error.userInfo["CKPartialErrors"] as? [AnyHashable: Error] {
+                    log("Partial errors found: \(partialErrors.count)")
+                    for (key, partialError) in partialErrors {
+                        log("Partial error [\(key)]: \(partialError.localizedDescription)")
+                    }
+                }
+            }
+
             throw error
         }
     }

@@ -280,7 +280,11 @@ struct SettingsView: View {
                     if !viewModel.iCloudSyncAvailable {
                         Text("iCloud同期を使用するには、デバイスでiCloudにサインインしてください。")
                     } else if !viewModel.isCloudKitSchemaInitialized {
-                        Text("初めてiCloud同期を使用する場合、またはデータが同期されない場合は、CloudKitスキーマの初期化を実行してください。")
+                        #if DEBUG
+                        Text("初めてiCloud同期を使用する場合は、CloudKitスキーマの初期化を実行してください。開発環境でのみ有効です。")
+                        #else
+                        Text("「CloudKitスキーマを初期化」ボタンをタップしてください。本番環境では、データを追加・変更すると自動的にCloudKitスキーマが作成され、同期が開始されます。")
+                        #endif
                     } else {
                         Text("iCloudを使用してデバイス間でデータを自動同期します。問題が発生した場合は、デバッグログを確認してください。")
                     }
