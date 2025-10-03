@@ -240,8 +240,11 @@ class CoreDataManager: ObservableObject {
             log("Error domain: \(nsError.domain)")
             log("Error code: \(nsError.code)")
 
+            // すべてのuserInfo情報をログ出力
+            log("Error userInfo keys: \(nsError.userInfo.keys.map { String(describing: $0) }.joined(separator: ", "))")
+
             // CKErrorの詳細情報
-            if nsError.domain == CKError.errorDomain {
+            if nsError.domain == CKError.errorDomain || nsError.domain == "CKErrorDomain" {
                 logCKErrorDetails(nsError)
             }
 
@@ -254,6 +257,8 @@ class CoreDataManager: ObservableObject {
                 log("⚠️ User is not authenticated with iCloud")
             } else if nsError.code == CKError.networkUnavailable.rawValue {
                 log("⚠️ Network is unavailable")
+            } else if nsError.code == CKError.partialFailure.rawValue {
+                log("⚠️ Partial failure - some records failed to sync")
             }
         } else {
             log("✅ \(eventTypeDescription(event.type)) completed successfully")
@@ -262,24 +267,53 @@ class CoreDataManager: ObservableObject {
 
     /// CKErrorの詳細情報をログに出力
     private func logCKErrorDetails(_ error: NSError) {
-        // Partial Errorsをチェック
+        log("🔍 Analyzing CKError details...")
+
+        // すべてのuserInfo内容を記録
+        for (key, value) in error.userInfo {
+            log("  userInfo[\(key)]: \(String(describing: value).prefix(200))")
+        }
+
+        // Partial Errorsをチェック（複数のキー名を試す）
+        var foundPartialErrors = false
+
+        // 標準的なCKPartialErrorsByItemIDKey
         if let partialErrors = error.userInfo[CKPartialErrorsByItemIDKey] as? [AnyHashable: Error] {
-            log("Partial errors count: \(partialErrors.count)")
+            log("✓ Found partial errors (CKPartialErrorsByItemIDKey): \(partialErrors.count) items")
+            foundPartialErrors = true
+            for (key, partialError) in partialErrors {
+                let partialNSError = partialError as NSError
+                log("  Item [\(key)]:")
+                log("    Error: \(partialNSError.localizedDescription)")
+                log("    Domain: \(partialNSError.domain)")
+                log("    Code: \(partialNSError.code)")
+            }
+        }
+
+        // 文字列キーで試す
+        if !foundPartialErrors, let partialErrors = error.userInfo["CKPartialErrors"] as? [AnyHashable: Error] {
+            log("✓ Found partial errors (CKPartialErrors): \(partialErrors.count) items")
+            foundPartialErrors = true
             for (key, partialError) in partialErrors {
                 log("  Item [\(key)]: \((partialError as NSError).localizedDescription)")
             }
         }
 
+        if !foundPartialErrors {
+            log("⚠️ No partial errors found in userInfo")
+        }
+
         // Underlying Errorをチェック
         if let underlyingError = error.userInfo[NSUnderlyingErrorKey] as? NSError {
-            log("Underlying error: \(underlyingError.localizedDescription)")
-            log("Underlying error domain: \(underlyingError.domain)")
-            log("Underlying error code: \(underlyingError.code)")
+            log("✓ Underlying error found:")
+            log("  Description: \(underlyingError.localizedDescription)")
+            log("  Domain: \(underlyingError.domain)")
+            log("  Code: \(underlyingError.code)")
         }
 
         // Retry After情報をチェック
         if let retryAfter = error.userInfo[CKErrorRetryAfterKey] as? NSNumber {
-            log("Retry after: \(retryAfter) seconds")
+            log("✓ Retry after: \(retryAfter) seconds")
         }
     }
 
