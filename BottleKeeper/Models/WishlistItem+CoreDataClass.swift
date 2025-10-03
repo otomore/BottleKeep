@@ -59,23 +59,25 @@ public class WishlistItem: NSManagedObject {
         super.willSave()
 
         // IDが未設定の場合は自動生成（新規作成時のみ）
-        if id == nil {
+        if primitiveValue(forKey: "id") == nil {
             setPrimitiveValue(UUID(), forKey: "id")
         }
 
         // 作成日時が未設定の場合は自動設定（新規作成時のみ）
-        if createdAt == nil {
+        if primitiveValue(forKey: "createdAt") == nil {
             setPrimitiveValue(Date(), forKey: "createdAt")
         }
 
         // 更新日時は明示的に設定されている場合のみ更新
         // willSave()内での自動更新は無限ループを引き起こす可能性があるため削除
 
-        // 優先度が範囲外の場合は補正
-        if priority < 1 {
-            setPrimitiveValue(1, forKey: "priority")
-        } else if priority > 5 {
-            setPrimitiveValue(5, forKey: "priority")
+        // 優先度が範囲外の場合は補正（primitiveValueを使用して変更追跡を回避）
+        let currentPriority = primitiveValue(forKey: "priority") as? Int16 ?? 1
+
+        if currentPriority < 1 {
+            setPrimitiveValue(Int16(1), forKey: "priority")
+        } else if currentPriority > 5 {
+            setPrimitiveValue(Int16(5), forKey: "priority")
         }
     }
 }

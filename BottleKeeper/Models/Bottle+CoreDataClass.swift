@@ -66,25 +66,25 @@ public class Bottle: NSManagedObject {
         super.willSave()
 
         // IDが未設定の場合は自動生成（新規作成時のみ）
-        if id == nil {
+        if primitiveValue(forKey: "id") == nil {
             setPrimitiveValue(UUID(), forKey: "id")
         }
 
         // 作成日時が未設定の場合は自動設定（新規作成時のみ）
-        if createdAt == nil {
+        if primitiveValue(forKey: "createdAt") == nil {
             setPrimitiveValue(Date(), forKey: "createdAt")
         }
 
         // 更新日時は明示的に設定されている場合のみ更新
         // willSave()内での自動更新は無限ループを引き起こす可能性があるため削除
 
-        // 残量が容量を超えないように補正
-        if remainingVolume > volume {
-            setPrimitiveValue(volume, forKey: "remainingVolume")
-        }
+        // 残量が容量を超えないように補正（primitiveValueを使用して変更追跡を回避）
+        let currentRemainingVolume = primitiveValue(forKey: "remainingVolume") as? Int32 ?? 0
+        let currentVolume = primitiveValue(forKey: "volume") as? Int32 ?? 0
 
-        // 残量が負の値にならないように補正
-        if remainingVolume < 0 {
+        if currentRemainingVolume > currentVolume {
+            setPrimitiveValue(currentVolume, forKey: "remainingVolume")
+        } else if currentRemainingVolume < 0 {
             setPrimitiveValue(0, forKey: "remainingVolume")
         }
     }
