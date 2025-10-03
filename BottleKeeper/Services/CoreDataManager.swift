@@ -33,6 +33,7 @@ class CoreDataManager {
 
     let container: NSPersistentCloudKitContainer
     private var iCloudAvailable = false
+    private let logger = CloudKitLogger.shared
 
     init(inMemory: Bool = false) {
         container = NSPersistentCloudKitContainer(name: "BottleKeeper")
@@ -50,7 +51,7 @@ class CoreDataManager {
                 let options = NSPersistentCloudKitContainerOptions(containerIdentifier: containerIdentifier)
                 description.cloudKitContainerOptions = options
 
-                print("📱 CloudKit Container ID: \(containerIdentifier)")
+                logger.log("CloudKit Container ID: \(containerIdentifier)", level: .debug)
 
                 // 履歴トラッキングを有効化（CloudKit同期に必要）
                 description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
@@ -60,17 +61,17 @@ class CoreDataManager {
             }
         }
 
-        container.loadPersistentStores { (storeDescription, error) in
+        container.loadPersistentStores { [weak self] (storeDescription, error) in
             if let error = error as NSError? {
-                print("⚠️ Core Data load error: \(error), \(error.userInfo)")
-                print("⚠️ Error domain: \(error.domain)")
-                print("⚠️ Error code: \(error.code)")
-                print("⚠️ Working with local storage only.")
+                self?.logger.log("Core Data load error: \(error.localizedDescription)", level: .error)
+                self?.logger.log("Error domain: \(error.domain)", level: .error)
+                self?.logger.log("Error code: \(error.code)", level: .error)
+                self?.logger.log("Working with local storage only", level: .warning)
                 // エラーが発生してもアプリは続行（クラッシュさせない）
             } else {
-                print("✅ Core Data loaded successfully")
-                print("✅ Store URL: \(storeDescription.url?.absoluteString ?? "unknown")")
-                print("✅ CloudKit options: \(storeDescription.cloudKitContainerOptions != nil ? "Enabled" : "Disabled")")
+                self?.logger.log("Core Data loaded successfully", level: .success)
+                self?.logger.log("Store URL: \(storeDescription.url?.absoluteString ?? "unknown")", level: .debug)
+                self?.logger.log("CloudKit options: \(storeDescription.cloudKitContainerOptions != nil ? "Enabled" : "Disabled")", level: .debug)
             }
         }
 
@@ -85,31 +86,33 @@ class CoreDataManager {
 
     // iCloudアカウント状態を確認
     private func checkiCloudAccountStatus() {
-        CKContainer(identifier: "iCloud.com.bottlekeep.whiskey").accountStatus { status, error in
+        CKContainer(identifier: "iCloud.com.bottlekeep.whiskey").accountStatus { [weak self] status, error in
+            guard let self = self else { return }
+
             if let error = error {
-                print("⚠️ iCloud account check error: \(error.localizedDescription)")
+                self.logger.log("iCloud account check error: \(error.localizedDescription)", level: .error)
                 self.iCloudAvailable = false
                 return
             }
 
             switch status {
             case .available:
-                print("✅ iCloud account is available")
+                self.logger.log("iCloud account is available", level: .success)
                 self.iCloudAvailable = true
             case .noAccount:
-                print("⚠️ No iCloud account configured")
+                self.logger.log("No iCloud account configured", level: .warning)
                 self.iCloudAvailable = false
             case .restricted:
-                print("⚠️ iCloud account is restricted")
+                self.logger.log("iCloud account is restricted", level: .warning)
                 self.iCloudAvailable = false
             case .couldNotDetermine:
-                print("⚠️ Could not determine iCloud account status")
+                self.logger.log("Could not determine iCloud account status", level: .warning)
                 self.iCloudAvailable = false
             case .temporarilyUnavailable:
-                print("⚠️ iCloud account is temporarily unavailable")
+                self.logger.log("iCloud account is temporarily unavailable", level: .warning)
                 self.iCloudAvailable = false
             @unknown default:
-                print("⚠️ Unknown iCloud account status")
+                self.logger.log("Unknown iCloud account status", level: .warning)
                 self.iCloudAvailable = false
             }
         }
@@ -132,22 +135,22 @@ class CoreDataManager {
             return
         }
 
-        print("☁️ CloudKit Event: \(event.type)")
+        logger.log("CloudKit Event: \(event.type)", level: .cloudKit)
 
         if let error = event.error {
-            print("❌ CloudKit sync error: \(error.localizedDescription)")
-            print("❌ Error domain: \((error as NSError).domain)")
-            print("❌ Error code: \((error as NSError).code)")
+            logger.log("CloudKit sync error: \(error.localizedDescription)", level: .error)
+            logger.log("Error domain: \((error as NSError).domain)", level: .error)
+            logger.log("Error code: \((error as NSError).code)", level: .error)
         } else {
             switch event.type {
             case .setup:
-                print("🔧 CloudKit setup completed")
+                logger.log("CloudKit setup completed", level: .cloudKit)
             case .import:
-                print("⬇️ CloudKit import completed")
+                logger.log("CloudKit import completed", level: .cloudKit)
             case .export:
-                print("⬆️ CloudKit export completed")
+                logger.log("CloudKit export completed", level: .cloudKit)
             @unknown default:
-                print("❓ Unknown CloudKit event type")
+                logger.log("Unknown CloudKit event type", level: .cloudKit)
             }
         }
     }
@@ -157,19 +160,43 @@ class CoreDataManager {
         return iCloudAvailable
     }
 
+    // CloudKitスキーマを初期化（初回セットアップ時のみ実行）
+    func initializeCloudKitSchema() throws {
+        logger.log("Initializing CloudKit schema...", level: .debug)
+        do {
+            try container.initializeCloudKitSchema(options: [])
+            logger.log("CloudKit schema initialized successfully", level: .success)
+            UserDefaults.standard.set(true, forKey: "cloudKitSchemaInitialized")
+            UserDefaults.standard.set(Date(), forKey: "cloudKitSchemaInitializedDate")
+        } catch {
+            logger.log("Failed to initialize CloudKit schema: \(error.localizedDescription)", level: .error)
+            throw error
+        }
+    }
+
+    // CloudKitスキーマが初期化済みかどうか
+    var isCloudKitSchemaInitialized: Bool {
+        return UserDefaults.standard.bool(forKey: "cloudKitSchemaInitialized")
+    }
+
+    // CloudKitスキーマの初期化日時
+    var cloudKitSchemaInitializedDate: Date? {
+        return UserDefaults.standard.object(forKey: "cloudKitSchemaInitializedDate") as? Date
+    }
+
     func save() {
         let context = container.viewContext
 
         if context.hasChanges {
             do {
                 try context.save()
-                print("💾 Core Data saved successfully")
+                logger.log("Core Data saved successfully", level: .success)
                 if iCloudAvailable {
-                    print("☁️ iCloud sync will begin automatically")
+                    logger.log("iCloud sync will begin automatically", level: .cloudKit)
                 }
             } catch {
                 let nsError = error as NSError
-                print("⚠️ Core Data save error: \(nsError), \(nsError.userInfo)")
+                logger.log("Core Data save error: \(nsError.localizedDescription)", level: .error)
                 // エラーが発生してもアプリは続行（クラッシュさせない）
                 // ユーザーデータの損失を防ぐため、次回の保存を試みる
             }

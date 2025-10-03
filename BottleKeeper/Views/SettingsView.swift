@@ -16,6 +16,9 @@ struct SettingsView: View {
 
     @State private var showingDeleteAlert = false
     @State private var iCloudSyncAvailable = false
+    @State private var showingSchemaInitAlert = false
+    @State private var schemaInitError: String?
+    @State private var isInitializingSchema = false
 
     private var coreDataManager = CoreDataManager.shared
 
@@ -129,6 +132,7 @@ struct SettingsView: View {
 
                 // iCloud同期状態
                 Section {
+                    // 同期状態
                     HStack {
                         Label("同期状態", systemImage: "icloud")
                         Spacer()
@@ -148,13 +152,55 @@ struct SettingsView: View {
                             }
                         }
                     }
+
+                    // スキーマ初期化状態
+                    HStack {
+                        Label("スキーマ初期化", systemImage: "cloud.fill")
+                        Spacer()
+                        if coreDataManager.isCloudKitSchemaInitialized {
+                            HStack(spacing: 4) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("初期化済み")
+                                    .foregroundColor(.green)
+                            }
+                        } else {
+                            HStack(spacing: 4) {
+                                Image(systemName: "exclamationmark.circle.fill")
+                                    .foregroundColor(.orange)
+                                Text("未初期化")
+                                    .foregroundColor(.orange)
+                            }
+                        }
+                    }
+
+                    // スキーマ初期化ボタン
+                    Button {
+                        initializeCloudKitSchema()
+                    } label: {
+                        HStack {
+                            Label("CloudKitスキーマを初期化", systemImage: "arrow.clockwise.icloud")
+                            Spacer()
+                            if isInitializingSchema {
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(isInitializingSchema || !iCloudSyncAvailable)
+
+                    // デバッグログへのリンク
+                    NavigationLink(destination: CloudKitDebugView()) {
+                        Label("デバッグログを表示", systemImage: "list.bullet.rectangle")
+                    }
                 } header: {
                     Text("iCloud同期")
                 } footer: {
-                    if iCloudSyncAvailable {
-                        Text("iCloudを使用してデバイス間でデータを自動同期します。")
-                    } else {
+                    if !iCloudSyncAvailable {
                         Text("iCloud同期を使用するには、デバイスでiCloudにサインインしてください。")
+                    } else if !coreDataManager.isCloudKitSchemaInitialized {
+                        Text("初めてiCloud同期を使用する場合、またはデータが同期されない場合は、CloudKitスキーマの初期化を実行してください。")
+                    } else {
+                        Text("iCloudを使用してデバイス間でデータを自動同期します。問題が発生した場合は、デバッグログを確認してください。")
                     }
                 }
 
@@ -244,6 +290,15 @@ struct SettingsView: View {
             } message: {
                 Text("すべてのボトルとウィッシュリストのデータが削除されます。この操作は取り消せません。")
             }
+            .alert(schemaInitError == nil ? "初期化完了" : "初期化エラー", isPresented: $showingSchemaInitAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                if let error = schemaInitError {
+                    Text("CloudKitスキーマの初期化に失敗しました：\(error)")
+                } else {
+                    Text("CloudKitスキーマの初期化が完了しました。データの同期が開始されます。")
+                }
+            }
         }
     }
 
@@ -264,6 +319,27 @@ struct SettingsView: View {
             } catch {
                 let nsError = error as NSError
                 print("⚠️ Failed to delete all data: \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+
+    private func initializeCloudKitSchema() {
+        isInitializingSchema = true
+        schemaInitError = nil
+
+        Task {
+            do {
+                try coreDataManager.initializeCloudKitSchema()
+                await MainActor.run {
+                    isInitializingSchema = false
+                    showingSchemaInitAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    isInitializingSchema = false
+                    schemaInitError = error.localizedDescription
+                    showingSchemaInitAlert = true
+                }
             }
         }
     }

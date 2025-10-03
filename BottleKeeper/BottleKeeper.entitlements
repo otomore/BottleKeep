@@ -16,11 +16,5 @@
 	</array>
 	<key>com.apple.developer.team-identifier</key>
 	<string>B3QHWZX47Z</string>
-	<key>com.apple.developer.ubiquity-container-identifiers</key>
-	<array>
-		<string>iCloud.com.bottlekeep.whiskey</string>
-	</array>
-	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
-	<string>B3QHWZX47Z.com.bottlekeep.whiskey</string>
 </dict>
 </plist>
