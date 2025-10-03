@@ -366,29 +366,8 @@ extension CoreDataManager {
             throw error
         }
 
-        // Production環境では initializeCloudKitSchema() は使用できない
-        // Development環境でのみ動作する
-        #if DEBUG
-        log("ℹ️ Running in DEBUG mode - attempting schema initialization")
-        #else
-        log("⚠️ Running in RELEASE mode - schema should be deployed via CloudKit Dashboard")
-        log("ℹ️ For Production environment, schema initialization is not supported")
-        log("ℹ️ Schema will be created automatically when data is first synced")
-
-        // Production環境では自動的にスキーマが作成されるため、初期化済みとマーク
-        UserDefaults.standard.set(
-            true,
-            forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitialized
-        )
-        UserDefaults.standard.set(
-            Date(),
-            forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitializedDate
-        )
-
-        log("✅ Schema initialization skipped for Production environment")
-        log("💡 Data will sync automatically when you add or modify records")
-        return
-        #endif
+        // 一時的に全環境でスキーマ初期化を有効化（Development環境でスキーマを生成するため）
+        log("ℹ️ Attempting schema initialization in all environments (temporary)")
 
         do {
             try container.initializeCloudKitSchema(options: [])
