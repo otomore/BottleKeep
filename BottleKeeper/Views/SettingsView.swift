@@ -128,7 +128,7 @@ struct SettingsView: View {
                 premiumFeaturesSection
 
                 // iCloud同期状態
-                Section("iCloud同期") {
+                Section {
                     HStack {
                         Label("同期状態", systemImage: "icloud")
                         Spacer()
@@ -148,6 +148,8 @@ struct SettingsView: View {
                             }
                         }
                     }
+                } header: {
+                    Text("iCloud同期")
                 } footer: {
                     if iCloudSyncAvailable {
                         Text("iCloudを使用してデバイス間でデータを自動同期します。")
