@@ -165,15 +165,6 @@ class CoreDataManager: ObservableObject {
                 self?.log("Store URL: \(storeDescription.url?.absoluteString ?? "unknown")")
                 let cloudKitStatus = storeDescription.cloudKitContainerOptions != nil ? "Enabled" : "Disabled"
                 self?.log("CloudKit options: \(cloudKitStatus)")
-
-                // CloudKitスキーマを自動初期化（一時的）
-                if let self = self, self.isCloudSyncAvailable {
-                    do {
-                        try self.initializeCloudKitSchema()
-                    } catch {
-                        self.log("⚠️ Schema initialization failed: \(error.localizedDescription)")
-                    }
-                }
             }
         }
     }
@@ -363,11 +354,10 @@ extension CoreDataManager {
 
     /// CloudKitスキーマを初期化（初回セットアップ時のみ実行）
     func initializeCloudKitSchema() throws {
-        // 一時的にチェックを無効化（スキーマ生成のため強制実行）
-        // if isCloudKitSchemaInitialized {
-        //     log("ℹ️ CloudKit schema already initialized, skipping")
-        //     return
-        // }
+        if isCloudKitSchemaInitialized {
+            log("ℹ️ CloudKit schema already initialized, skipping")
+            return
+        }
 
         log("🔄 Initializing CloudKit schema...")
 
@@ -381,9 +371,7 @@ extension CoreDataManager {
             throw error
         }
 
-        // 一時的に全環境でスキーマ初期化を有効化（Development環境でスキーマを生成するため）
-        log("ℹ️ Attempting schema initialization in all environments (temporary)")
-
+        #if DEBUG
         do {
             try container.initializeCloudKitSchema(options: [])
             log("✅ CloudKit schema initialized successfully")
@@ -422,6 +410,9 @@ extension CoreDataManager {
 
             throw error
         }
+        #else
+        log("⚠️ CloudKit schema initialization is only available in DEBUG builds")
+        #endif
     }
 
     /// ログをクリア
