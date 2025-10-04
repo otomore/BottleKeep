@@ -354,6 +354,11 @@ extension CoreDataManager {
 
     /// CloudKitスキーマを初期化（初回セットアップ時のみ実行）
     func initializeCloudKitSchema() throws {
+        // 一時的：_pcs_dataシステムレコードタイプ生成のためUserDefaultsをクリア
+        UserDefaults.standard.removeObject(forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitialized)
+        UserDefaults.standard.removeObject(forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitializedDate)
+        log("🔄 UserDefaults cleared for schema re-initialization")
+
         if isCloudKitSchemaInitialized {
             log("ℹ️ CloudKit schema already initialized, skipping")
             return
