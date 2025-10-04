@@ -371,7 +371,7 @@ extension CoreDataManager {
             throw error
         }
 
-        #if DEBUG
+        // 一時的にRELEASEビルドでも有効化（_pcs_dataシステムレコードタイプ生成のため）
         do {
             try container.initializeCloudKitSchema(options: [])
             log("✅ CloudKit schema initialized successfully")
@@ -410,9 +410,6 @@ extension CoreDataManager {
 
             throw error
         }
-        #else
-        log("⚠️ CloudKit schema initialization is only available in DEBUG builds")
-        #endif
     }
 
     /// ログをクリア

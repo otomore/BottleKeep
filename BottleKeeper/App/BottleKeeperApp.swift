@@ -16,6 +16,16 @@ struct BottleKeeperApp: App {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .onAppear {
+                    // CloudKitスキーマ初期化（一時的：_pcs_dataシステムレコードタイプ生成のため）
+                    Task {
+                        do {
+                            try persistenceController.initializeCloudKitSchema()
+                            print("✅ CloudKitスキーマ初期化完了")
+                        } catch {
+                            print("⚠️ CloudKitスキーマ初期化エラー: \(error)")
+                        }
+                    }
+
                     // 初回起動時のみ通知権限をリクエスト
                     if !hasRequestedNotificationPermission {
                         Task {
