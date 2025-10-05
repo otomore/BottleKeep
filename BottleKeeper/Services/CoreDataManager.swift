@@ -6,7 +6,7 @@ import CloudKit
 
 private enum CoreDataConstants {
     static let containerName = "BottleKeeper"
-    static let cloudKitContainerIdentifier = "iCloud.com.bottlekeep.whiskey"
+    static let cloudKitContainerIdentifier = "iCloud.com.bottlekeep.whiskey.v2"
     static let maxLogCount = 100
     static let previewSampleCount = 5
 
@@ -100,6 +100,20 @@ class CoreDataManager: ObservableObject {
     }
 
     init(inMemory: Bool = false) {
+        // 一時的: 新しいCloudKitコンテナへの移行のためUserDefaultsをクリア
+        #if DEBUG
+        let currentContainerID = UserDefaults.standard.string(forKey: "cloudKitContainerID")
+        let expectedContainerID = CoreDataConstants.cloudKitContainerIdentifier
+
+        if currentContainerID != expectedContainerID {
+            UserDefaults.standard.removeObject(forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitialized)
+            UserDefaults.standard.removeObject(forKey: CoreDataConstants.UserDefaultsKeys.cloudKitSchemaInitializedDate)
+            UserDefaults.standard.set(expectedContainerID, forKey: "cloudKitContainerID")
+            print("🔄 CloudKit container changed to \(expectedContainerID)")
+            print("🔄 UserDefaults cleared for new schema initialization")
+        }
+        #endif
+
         container = NSPersistentCloudKitContainer(name: CoreDataConstants.containerName)
 
         if inMemory {
