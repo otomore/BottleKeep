@@ -29,4 +29,50 @@ Claude Code は以下のルールに従ってください：
 
 ---
 
+## プロジェクト固有の重要な知見
+
+### CloudKitスキーマ管理
+
+**絶対に守るべき原則**:
+1. **手動でImport Schemaを使用しない**
+   - 手動インポートでは`_pcs_data`システムレコードタイプが作成されない
+   - NSPersistentCloudKitContainerの自動生成のみを使用すること
+
+2. **スキーマ初期化のタイミング**
+   - `initializeCloudKitSchema()`は`loadPersistentStores`完了後に実行
+   - DEBUGビルドで一度だけ実行（UserDefaultsでフラグ管理）
+   - RELEASEビルドでは実行しない（既にスキーマが存在すべき）
+
+3. **既存スキーマの問題**
+   - Production環境のスキーマは削除不可
+   - 既存スキーマに`_pcs_data`を後から追加することは不可能
+   - 問題が発生したら新しいCloudKitコンテナを作成するのが確実
+
+### 開発環境
+
+**Macなし環境での開発フロー**:
+- GitHub Actionsをビルド＆テスト環境として活用
+- シミュレーター起動とスキーマ初期化もGitHub Actionsで実行
+- プロビジョニングプロファイルはApple Developer Portal（Web）で管理
+- すべての設定変更はファイル編集で実施（Xcode GUI不要）
+
+### CloudKit関連の重要ファイル
+
+**変更時は必ずセットで更新**:
+1. `BottleKeeper/BottleKeeper.entitlements` - CloudKitコンテナID
+2. `BottleKeeper/Services/CoreDataManager.swift` - containerIdentifier定数
+3. プロビジョニングプロファイル - 新しいコンテナを含める必要あり
+
+**参考ドキュメント**:
+- `CLOUDKIT_SYNC_STATUS.md` - 問題の詳細な履歴
+- `CLOUDKIT_MIGRATION_NO_MAC.md` - Macなし環境での移行手順
+
+### 現在のCloudKitコンテナ
+
+- **Container ID**: `iCloud.com.bottlekeep.whiskey.v2`
+- **Team ID**: `B3QHWZX47Z`
+- **環境**: Development（初期スキーマ生成中）→ Production（デプロイ予定）
+
+---
+
 この設定により、このプロジェクトにおけるClaude Codeとのやり取りは継続的に日本語で行われます。
