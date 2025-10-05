@@ -62,18 +62,31 @@ jobs:
 
           # アプリを起動してCloudKitスキーマ初期化を実行
           echo "🚀 アプリを起動中（CloudKitスキーマ初期化のため）..."
-          xcrun simctl launch --console "$SIMULATOR_ID" com.bottlekeep.whiskey &
+          echo "ℹ️ DEBUGビルドでは、CoreDataManagerが自動的にスキーマ初期化を試行します"
+
+          # シミュレーターログをリアルタイムで取得するために、別プロセスで起動
+          xcrun simctl launch --console "$SIMULATOR_ID" com.bottlekeep.whiskey 2>&1 | tee simulator.log &
           LAUNCH_PID=$!
 
-          # 30秒待機（スキーマ初期化が完了するまで）
-          echo "⏳ CloudKitスキーマ初期化完了を待機中（30秒）..."
-          sleep 30
+          # 60秒待機（スキーマ初期化が完了するまで）
+          # 以前の30秒では不十分だった可能性があるため、60秒に延長
+          echo "⏳ CloudKitスキーマ初期化完了を待機中（60秒）..."
+          sleep 60
+
+          # ログから重要なメッセージを抽出
+          echo "📋 シミュレーターログから重要なメッセージを抽出中..."
+          if [ -f simulator.log ]; then
+            echo "=== スキーマ初期化関連ログ ==="
+            grep -i "cloudkit\|schema\|_pcs_data\|error 134060\|initialized" simulator.log || echo "関連ログが見つかりませんでした"
+          fi
 
           # アプリを終了
           echo "🛑 アプリを終了中..."
           xcrun simctl terminate "$SIMULATOR_ID" com.bottlekeep.whiskey || true
+          kill $LAUNCH_PID 2>/dev/null || true
 
-          echo "✅ CloudKitスキーマ初期化完了（Development環境）"
+          echo "✅ CloudKitスキーマ初期化プロセス完了（Development環境）"
+          echo "ℹ️ CloudKit Dashboardでスキーマが正しく作成されたか確認してください"
 
       - name: テスト結果をアップロード
         if: always()

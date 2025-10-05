@@ -165,7 +165,36 @@ class CoreDataManager: ObservableObject {
                 self?.log("Store URL: \(storeDescription.url?.absoluteString ?? "unknown")")
                 let cloudKitStatus = storeDescription.cloudKitContainerOptions != nil ? "Enabled" : "Disabled"
                 self?.log("CloudKit options: \(cloudKitStatus)")
+
+                // ストアロード完了後にスキーマ初期化を試行（一度だけ）
+                // これは、Development環境で_pcs_dataシステムレコードタイプを生成するために必要
+                #if DEBUG
+                self?.attemptSchemaInitializationIfNeeded()
+                #endif
             }
+        }
+    }
+
+    /// スキーマ初期化が必要な場合に自動的に試行
+    private func attemptSchemaInitializationIfNeeded() {
+        // 既に初期化済みの場合はスキップ
+        if isCloudKitSchemaInitialized {
+            log("ℹ️ CloudKit schema already initialized, skipping automatic initialization")
+            return
+        }
+
+        // iCloudが利用可能でない場合はスキップ
+        guard isCloudSyncAvailable else {
+            log("⚠️ iCloud not available, skipping schema initialization")
+            return
+        }
+
+        log("🔄 Attempting automatic schema initialization...")
+        do {
+            try initializeCloudKitSchema()
+        } catch {
+            log("⚠️ Automatic schema initialization failed: \(error.localizedDescription)")
+            log("ℹ️ This is normal if schema already exists in CloudKit")
         }
     }
 
@@ -360,6 +389,7 @@ extension CoreDataManager {
         }
 
         log("🔄 Initializing CloudKit schema...")
+        log("ℹ️ This creates _pcs_data system record type and user-defined record types")
 
         guard isCloudSyncAvailable else {
             let error = NSError(
@@ -371,10 +401,12 @@ extension CoreDataManager {
             throw error
         }
 
-        // 一時的にRELEASEビルドでも有効化（_pcs_dataシステムレコードタイプ生成のため）
+        // スキーマ初期化を実行
         do {
             try container.initializeCloudKitSchema(options: [])
             log("✅ CloudKit schema initialized successfully")
+            log("✅ _pcs_data system record type should now be created")
+            log("✅ CD_Bottle, CD_WishlistItem, CD_DrinkingLog, CD_BottlePhoto record types created")
 
             UserDefaults.standard.set(
                 true,
@@ -389,6 +421,16 @@ extension CoreDataManager {
             log("Error domain: \(error.domain)")
             log("Error code: \(error.code)")
             log("Error description: \(error.localizedDescription)")
+
+            // NSCocoaErrorDomain error 134060の特別処理
+            if error.domain == "NSCocoaErrorDomain" && error.code == 134060 {
+                log("⚠️ Error 134060: Schema already exists or stores not properly configured")
+                log("⚠️ This usually means:")
+                log("  1. CloudKit schema already exists (cannot reinitialize)")
+                log("  2. Stores are not loaded yet")
+                log("  3. CloudKit container options are not properly set")
+                log("ℹ️ If schema exists but _pcs_data is missing, consider creating a new CloudKit container")
+            }
 
             // CKErrorの詳細情報を取得
             if error.domain == "CKErrorDomain" {
