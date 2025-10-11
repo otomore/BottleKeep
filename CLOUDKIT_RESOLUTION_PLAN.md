@@ -1,8 +1,45 @@
 # CloudKit問題 解決プラン
 
 **作成日**: 2025-10-12
+**最終更新**: 2025-10-12 02:04 JST (GitHub Actions実行完了後)
 **対象**: `_pcs_data`システムレコードタイプ欠落問題
-**現在のステータス**: ✅ コード準備完了 → ⏳ ユーザー操作待ち
+**現在のステータス**: ✅ GitHub Actions実行完了 → ⚠️ スキーマ初期化状況確認必要
+
+---
+
+## 🔄 最新の実行結果（2025-10-12）
+
+### GitHub Actions実行 - Run #18432219295
+
+**実行サマリー**:
+- ✅ **テストジョブ**: 成功（2m49s）
+  - DEBUGビルド成功
+  - シミュレーター起動成功
+  - アプリ起動成功（PID: 18242）
+  - 60秒待機完了
+- ❌ **ビルドジョブ**: 失敗（21s）
+  - エラー: プロビジョニングプロファイルに新CloudKitコンテナ含まれず
+- ⏭️ **TestFlight配信**: スキップ
+
+**⚠️ 重要な発見**:
+1. **CloudKitログが出力されていない**
+   - `grep -i "cloudkit|schema|_pcs_data"` で関連ログが見つからず
+   - CoreDataManagerのログメッセージが一切表示されていない
+   - **可能性1**: アプリがクラッシュした（iCloudアカウント未設定など）
+   - **可能性2**: スキーマ初期化は既に完了していてUserDefaultsにフラグが立っている
+   - **可能性3**: ログが別の場所に出力された
+
+2. **プロビジョニングプロファイルの問題**（RELEASE buildのみ）
+   ```
+   Provisioning profile "BottleKeep Distribution" doesn't match the entitlements
+   file's value for the com.apple.developer.icloud-container-identifiers entitlement.
+   ```
+   - 現在のプロファイル: 旧コンテナ `iCloud.com.bottlekeep.whiskey` のみ
+   - 必要な設定: 新コンテナ `iCloud.com.bottlekeep.whiskey.v2` を追加
+
+**次のアクション**:
+1. **最優先**: CloudKitダッシュボードで`_pcs_data`の存在確認（ユーザー操作必須）
+2. **優先**: Apple Developer Portalでプロビジョニングプロファイル更新（ユーザー操作必須）
 
 ---
 
@@ -25,16 +62,39 @@
    - ✅ シミュレーター起動＆スキーマ初期化ワークフロー整備
    - ✅ 60秒待機＋ログ抽出機能実装
 
+4. **GitHub Actions実行（2025-10-12）**
+   - ✅ ワークフロー手動トリガー（Run #18432219295）
+   - ✅ DEBUGビルド＆シミュレーター起動成功
+   - ✅ アプリ起動完了（60秒間実行）
+   - ⚠️ CloudKitログが出力されず（原因調査必要）
+
 ### ⏳ 未完了（ユーザー操作が必要）
 
 1. **Apple Developer Portalでの確認・操作**
    - ⏳ 新コンテナ `iCloud.com.bottlekeep.whiskey.v2` が作成済みか確認
-   - ⏳ プロビジョニングプロファイルに新コンテナが含まれているか確認
-   - ⏳ （必要に応じて）新しいプロビジョニングプロファイル作成
+   - ❗ **プロビジョニングプロファイルに新コンテナが含まれていない**（確定）
+     - GitHub Actions Run #18432219295でビルドエラー確認済み
+     - 現在: 旧コンテナ `iCloud.com.bottlekeep.whiskey` のみ
+     - 必要: 新コンテナ `iCloud.com.bottlekeep.whiskey.v2` を追加
+   - ❗ **新しいプロビジョニングプロファイルの作成＆GitHub Secrets更新が必須**
 
-2. **CloudKitダッシュボードでの確認**
-   - ⏳ Development環境のスキーマ状態確認
-   - ⏳ `_pcs_data`レコードタイプの存在確認
+2. **CloudKitダッシュボードでの確認**（🔥 最優先）
+   - ⏳ **Development環境のスキーマ状態確認**
+   - ⏳ **`_pcs_data`レコードタイプの存在確認**
+   - 📍 URL: https://icloud.developer.apple.com/dashboard/
+   - 📍 Container: `iCloud.com.bottlekeep.whiskey.v2`
+   - 📍 Environment: **Development**
+   - 📍 Schema → Record Types
+   - ✅ 確認すべきレコードタイプ:
+     - `CD_Bottle`
+     - `CD_BottlePhoto`
+     - `CD_DrinkingLog`
+     - `CD_WishlistItem`
+     - **`_pcs_data`** ← **これが最重要**
+
+   **この確認結果により次のアクションが決まります**:
+   - ✅ `_pcs_data`が存在 → スキーマ初期化成功！ステップ3（Production展開）へ
+   - ❌ `_pcs_data`が存在しない → トラブルシューティング必要（ログ調査、再実行など）
 
 3. **実機/TestFlightでの動作確認**
    - ⏳ 2台のデバイスでデータ同期テスト
