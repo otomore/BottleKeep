@@ -127,11 +127,19 @@ Temporary Items
 secrets.json
 config.json
 
-# Claude Code settings
+# Claude Code settings (個人環境ファイル)
 .claude/
 .claude-config.json
-CLAUDE.md
+.claude.json
 claude-ja.bat
-claude-ja.shcert_encoded.txt
+claude-ja.sh
+cert_encoded.txt
 encoded.txt
 SECRET_INFO.md
+
+# MCPサーバー関連（ローカル開発ツール）
+serena/
+.playwright-mcp/
+
+# プロビジョニングプロファイル（個人の証明書）
+*.mobileprovision
